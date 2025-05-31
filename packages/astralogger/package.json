@@ -9,12 +9,15 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "clean": "rm -rf dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "pino": "^9.6.0"
+  "devDependencies": {
+    "pino": "^9.7.0",
+    "pino-pretty": "^13.0.0",
+    "typescript": "^5.8.3"
   }
 }
