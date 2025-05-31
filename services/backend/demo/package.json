@@ -5,6 +5,8 @@
   "main": "dist/index.js",
   "type": "commonjs",
   "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
     "dev": "tsc && node dist/index.js"
   },
   "keywords": [],
@@ -12,5 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "astralogger": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
   }
 }
