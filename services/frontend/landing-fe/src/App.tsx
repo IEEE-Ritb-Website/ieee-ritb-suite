@@ -1,10 +1,10 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Homepage from "./pages/Homepage";
-import Chapters from "./pages/Chapters";
-import Chapter from "./pages/Chapter";
-import StudentBranch from "./pages/SB";
-import Gallery from "./pages/Gallery";
+import Homepage from "./Pages/Homepage";
+import Chapters from "./Pages/Chapters";
+import Chapter from "./Pages/Chapter";
+import StudentBranch from "./Pages/SB";
+import Gallery from "./Pages/Gallery";
 
 function App() {
   return (
@@ -21,4 +21,3 @@ function App() {
 }
 
 export default App;
-
