@@ -96,6 +96,7 @@
   justify-content: space-between;
   /* height: 1.5rem;  */
 }
+
 */ .menu-button {
   display: flex;
   flex-direction: column;
@@ -110,7 +111,8 @@
 .menu-icon {
   position: relative;
   width: 20px;
-  height: 18px; /* Enough space for 3 lines with spacing */
+  height: 18px;
+  /* Enough space for 3 lines with spacing */
   display: flex;
   flex-direction: column;
   justify-content: space-between;

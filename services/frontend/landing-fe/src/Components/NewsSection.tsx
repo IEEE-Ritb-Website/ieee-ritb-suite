@@ -149,12 +149,10 @@ const NewsSection: React.FC = () => {
                   <span className="author">{item.author}</span>
                 </div>
               </div>
-
               <div className="card-body">
                 <h3 className="article-title">{item.title}</h3>
                 <p className="article-excerpt">{item.excerpt}</p>
               </div>
-
               <div className="card-footer">
                 <button className="read-more">
                   <span className="btn-text">Continue Reading</span>
@@ -171,14 +169,12 @@ const NewsSection: React.FC = () => {
                   </div>
                 </button>
               </div>
-
               <div className="hover-gradient"></div>
               <div className="card-reflection"></div>
             </article>
           ))}
         </div>
       </div>
-
       <div className="background-elements">
         <div className="noise-texture"></div>
         <div className="gradient-orb gradient-orb-1"></div>

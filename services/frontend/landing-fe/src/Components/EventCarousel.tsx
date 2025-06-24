@@ -99,9 +99,8 @@ const EventCarousel: React.FC<EventCarouselProps> = ({ events }) => {
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                index === currentIndex ? "bg-white" : "bg-white/30"
-              }`}
+              className={`w-2 h-2 rounded-full transition-colors duration-300 ${index === currentIndex ? "bg-white" : "bg-white/30"
+                }`}
             />
           ))}
         </div>
