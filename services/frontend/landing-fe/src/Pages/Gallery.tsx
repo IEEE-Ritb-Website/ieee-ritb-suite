@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
 import "./Gallery.css";
 import bckimg from "../assets/bckimg.jpg";
-import { Card } from "@/component/luxe/ui/card";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import Particles from "../Components/Particles";
