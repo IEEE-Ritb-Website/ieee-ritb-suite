@@ -1,6 +1,6 @@
 const AnimatedLogo: React.FC = () => {
   return (
-    <div className="mt-50 mb-50 mr-40">
+    <div className="mt-50 mb-50">
       <div className="text-wrapper relative min-h-40 inset-x-0   flex items-center justify-center pointer-events-none">
         <svg
           viewBox="0 0 1000 300"

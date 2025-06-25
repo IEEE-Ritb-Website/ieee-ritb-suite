@@ -15,9 +15,9 @@
 
 .responsive-svg text {
   font-size: 10rem;
-  fill: rgba(78, 157, 236, 0.863);
+  fill: rgba(10, 116, 215, 0.9);
   stroke-width: 2;
-  stroke: #36aae4;
+  stroke: rgb(10, 116, 215);
   animation: stroke 5s 1 alternate;
 }
 
