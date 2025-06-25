@@ -1,9 +1,6 @@
 @import "tw-animate-css";
 @import "tailwindcss";
 @import "tailwindcss";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 @font-face {
   font-family: "Montserrat";

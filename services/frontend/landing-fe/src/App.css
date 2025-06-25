@@ -10,15 +10,15 @@
 .responsive-svg {
   width: 90%;
   height: auto;
-  font-family: "Russo One", sans-serif;
+  font-family: "montserrat", sans-serif;
 }
 
 .responsive-svg text {
   font-size: 10rem;
   fill: rgba(78, 157, 236, 0.863);
   stroke-width: 2;
-  stroke: #3798A0;
-  animation: stroke 5s infinite alternate;
+  stroke: #36aae4;
+  animation: stroke 5s 1 alternate;
 }
 
 @media (min-width: 640px) {
