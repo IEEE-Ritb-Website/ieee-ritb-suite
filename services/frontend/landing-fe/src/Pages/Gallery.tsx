@@ -58,7 +58,7 @@ const AnimatedCard: React.FC<{
   index: number;
   onView: () => void;
   onShare: () => void;
-}> = ({ img, index, onView, onShare }) => {
+}> = ({ img, index, onView }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
