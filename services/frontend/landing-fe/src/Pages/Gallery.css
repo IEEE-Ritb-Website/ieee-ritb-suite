@@ -6,7 +6,7 @@
 /* Gallery Section - Dark Background */
 .gallery-section {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+  background: transparent;
   position: relative;
   padding: 80px 0;
   overflow: hidden;
@@ -20,7 +20,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image:
+  /* background-image:
     radial-gradient(
       circle at 25% 25%,
       rgba(0, 102, 153, 0.1) 0%,
@@ -30,7 +30,7 @@
       circle at 75% 75%,
       rgba(0, 128, 204, 0.05) 0%,
       transparent 50%
-    );
+    ); */
   pointer-events: none;
 }
 
@@ -45,8 +45,8 @@
 .gallery-title {
   font-size: 3.5rem;
   font-weight: 700;
-  color:  rgba(78, 157, 236, 0.863);
-  margin: 0 0 20px 0;
+  color: rgba(78, 157, 236, 0.863);
+  margin: 0 2px 20px 0;
   text-shadow: 0 0 30px rgba(0, 102, 153, 0.4);
   position: relative;
   display: inline-block;
@@ -99,7 +99,7 @@
   padding: 14px 28px;
   background: rgba(255, 255, 255, 0.05);
   border: 2px solid rgba(0, 102, 153, 0.3);
-  color:  rgba(78, 157, 236, 0.863);
+  color: rgba(78, 157, 236, 0.863);
   border-radius: 30px;
   font-weight: 600;
   font-size: 1rem;
@@ -132,7 +132,7 @@
 
 .filter-btn:hover,
 .filter-btn.active {
-  background:  rgba(78, 157, 236, 0.863);
+  background: rgba(78, 157, 236, 0.863);
   border-color: #006699;
   color: white;
   box-shadow: 0 8px 30px rgba(0, 102, 153, 0.4);
@@ -306,7 +306,7 @@
 
 .card-category {
   display: inline-block;
-  background:  rgba(78, 157, 236, 0.863);
+  background: rgba(78, 157, 236, 0.863);
   color: white;
   padding: 6px 14px;
   border-radius: 20px;
@@ -406,7 +406,7 @@
 
 .lightbox-category {
   display: inline-block;
-  background:  rgba(78, 157, 236, 0.863);
+  background: rgba(78, 157, 236, 0.863);
   color: white;
   padding: 8px 16px;
   border-radius: 20px;

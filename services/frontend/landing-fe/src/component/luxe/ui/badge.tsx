@@ -9,6 +9,9 @@ type Variant = {
   variant: string;
   component: React.FC<React.ComponentProps<"div">>;
 };
+{
+  /* removed border border-border from shine variant class */
+}
 
 const variants = [
   {
@@ -67,7 +70,7 @@ const variants = [
       <div
         {...props}
         className={cn(
-          "animate-shine items-center justify-center rounded-full border border-border bg-[length:400%_100%]",
+          "animate-shine items-center justify-center rounded-full  bg-[length:400%_100%]",
           "px-3 py-1 text-primary-invert/90 transition-colors dark:text-primary-muted",
           "bg-[linear-gradient(110deg,#000000,45%,#303030,55%,#000000)]",
           "dark:bg-[linear-gradient(110deg,#000103,45%,#303030,55%,#000103)]",

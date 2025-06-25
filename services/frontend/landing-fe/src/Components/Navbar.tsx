@@ -21,14 +21,13 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <nav className="navbar">
+      <nav className="navbar ">
         <div className="navbar-container">
-         
           <Badge variant="shine">
-             <div className="navbar-logo">
-            <span>IEEE </span>
-            <span>RIT-B</span>
-          </div>
+            <div className="navbar-logo">
+              <span>IEEE </span>
+              <span>RIT-B</span>
+            </div>
           </Badge>
 
           {/* Desktop Nav */}

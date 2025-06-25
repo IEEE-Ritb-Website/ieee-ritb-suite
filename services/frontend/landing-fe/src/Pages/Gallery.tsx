@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
 import "./Gallery.css";
 import bckimg from "../assets/bckimg.jpg";
-
+import { Card } from "@/component/luxe/ui/card";
+import Navbar from "../Components/Navbar";
+import Footer from "../Components/Footer";
+import Particles from "../Components/Particles";
 interface GalleryImage {
   src: string;
   title: string;
@@ -179,117 +182,134 @@ const Gallery: React.FC = () => {
   };
 
   return (
-    <section className="gallery-section">
-      {/* Page Title */}
-      <motion.div
-        className="gallery-header"
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
-        <motion.h1
-          className="gallery-title"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.3 }}
-        >
-          IEEE Gallery
-        </motion.h1>
-        <motion.p
-          className="gallery-subtitle"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-        >
-          Showcasing Technical Excellence & Innovation
-        </motion.p>
-      </motion.div>
-
-      {/* Filter Options */}
-      <motion.div
-        className="gallery-filters"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.7 }}
-      >
-        {categories.map((category, index) => (
-          <motion.button
-            key={category}
-            className={`filter-btn ${selectedCategory === category ? "active" : ""}`}
-            onClick={() => setSelectedCategory(category)}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{
-              duration: 0.4,
-              delay: 0.8 + index * 0.1,
-              ease: "backOut",
-            }}
-            whileHover={{
-              scale: 1.05,
-              y: -2,
-              transition: { duration: 0.2 },
-            }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {category}
-          </motion.button>
-        ))}
-      </motion.div>
-
-      {/* Gallery Grid */}
-      <motion.div
-        className="gallery-grid"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 1 }}
-      >
-        {filteredImages.map((img, index) => (
-          <AnimatedCard
-            key={`${img.title}-${index}`}
-            img={img}
-            index={index}
-            onView={() => openLightbox(img)}
-            onShare={() => handleShare(img)}
-          />
-        ))}
-      </motion.div>
-
-      {/* Lightbox Modal */}
-      {lightboxImage && (
+    <>
+      <Navbar />
+      <section className="gallery-section mt-8">
+        {/* Page Title */}
         <motion.div
-          className="lightbox-overlay"
+          className="gallery-header"
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <motion.h1
+            className="gallery-title"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.3 }}
+          >
+            <div className="navbar-logo">
+              <span className="text-4xl">IEEE </span>
+              <span className="text-4xl">Gallery</span>
+            </div>
+          </motion.h1>
+          <motion.p
+            className="gallery-subtitle"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.5 }}
+          >
+            Showcasing Technical Excellence & Innovation
+          </motion.p>
+        </motion.div>
+
+        {/* Filter Options */}
+        <motion.div
+          className="gallery-filters"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.7 }}
+        >
+          {categories.map((category, index) => (
+            <motion.button
+              key={category}
+              className={`filter-btn ${selectedCategory === category ? "active" : ""}`}
+              onClick={() => setSelectedCategory(category)}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 0.4,
+                delay: 0.8 + index * 0.1,
+                ease: "backOut",
+              }}
+              whileHover={{
+                scale: 1.05,
+                y: -2,
+                transition: { duration: 0.2 },
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {category}
+            </motion.button>
+          ))}
+        </motion.div>
+
+        {/* Gallery Grid */}
+        <motion.div
+          className="gallery-grid"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={closeLightbox}
+          transition={{ duration: 0.8, delay: 1 }}
         >
-          <motion.div
-            className="lightbox-content"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button className="lightbox-close" onClick={closeLightbox}>
-              <i className="fas fa-times"></i>
-            </button>
-
-            <div className="lightbox-image-container">
-              <img src={lightboxImage.src} alt={lightboxImage.title} />
-            </div>
-
-            <div className="lightbox-info">
-              <div className="lightbox-category">{lightboxImage.category}</div>
-              <h3 className="lightbox-title">{lightboxImage.title}</h3>
-              <p className="lightbox-description">
-                {lightboxImage.description}
-              </p>
-            </div>
-          </motion.div>
+          {filteredImages.map((img, index) => (
+            <AnimatedCard
+              key={`${img.title}-${index}`}
+              img={img}
+              index={index}
+              onView={() => openLightbox(img)}
+              onShare={() => handleShare(img)}
+            />
+          ))}
         </motion.div>
-      )}
-    </section>
+
+        {/* Lightbox Modal */}
+        {lightboxImage && (
+          <motion.div
+            className="lightbox-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeLightbox}
+          >
+            <motion.div
+              className="lightbox-content"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button className="lightbox-close" onClick={closeLightbox}>
+                <i className="fas fa-times"></i>
+              </button>
+
+              <div className="lightbox-image-container">
+                <img src={lightboxImage.src} alt={lightboxImage.title} />
+              </div>
+
+              <div className="lightbox-info">
+                <div className="lightbox-category">
+                  {lightboxImage.category}
+                </div>
+                <h3 className="lightbox-title">{lightboxImage.title}</h3>
+                <p className="lightbox-description">
+                  {lightboxImage.description}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </section>
+      <Footer />
+      <Particles
+        className="absolute inset-0"
+        quantity={400}
+        ease={100}
+        color="#ffffff"
+        size={0.05}
+        refresh
+      />
+    </>
   );
 };
 
