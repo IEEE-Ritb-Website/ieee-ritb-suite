@@ -7,13 +7,9 @@ const AnimatedLogo: React.FC = () => {
           preserveAspectRatio="xMidYMid meet"
           className="responsive-svg "
         >
-          <text x="50%" y="50%" dy=".35em" textAnchor="middle"  >
-            <tspan className="inline-block   ">
-              IEEE{" "}
-            </tspan>
-            <tspan className="inline-block  ">
-              RIT-B
-            </tspan>
+          <text x="50%" y="50%" dy=".35em" textAnchor="middle">
+            <tspan className="inline-block   ">IEEE </tspan>
+            <tspan className="inline-block  ">RIT-B</tspan>
           </text>
         </svg>
       </div>

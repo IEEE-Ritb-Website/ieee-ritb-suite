@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Text } from "@/component/luxe/ui/text";
 import "./NewsSection.css";
 
 interface NewsItem {
@@ -102,11 +103,12 @@ const NewsSection: React.FC = () => {
   return (
     <section className="news-section ">
       <div className="news-container">
-        <div className="section-header">
-          <div className="header-content">
-            <span className="section-label">Latest Updates</span>
-            <h2 className="section-title">News & Insights</h2>
-            <p className="section-description">
+        <div className="section-header ">
+          <div className="header-content text-center mx-auto">
+            <Text variant="shine" className="section-title">
+              News & Insights
+            </Text>
+            <p className="section-description mt-4">
               Stay informed with cutting-edge developments in authentication and
               security technology
             </p>

@@ -1,102 +1,118 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { motion, AnimatePresence } from "framer-motion"
-import { useRef, useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { Text } from "@/component/luxe/ui/text";
+import "./EventCarousel.css";
 
 export type EventType = {
-  id: number
-  title: string
-  url: string
-  description?: string
-}
+  id: number;
+  title: string;
+  url: string;
+  description?: string;
+};
 
 type EventCarouselProps = {
-  events: EventType[]
-}
+  events: EventType[];
+};
 
 const EventCarousel: React.FC<EventCarouselProps> = ({ events }) => {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [isHovered, setIsHovered] = useState(false)
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const extendedEvents = events.length < 3 ? [...events, ...events, ...events] : events
+  const extendedEvents =
+    events.length < 3 ? [...events, ...events, ...events] : events;
 
   useEffect(() => {
     const startAutoPlay = () => {
       intervalRef.current = setInterval(() => {
         if (!isHovered) {
-          setCurrentIndex((prevIndex) => (prevIndex + 1) % extendedEvents.length)
+          setCurrentIndex(
+            (prevIndex) => (prevIndex + 1) % extendedEvents.length,
+          );
         }
-      }, 3000)
-    }
+      }, 3000);
+    };
 
     const stopAutoPlay = () => {
       if (intervalRef.current) {
-        clearInterval(intervalRef.current)
+        clearInterval(intervalRef.current);
       }
-    }
+    };
 
-    startAutoPlay()
+    startAutoPlay();
 
-    return () => stopAutoPlay()
-  }, [isHovered, extendedEvents.length])
+    return () => stopAutoPlay();
+  }, [isHovered, extendedEvents.length]);
 
   const getVisibleEvents = () => {
-    const visible = []
+    const visible = [];
     for (let i = 0; i < 3; i++) {
-      const index = (currentIndex + i) % extendedEvents.length
-      visible.push(extendedEvents[index])
+      const index = (currentIndex + i) % extendedEvents.length;
+      visible.push(extendedEvents[index]);
     }
-    return visible
-  }
+    return visible;
+  };
 
   return (
-    <section className="relative bg-transparent py-20 mx-4 md:mx-20 lg:mx-36 xl:mx-50">
-      <div
-        className="flex items-center justify-center overflow-hidden px-6"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <motion.div className="flex gap-6" animate={{ x: 0 }} transition={{ duration: 0.5, ease: "easeInOut" }}>
-          <AnimatePresence mode="wait">
-            {getVisibleEvents().map((event, index) => (
-              <motion.div
-                key={`${event.id}-${currentIndex}-${index}`}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{
-                  duration: 0.5,
-                  delay: index * 0.1,
-                  ease: "easeInOut",
-                }}
-              >
-                <EventCard event={event} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      </div>
-      <div className="flex justify-center mt-8 gap-2">
-        {extendedEvents.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-              index === currentIndex ? "bg-white" : "bg-white/30"
-            }`}
-          />
-        ))}
-      </div>
-    </section>
-  )
-}
+    <>
+      <section className="relative bg-transparent py-20 mx-4 md:mx-20 lg:mx-36 xl:mx-50">
+        <div className="text-center mx-auto">
+          <Text variant="shine" className="section-title">
+            Events
+          </Text>
+        </div>
+        <div
+          className="flex items-center justify-center overflow-hidden px-6 mt-4"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <motion.div
+            className="flex gap-6"
+            animate={{ x: 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+          >
+            <AnimatePresence mode="wait">
+              {getVisibleEvents().map((event, index) => (
+                <motion.div
+                  key={`${event.id}-${currentIndex}-${index}`}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.1,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <EventCard event={event} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+        <div className="flex justify-center mt-8 gap-2">
+          {extendedEvents.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                index === currentIndex ? "bg-white" : "bg-white/30"
+              }`}
+            />
+          ))}
+        </div>
+      </section>
+    </>
+  );
+};
 
 type EventCardProps = {
-  event: EventType
-}
+  event: EventType;
+};
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   return (
@@ -112,7 +128,9 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       <div className="absolute inset-0 z-5 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       <div className="absolute inset-0 z-10 flex flex-col justify-end p-6">
         <div className="transform transition-transform duration-300 group-hover:translate-y-[-8px]">
-          <h3 className="text-2xl font-bold text-white mb-2 leading-tight">{event.title}</h3>
+          <h3 className="text-2xl font-bold text-white mb-2 leading-tight">
+            {event.title}
+          </h3>
           {event.description && (
             <p className="text-gray-200 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-3">
               {event.description}
@@ -122,7 +140,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       </div>
       <div className="absolute inset-0 z-20 border-2 border-transparent group-hover:border-white/20 rounded-xl transition-colors duration-300" />
     </div>
-  )
-}
+  );
+};
 
-export default EventCarousel
+export default EventCarousel;
