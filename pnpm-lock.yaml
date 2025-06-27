@@ -94,7 +94,7 @@ importers:
         specifier: ^3.9.0
         version: 3.10.0(react-hook-form@7.58.1)
       '@radix-ui/react-accordion':
-        specifier: ^1.2.0
+        specifier: ^1.2.11
         version: 1.2.11(@types/react-dom@19.1.5)(@types/react@19.1.4)(react-dom@19.1.0)(react@19.1.0)
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.1
@@ -235,6 +235,9 @@ importers:
       '@eslint/js':
         specifier: ^9.25.0
         version: 9.25.1
+      '@luxeui/ui':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@types/node':
         specifier: ^22.15.19
         version: 22.15.32
@@ -889,6 +892,10 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+    dev: true
+
+  /@luxeui/ui@1.0.1:
+    resolution: {integrity: sha512-7vLvkjZLhA5pNIeABqd7qHqujfpri/KnhAl4LfO1S9ryVnzMIOszTXtd7fs/tKWYACwz99Jo8Ubm7tFh1O2ldw==}
     dev: true
 
   /@mongodb-js/saslprep@1.3.0:
