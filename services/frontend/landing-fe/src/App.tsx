@@ -5,6 +5,7 @@ import Chapters from "./Pages/Chapters";
 import Chapter from "./Pages/Chapter";
 import StudentBranch from "./Pages/SB";
 import Gallery from "./Pages/Gallery";
+import FacultyPage from "./Pages/Faculty";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/chapters/:id" element={<Chapter />} /> {/* Dynamic */}
         <Route path="/student-branch" element={<StudentBranch />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/faculty" element={<FacultyPage />} />
       </Routes>
     </Router>
   );
