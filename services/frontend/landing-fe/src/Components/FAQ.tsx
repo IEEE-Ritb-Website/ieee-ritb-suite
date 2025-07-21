@@ -1,8 +1,11 @@
-import { useState } from "react";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "../../src/component/luxe/ui/accordion";
 
-function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
+export default function FAQ() {
   const faqs = [
     {
       question: "What is IEEE RIT?",
@@ -46,111 +49,45 @@ function FAQ() {
     },
   ];
 
-  const toggleFAQ = (index : number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
   return (
-    <>
-      <style>{`
-        :root {
-          --dark-background: #05060f;
-          --body-normal: rgba(200,212,234,.78);
-          --body-loud: #c7d3ea;
-          --body-muted: #c7d3eaa3;
-        }
-        .faq-section {
-          background: var(--dark-background);
-          color: var(--body-normal);
-          max-width: 900px;
-          margin: 2rem auto 3rem auto;
-          padding: 1.5rem 2rem;
-          border-radius: 8px;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          font-size: 14px;
-          box-sizing: border-box;
-          box-shadow: 0 0 10px rgba(199, 211, 234, 0.2);
-          opacity: 0.9;
-        }
-        .faq-title {
-          font-size: 1.8rem;
-          color: var(--body-loud);
-          margin-bottom: 1.5rem;
-          text-align: center;
-          font-weight: 700;
-        }
-        .faq-item {
-          border-bottom: 1px solid var(--body-muted);
-          padding: 0.8rem 0;
-          cursor: pointer;
-          user-select: none;
-        }
-        .faq-question {
-          font-weight: 600;
-          color: var(--body-loud);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 1rem;
-          transition: color 0.2s ease;
-        }
-        .faq-question:hover {
-          color: var(--body-normal);
-        }
-        .faq-answer {
-          max-height: 0;
-          overflow: hidden;
-          color: var(--body-muted);
-          font-size: 0.9rem;
-          line-height: 1.5;
-          transition: max-height 0.35s ease, padding 0.35s ease;
-          padding: 0 0;
-          margin-top: 0.5rem;
-        }
-        .faq-answer.open {
-          max-height: 400px;
-          padding: 0.5rem 0;
-        }
-        .arrow {
-          font-size: 1.2rem;
-          color: var(--body-normal);
-          transition: transform 0.3s ease;
-          user-select: none;
-        }
-        .arrow.open {
-          transform: rotate(90deg);
-        }
-      `}</style>
+    <div className="min-h-screen bg-black px-4 py-16">
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-white mb-4">
+            Frequently Asked Questions
+          </h1>
+          <div className="w-20 h-0.5 bg-white mx-auto"></div>
+        </div>
 
-      <section className="faq-section" aria-label="Frequently Asked Questions">
-        <h2 className="faq-title">Frequently Asked Questions</h2>
+        {/* FAQ Accordion */}
+        <Accordion type="single" collapsible className="w-full space-y-2">
+          {faqs.map((faq, index) => (
+            <AccordionItem
+              key={index}
+              value={`item-${index}`}
+              className="border-b border-gray-800"
+            >
+              <AccordionTrigger className="text-white text-left text-lg font-medium py-4 hover:bg-gray-900/30 transition-colors">
+                {faq.question}
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-300 pb-4 px-1 leading-relaxed">
+                {faq.answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
 
-        {faqs.map((faq, idx) => (
-          <div
-            className="faq-item"
-            key={idx}
-            onClick={() => toggleFAQ(idx)}
-            role="button"
-            aria-expanded={openIndex === idx}
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") toggleFAQ(idx);
-            }}
-          >
-            <div className="faq-question">
-              {faq.question}
-              <span className={`arrow ${openIndex === idx ? "open" : ""}`}>
-                ▶
-              </span>
-            </div>
-            <div className={`faq-answer ${openIndex === idx ? "open" : ""}`}>
-              {faq.answer}
-            </div>
-          </div>
-        ))}
-      </section>
-    </>
+        {/* Call to Action */}
+        <div className="text-center mt-12">
+          <p className="text-gray-400 mb-6">
+            Still have questions? We're here to help!
+          </p>
+          <button className="bg-white hover:bg-gray-200 text-black font-semibold px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105">
+            Contact Us
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
-
-export default FAQ;
