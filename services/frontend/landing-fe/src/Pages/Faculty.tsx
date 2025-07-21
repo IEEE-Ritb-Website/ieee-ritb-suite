@@ -34,7 +34,7 @@ const FacultyPage: React.FC = () => {
             <ProfileCard
               key={faculty.faculty}
               name={faculty.faculty}
-              chapter={faculty.chapter}
+              role={faculty.role}
               imageUrl={faculty.imageUrl}
             />
           ))}
