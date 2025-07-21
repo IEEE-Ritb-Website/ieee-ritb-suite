@@ -58,6 +58,6 @@ export const facultyList: FacultyCoordinator[] = [
   {
     role: "EMBS",
     faculty: "Dr PRABHA RAVI",
-    imageUrl: "NA",
+    imageUrl: "https://i1.rgstatic.net/ii/profile.image/683667047346177-1540010334427_Q128/Prabha-Ravi-2.jpg",
   },
 ];
