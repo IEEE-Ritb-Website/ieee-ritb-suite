@@ -1,0 +1,164 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400");
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+.content {
+  animation: animatop 0.9s cubic-bezier(0.425, 1.14, 0.47, 1.125) forwards;
+  padding: 1rem;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.card {
+  width: 100%;
+  max-width: 500px;
+  min-height: 100px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0);
+  box-shadow: 0px 10px 20px rgba(136, 207, 240, 0.163);
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+.card:hover {
+  box-shadow: 0 0 25px rgba(47, 149, 232, 0.7);
+}
+.card:after {
+  content: "";
+  display: block;
+  width: 190px;
+  height: 300px;
+  background: rgb(47, 149, 232);
+  position: absolute;
+  animation: rotatemagic 0.75s cubic-bezier(0.425, 1.04, 0.47, 1.105) 1s both;
+  z-index: 1;
+  top: -24px;
+  left: -78px;
+  opacity: 0.8;
+  border-radius: 30px;
+}
+
+.badgescard {
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: #ececec;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  z-index: -1;
+  left: 5%;
+  bottom: 10px;
+  animation: animainfos 0.5s cubic-bezier(0.425, 1.04, 0.47, 1.105) 0.75s
+    forwards;
+  transition: bottom 0.3s ease;
+}
+.badgescard span {
+  font-size: 1.4em;
+  margin: 0 6px;
+  opacity: 0.7;
+}
+
+.firstinfo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  z-index: 2;
+  position: relative;
+}
+.firstinfo img {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+.firstinfo .profileinfo {
+  padding: 0 20px;
+  flex: 1;
+}
+.firstinfo .profileinfo h1 {
+  font-size: 1.6em;
+  margin: 0;
+  color: #ffffff;
+}
+.firstinfo .profileinfo h3 {
+  font-size: 1.2em;
+  color: #2a72d7;
+  font-style: italic;
+  margin: 5px 0;
+}
+.firstinfo .profileinfo p.bio {
+  padding: 10px 0 0 0;
+  color: #555;
+  line-height: 1.4;
+  font-style: normal;
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 15px 10px;
+    max-width: 90%;
+  }
+  .badgescard {
+    width: 95%;
+    left: 2.5%;
+    font-size: 0.9em;
+  }
+  .firstinfo {
+    flex-direction: column;
+    align-items: center;
+  }
+  .firstinfo img {
+    width: 80px;
+    height: 80px;
+  }
+  .firstinfo .profileinfo {
+    padding: 10px 0 0 0;
+    text-align: center;
+  }
+  .firstinfo .profileinfo h1 {
+    font-size: 1.4em;
+  }
+  .firstinfo .profileinfo h3 {
+    font-size: 1em;
+  }
+}
+
+@keyframes animatop {
+  0% {
+    opacity: 0;
+    bottom: -500px;
+  }
+  100% {
+    opacity: 1;
+    bottom: 0;
+  }
+}
+
+@keyframes animainfos {
+  0% {
+    bottom: 10px;
+  }
+  100% {
+    bottom: -42px;
+  }
+}
+
+@keyframes rotatemagic {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg);
+    top: -24px;
+    left: -253px;
+  }
+  100% {
+    transform: rotate(-30deg);
+    top: -24px;
+    left: -78px;
+  }
+}
