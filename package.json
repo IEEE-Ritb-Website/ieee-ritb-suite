@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "create-be": "node scripting/dist/create-be.js",
     "build-all": "nx run-many --target=build --all"
   },
   "keywords": [],
