@@ -2,5 +2,7 @@ node_modules
 dist
 build
 
+*.local
+
 .nx/cache
 .nx/workspace-data

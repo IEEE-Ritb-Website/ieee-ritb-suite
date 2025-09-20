@@ -10,6 +10,9 @@ function loadConfig(): LoggerOptions {
         try {
             const raw = fs.readFileSync(configPath, "utf-8");
             const config = JSON.parse(raw);
+            if (process.env.NODE_ENV !== "development") {
+                config.level = "info";  // on production, do not log below info for safety
+            }
             return config;
         } catch (err) {
             console.warn("[AstraLogger] Failed to parse astralogger.json. Falling back to default config.");
