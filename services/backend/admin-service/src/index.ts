@@ -1,13 +1,10 @@
-import dotenv from "dotenv";
-
-dotenv.config({ path: "../../../.env.local" });
+import { loadEnv } from "./utils/loadEnv";
+loadEnv();
 
 import app from "./app";
 import { getAstraLogger } from "astralogger";
+import { CONFIG } from "./configs";
 
-getAstraLogger().debug(process.env.NODE_ENV)
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    getAstraLogger().info(`🚀 Server running on http://localhost:${PORT}`);
+app.listen(CONFIG.server.port, () => {
+    getAstraLogger().info(`🚀 ${CONFIG.server.name} server running on http://localhost:${CONFIG.server.port}`);
 });

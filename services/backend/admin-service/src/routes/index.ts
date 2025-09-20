@@ -1,10 +1,8 @@
 import { Router } from 'express';
-import { pingRoute } from './ping';
-import { sampleRoute } from './sample';
+import authRouter from './authRoutes';
 
 const router = Router();
 
-router.use(pingRoute);
-router.use(sampleRoute);
+router.use(authRouter);
 
 export default router;

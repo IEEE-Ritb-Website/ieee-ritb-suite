@@ -3,8 +3,13 @@ import z, { ZodObject, ZodType } from "zod";
 import { ZodSchema } from "zod/v3";
 
 export type ICONFIG = {
+    server: {
+        port: number,
+        name: string,
+    },
     auth: {
         trustedOrigins: string,
+        baseUrl: string,
     },
 }
 

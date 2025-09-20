@@ -1,5 +1,4 @@
-import { Request, Response } from "express";
-import { SampleController } from "./sample";
+import { CreateChapterAdminController } from "./auth/createChapterAdmin";
 import { mongodbClient } from "@/db";
 
 export class ControllerClass {
@@ -8,11 +7,7 @@ export class ControllerClass {
         mongodbClient.init();
     }
 
-    async pingController(req: Request, res: Response) {
-        return res.status(201).json({ message: "Server running on 3000" });
-    }
-
-    sampleController = SampleController;
+    createChapterAdmin = CreateChapterAdminController;
 }
 
 const Controllers = new ControllerClass();

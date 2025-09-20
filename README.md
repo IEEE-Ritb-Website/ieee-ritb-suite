@@ -91,9 +91,15 @@ pnpm install
 
 **Note:** Make sure that you are in the root directory and then install all the packages. It might create issues if you are installing inside some other directory.
 
-5. Make your changes
+5. Install the dependencies
 
-6. Push the code
+```bash
+pnpm build-all
+```
+
+6. Make your changes
+
+7. Push the code
 
 ```bash
 git add .
@@ -101,11 +107,9 @@ git commit -m "write-a-relevant-commit-message"
 git push --set-upstream branch-name
 ```
 
-7. Create a pull request on github
+8. Create a pull request on github
 
-8. Make sure all checks are passing and there are no conflicts
-
-9. Wait for review!
+9. Make sure all checks are passing and there are no conflicts. Wait for review!
 
 <!-- Contact -->
 

@@ -48,10 +48,15 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
+  packages/catalogues: {}
+
   scripting: {}
 
   services/backend/admin-service:
     dependencies:
+      '@astranova/catalogues':
+        specifier: workspace:*
+        version: link:../../../packages/catalogues
       astralogger:
         specifier: workspace:*
         version: link:../../../packages/astralogger

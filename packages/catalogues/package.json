@@ -1,0 +1,18 @@
+{
+  "name": "@astranova/catalogues",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Use the static data like current chapters and their details",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
