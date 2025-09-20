@@ -1,5 +1,6 @@
 import { ApiResponse, CreateExpressRequest, ErrorResponse, ExtractValidatedData, InferSchemaTypes, ReqSchemaMap, ValidatedRequest } from "@/types";
 import { ResponseCreator } from "@/utils/responseCreator";
+import { getAstraLogger } from "astralogger";
 import { NextFunction, Request, Response } from "express";
 import { ZodError, ZodType } from "zod";
 
@@ -26,6 +27,7 @@ export function validationMiddleware<T extends ReqSchemaMap>(schema: T) {
             req.validatedData = validatedData;
             next();
         } catch (error: unknown) {
+            getAstraLogger().trace(`Request validation failed: ${error}`);
             if (error instanceof ZodError) {
                 const details = error.issues.map(e => ({
                     path: e.path.join("."),
@@ -77,6 +79,7 @@ export function withResponseValidation<
             const validatedData = responseSchema.parse(result.data);
             return res.status(result.status).json(validatedData);
         } catch (error) {
+            getAstraLogger().error(`Response validation failed: ${error}`);
             if (error instanceof ZodError) {
                 const details = error.issues.map(e => ({
                     path: e.path.join("."),

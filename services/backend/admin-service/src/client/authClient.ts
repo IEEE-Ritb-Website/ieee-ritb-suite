@@ -6,5 +6,9 @@ export const authClient = createAuthClient({
     baseURL: CONFIG.auth.baseUrl,
     plugins: [
         adminClient(),
-    ]
+    ],
+    routes: {
+        signIn: "/api/auth/sign-in",
+        signUp: "/api/auth/create-chapter-admin",
+    }
 });

@@ -1,5 +1,6 @@
 import { CreateChapterAdminController } from "./auth/createChapterAdmin";
 import { mongodbClient } from "@/db";
+import { SignInController } from "./auth/signIn";
 
 export class ControllerClass {
     constructor() {
@@ -8,6 +9,7 @@ export class ControllerClass {
     }
 
     createChapterAdmin = CreateChapterAdminController;
+    signIn = SignInController;
 }
 
 const Controllers = new ControllerClass();

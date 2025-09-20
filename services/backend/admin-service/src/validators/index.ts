@@ -38,3 +38,37 @@ export const CreateChapterAdminResponseValidator = defineResponseSchema(
 export type ICreateChapterAdminResponse = z.infer<typeof CreateChapterAdminResponseValidator>;
 export type CreateChapterAdminResponse = CreateExpressResponse<ICreateChapterAdminResponse>;
 export type CreateChapterAdminRequest = CreateExpressRequest<ICreateChapterAdminRequest, ICreateChapterAdminResponse>;
+
+export const SignInRequestValidator = defineRequestSchema(
+    z.object({
+        params: z.object({}),
+        body: z.object({
+            email: z.string(),
+            password: z.string(),
+        }),
+        query: z.object({}),
+    })
+)
+
+export type ISignInRequest = z.infer<typeof SignInRequestValidator>;
+
+export const SignInResponseValidator = defineResponseSchema(
+    z.object({
+        success: z.literal(true),
+        message: z.string(),
+        redirect: z.boolean(),
+        token: z.string(),
+        user: z.object({
+            id: z.string(),
+            email: z.string(),
+            name: z.string(),
+            emailVerified: z.boolean(),
+            createdAt: z.date(),
+            updatedAt: z.date(),
+        }),
+    })
+)
+
+export type ISignInResponse = z.infer<typeof SignInResponseValidator>;
+export type SignInResponse = CreateExpressResponse<ISignInResponse>;
+export type SignInRequest = CreateExpressRequest<ISignInRequest, ISignInResponse>;
