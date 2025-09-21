@@ -15,7 +15,7 @@ export async function CreateChapterExecomController(
     if (!ctx) {
         throw new Error("Should Never Happen: This should have been handled by the middleware");
     }
-    if (ctx.user.role !== "chapteradmin") {
+    if (ctx.user.role !== "orgAdmin") {
         return responseCreator.unauthorized("Only chapter admin is allowed to create new execoms");
     }
     try {
@@ -24,10 +24,7 @@ export async function CreateChapterExecomController(
                 email: req.body.email,
                 name: req.body.name,
                 password: req.body.password,
-                role: "user",
-                data: {
-                    chapter: req.body.chapter,
-                },
+                role: "member",
             },
         });
         if (!createUser.user) {

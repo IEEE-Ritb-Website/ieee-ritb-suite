@@ -17,9 +17,20 @@ import { authenticationMiddleware } from "@/middlewares/authenticationMiddleware
 import { validationMiddleware, withResponseValidation } from "@/middlewares/validationMiddleware";
 import { ResponseCreator } from "@/utils/responseCreator";
 import { Router } from "express";
+import { auth } from "@/lib/auth";
+import { fromNodeHeaders } from "better-auth/node";
 
 const authRouter = Router();
 
+authRouter.get("/auth/me",
+    authenticationMiddleware,
+    async (req, res) => {
+        const session = await auth.api.getSession({
+            headers: fromNodeHeaders(req.headers),
+        });
+        return res.json(session);
+    }
+);
 authRouter.post('/auth/sign-in',
     validationMiddleware(SignInRequestValidator),
     withResponseValidation<ISignInResponse, typeof SignInRequestValidator>(

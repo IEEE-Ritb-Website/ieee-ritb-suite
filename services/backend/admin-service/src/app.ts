@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 
 import router from "@/routes";
 import { auth } from "@/lib/auth";
-import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
+import { fromNodeHeaders } from "better-auth/node";
 import { CONFIG } from "./configs";
 
 const app = express();
@@ -16,12 +16,7 @@ const corsOptions: CorsOptions = {
 
 app.use(cors(corsOptions));
 
-app.get("/api/me", async (req, res) => {
-    const session = await auth.api.getSession({
-        headers: fromNodeHeaders(req.headers),
-    });
-    return res.json(session);
-});
+// app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());

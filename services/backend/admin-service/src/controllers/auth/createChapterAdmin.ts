@@ -15,7 +15,7 @@ export async function CreateChapterAdminController(
     if (!ctx) {
         throw new Error("Should Never Happen: This should have been handled by the middleware");
     }
-    if (ctx.user.role !== "admin") {
+    if (ctx.user.role !== "rootAdmin") {
         return responseCreator.unauthorized("Only admin is allowed to create new chapter admins");
     }
     try {
@@ -24,7 +24,7 @@ export async function CreateChapterAdminController(
                 email: req.body.email,
                 name: req.body.name,
                 password: req.body.password,
-                role: "user",
+                role: "orgAdmin",
                 data: {
                     chapter: req.body.chapter,
                 },

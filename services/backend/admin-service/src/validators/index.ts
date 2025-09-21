@@ -46,7 +46,6 @@ export const CreateChapterExecomRequestValidator = defineRequestSchema(
             email: z.email(),
             name: z.string(),
             password: z.string(),
-            chapter: ChapterNameSchema,
         }),
         query: z.object({}),
     })
@@ -123,3 +122,31 @@ export const ChangePasswordResponseValidator = defineResponseSchema(
 export type IChangePasswordResponse = z.infer<typeof ChangePasswordResponseValidator>;
 export type ChangePasswordResponse = CreateExpressResponse<IChangePasswordResponse>;
 export type ChangePasswordRequest = CreateExpressRequest<IChangePasswordRequest, IChangePasswordResponse>;
+
+export const CreateChapterRequestValidator = defineRequestSchema(
+    z.object({
+        params: z.object({}),
+        body: z.object({
+            name: z.string(),
+            logo: z.url(),
+            chapterType: z.string(),  // TODO: Strict the type to tech or non-tech
+            shortDescription: z.string(),
+            faculty: z.string().optional(),
+            facultyImage: z.url().optional(),
+        }),
+        query: z.object({}),
+    })
+)
+
+export type ICreateChapterRequest = z.infer<typeof CreateChapterRequestValidator>;
+
+export const CreateChapterResponseValidator = defineResponseSchema(
+    z.object({
+        success: z.literal(true),
+        message: z.string(),
+    })
+)
+
+export type ICreateChapterResponse = z.infer<typeof CreateChapterResponseValidator>;
+export type CreateChapterResponse = CreateExpressResponse<ICreateChapterResponse>;
+export type CreateChapterRequest = CreateExpressRequest<ICreateChapterRequest, ICreateChapterRequest>;

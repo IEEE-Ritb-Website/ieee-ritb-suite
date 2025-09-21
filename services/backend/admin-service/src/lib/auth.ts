@@ -1,90 +1,101 @@
 import { CONFIG } from "@/configs";
 import { mongodbClient } from "@/db";
-import { Chapters } from "@astranova/catalogues";
-import { getAstraLogger } from "astralogger";
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { getHeaders } from "better-auth/client";
 import { fromNodeHeaders } from "better-auth/node";
 import { admin, organization } from "better-auth/plugins";
 import { Request } from "express";
-import z from "zod";
-
-export const UserRoleSchema = z.object({
-    role: z.string(),
-    position: z.string(),
-    chapter: z.string().optional(),
-})
+import { member, orgAdmin, rootAdmin } from "./auth/permissions";
 
 // REFERENCE: https://www.better-auth.com/docs/plugins/admin
 export const auth = betterAuth({
     database: mongodbAdapter(mongodbClient.getDb()),
     emailAndPassword: {
         enabled: true,
-        disableSignUp: true,    // do not allow anyone to sign up themselves. only admin can onboard new user
     },
     plugins: [
-        admin(),
+        admin({
+            roles: {
+                member,
+                orgAdmin,
+                rootAdmin,
+            },
+            defaultRole: "member",
+        }),
         organization({
             allowUserToCreateOrganization: async (user) => {
-                const getUserRole = "admin";    // TODO: fix this to get user role to create an organization (only allow admins)
-                return getUserRole === "admin";
+                return user.role === "rootAdmin";   // Only allow the root admins to create organizations
+            },
+            sendInvitationEmail: async (data) => {
+                console.log(`Sending invitation to ${data.email} for organization: ${data.organization.name}`);
+            },
+            roles: {
+                member,
+                orgAdmin,
+                rootAdmin,
+            },
+            creatorRole: "rootAdmin",
+            schema: {
+                organization: {
+                    additionalFields: {
+                        // organizationType: `student-branch` or `chapter`
+                        organizationLevel: {
+                            type: "string",
+                            defaultValue: "chapter",
+                        },
+                        // type: `tech` or `non-tech`
+                        type: {
+                            type: "string",
+                            required: false,
+                        },
+                        parentOrganizationId: {
+                            type: "string",
+                            required: false,
+                        },
+                        shortDescription: {
+                            type: "string",
+                            required: true,
+                        },
+                        faculty: {
+                            type: "string",
+                            required: false,
+                        },
+                        facultyImage: {
+                            type: "string",
+                            required: false,
+                        }
+                    }
+                }
             }
-        })
+        }),
     ],
     user: {
         additionalFields: {
-            role: {
+            department: {
+                type: "string",
+                required: false,
+            },
+            usn: {
                 type: "string",
                 required: true,
-                input: false,
+            },
+            role: {
+                type: "string",
+                defaultValue: "member",
+            },
+            membershipId: {
+                type: "string",
+                required: true,
+            },
+            // TODO: Implement user positions
+            positions: {
+                type: "json",
+                defaultValue: [],
             }
         }
     },
     trustedOrigins: [CONFIG.auth.trustedOrigins],
 });
-
-export async function createOrganizations() {
-    try {
-        const ctx = await auth.api.signInEmail({
-            body: {
-                email: "shivesh@example.com",
-                password: "password123",
-            },
-            returnHeaders: true,
-        })
-        for (let chapter of Chapters) {
-            await auth.api.createOrganization({
-                body: {
-                    name: chapter.name,
-                    slug: chapter.name.toLowerCase().trim().replace(/\s+/g, "-"),
-                    logo: chapter.imagePath,
-                },
-            })
-        }
-    } catch (error) {
-        getAstraLogger().fatal(`Error creating organizations: ${error}`);
-    }
-}
-
-createOrganizations();
-
-// Use this function to create an admin if does not exist
-export async function createAdmin() {
-    try {
-        await auth.api.createUser({
-            body: {
-                email: "shivesh@example.com",
-                password: "password123",
-                name: "Admin",
-                role: "admin",
-            }
-        });
-        getAstraLogger().info("Admin user created successfully")
-    } catch (error) {
-        getAstraLogger().fatal(`Error creating admin user: ${error}`);
-    }
-}
 
 export const getAuthContext = async (headers: Request["headers"]) => {
     const session = await auth.api.getSession({
