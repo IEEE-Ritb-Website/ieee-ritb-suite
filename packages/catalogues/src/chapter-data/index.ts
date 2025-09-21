@@ -1,3 +1,4 @@
+import z from "zod";
 
 export interface IChapter {
     name: string;
@@ -7,7 +8,7 @@ export interface IChapter {
     imagePath: string;
 }
 
-export const Chapters: IChapter[] = [
+export const Chapters = [
     {
         name: "Computer Society",
         acronym: "CS",
@@ -15,7 +16,21 @@ export const Chapters: IChapter[] = [
         shortDescription: "",
         imagePath: "",
     },
-]
+    {
+        name: "Electronics Society",
+        acronym: "ES",
+        type: "tech",
+        shortDescription: "",
+        imagePath: "",
+    },
+] as const satisfies readonly IChapter[];
 
-export const ChapterNames = Chapters.map((c: IChapter) => c.name);
-export type IChapterNames = (typeof ChapterNames)[number];
+type ChapterTuple = typeof Chapters;
+type ChapterNameTuple = ChapterTuple[number]["name"];
+
+export const ChapterNames = Chapters.map(c => c.name);
+export type IChapterNames = ChapterNameTuple;
+
+export const ChapterNameSchema = z.enum(
+    Chapters.map(c => c.name)
+);

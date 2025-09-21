@@ -3,6 +3,9 @@ import z, { ZodObject, ZodType } from "zod";
 import { ZodSchema } from "zod/v3";
 
 export type ICONFIG = {
+    database: {
+        name: string;
+    },
     server: {
         port: number,
         name: string,

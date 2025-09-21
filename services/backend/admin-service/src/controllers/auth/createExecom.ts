@@ -1,22 +1,22 @@
-import { CreateChapterAdminRequest, CreateChapterAdminResponse, ICreateChapterAdminResponse } from "@/validators";
+import { CreateChapterExecomRequest, CreateChapterExecomResponse, ICreateChapterExecomResponse } from "@/validators";
 import { ControllerClass } from "..";
 import { ResponseCreator } from "@/utils/responseCreator";
 import { WithResponsePromise } from "@/types";
 import { getAstraLogger } from "astralogger";
 import { auth, getAuthContext } from "@/lib/auth";
 
-export async function CreateChapterAdminController(
+export async function CreateChapterExecomController(
     this: ControllerClass,
-    req: CreateChapterAdminRequest,
-    res: CreateChapterAdminResponse,
-    responseCreator: ResponseCreator<ICreateChapterAdminResponse>,
-): WithResponsePromise<ICreateChapterAdminResponse> {
+    req: CreateChapterExecomRequest,
+    res: CreateChapterExecomResponse,
+    responseCreator: ResponseCreator<ICreateChapterExecomResponse>,
+): WithResponsePromise<ICreateChapterExecomResponse> {
     const ctx = await getAuthContext(req.headers);
     if (!ctx) {
         throw new Error("Should Never Happen: This should have been handled by the middleware");
     }
-    if (ctx.user.role !== "admin") {
-        return responseCreator.unauthorized("Only admin is allowed to create new chapter admins");
+    if (ctx.user.role !== "chapteradmin") {
+        return responseCreator.unauthorized("Only chapter admin is allowed to create new execoms");
     }
     try {
         const createUser = await auth.api.createUser({
@@ -33,9 +33,9 @@ export async function CreateChapterAdminController(
         if (!createUser.user) {
             throw new Error("Error creating the user");
         }
-        return responseCreator.created({ success: true, message: "Chapter admin user created successfully" });
+        return responseCreator.created({ success: true, message: "Execom user created successfully" });
     } catch (error) {
-        getAstraLogger().fatal(`Error in CreateChapterAdminController: ${error}`);
+        getAstraLogger().fatal(`Error in CreateChapterExecomController: ${error}`);
         return responseCreator.fatal();
     }
 }

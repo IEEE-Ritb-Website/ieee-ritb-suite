@@ -9,6 +9,5 @@ export const authClient = createAuthClient({
     ],
     routes: {
         signIn: "/api/auth/sign-in",
-        signUp: "/api/auth/create-chapter-admin",
     }
 });

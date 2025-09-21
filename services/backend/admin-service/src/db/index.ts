@@ -1,3 +1,4 @@
+import { CONFIG } from "@/configs";
 import { getAstraLogger } from "astralogger";
 import { MongoClient } from "mongodb";
 
@@ -8,7 +9,7 @@ class MongoDBClient {
 
     constructor() {
         this.url = process.env.MONGODB_URL!;
-        this.dbName = process.env.DB_NAME || "test";
+        this.dbName = CONFIG.database.name;
         this.client = new MongoClient(this.url);
     }
 

@@ -4,6 +4,7 @@ import { ResponseCreator } from "@/utils/responseCreator";
 import { WithResponsePromise } from "@/types";
 import { getAstraLogger } from "astralogger";
 import { auth } from "@/lib/auth";
+import { APIError } from "better-auth";
 
 export async function SignInController(
     this: ControllerClass,
@@ -17,19 +18,27 @@ export async function SignInController(
                 email: req.body.email,
                 password: req.body.password,
             },
+            returnHeaders: true,
         });
-        if (!session.user) {
-            return responseCreator.unauthorized("Invalid email or password");
+        for (const [key, value] of session.headers.entries()) {
+            if (key.toLowerCase() === "set-cookie") {
+                res.append("Set-Cookie", value);
+            }
         }
         return responseCreator.ok({
             success: true,
             message: "Successfully signed in",
-            redirect: session.redirect,
-            token: session.token,
-            user: { ...session.user }
+            redirect: session.response.redirect,
+            url: session.response.url,
+            token: session.response.token,
+            user: { ...session.response.user },
         });
     } catch (error) {
-        getAstraLogger().fatal(`Error in SignInController, should never happen: ${error}`);
+        if (error instanceof APIError) {
+            getAstraLogger().error(`APIError in SignInController: ${error.message}`);
+            return responseCreator.badRequest(error.message);
+        }
+        getAstraLogger().fatal(`Error in SignInController: ${error}`);
         return responseCreator.fatal();
     }
 }
