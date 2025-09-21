@@ -1,5 +1,5 @@
 import React from "react";
-import { facultyList } from "../staticData/FacultyCoord";
+import facultyList  from "../configs/faculty.json";
 import ProfileCard from "../Components/ProfileCard";
 import Particles from "@/Components/Particles";
 import Navbar from "../Components/Navbar";
