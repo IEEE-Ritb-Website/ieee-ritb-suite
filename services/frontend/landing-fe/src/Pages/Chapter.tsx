@@ -9,6 +9,7 @@ interface ChapterData {
   chapterName: string;
   chapterChair: string;
   relatedPositions: string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   execoms: any[];
   founded?: string;
   website?: string;
