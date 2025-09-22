@@ -7,7 +7,7 @@ import "./Navbar.css";
 const navItems = [
   { name: "Home", path: "/" },
   // { name: "Chapters", path: "/chapters" },
-  { name: "Faculty", path: "/faculty" }, 
+  { name: "Faculty", path: "/faculty" },
   // { name: "Gallery", path: "/gallery" },
   // { name: "Contact", path: "/contact" },
 ];
@@ -23,12 +23,14 @@ const Navbar: React.FC = () => {
     <>
       <nav className="navbar ">
         <div className="navbar-container">
-          <Badge variant="shine">
-            <div className="navbar-logo">
-              <span>IEEE </span>
-              <span>RIT-B</span>
-            </div>
-          </Badge>
+          <Link to={"/"}>
+            <Badge variant="shine">
+              <div className="navbar-logo">
+                <span>IEEE </span>
+                <span>RIT-B</span>
+              </div>
+            </Badge>
+          </Link>
 
           {/* Desktop Nav */}
           <div className="navbar-nav">

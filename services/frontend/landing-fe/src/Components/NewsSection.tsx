@@ -14,6 +14,7 @@ interface NewsItem {
 
 const NewsSection: React.FC = () => {
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const newsItems: NewsItem[] = [

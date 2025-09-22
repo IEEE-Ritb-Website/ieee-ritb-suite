@@ -1,5 +1,5 @@
 import React from "react";
-import facultyList  from "../configs/faculty.json";
+import facultyList from "../configs/faculty.json";
 import ProfileCard from "../Components/ProfileCard";
 import Particles from "@/Components/Particles";
 import Navbar from "../Components/Navbar";
@@ -34,7 +34,7 @@ const FacultyPage: React.FC = () => {
             <ProfileCard
               key={faculty.faculty}
               name={faculty.faculty}
-              role={faculty.role}
+              // role={faculty.role}
               imageUrl={faculty.imageUrl}
             />
           ))}
