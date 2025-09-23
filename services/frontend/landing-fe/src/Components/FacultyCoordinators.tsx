@@ -161,20 +161,20 @@ CoordinatorCard.displayName = 'CoordinatorCard';
 const FacultyCoordinators: React.FC<{ data?: Coordinator[] }> = ({ data }) => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [erroredImages, setErroredImages] = useState<Set<number>>(new Set());
-  const [filter, setFilter] = useState<string>('all');
+  const [filter, _setFilter] = useState<string>('all');
 
   // fallback sample data if no data prop passed
   const sample = useMemo<Coordinator[]>(() => ([
     {
       id: 1, name: 'Akshay Kumar', designation: 'Founder & CEO', initials: 'AK',
       image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=800&auto=format&fit=crop',
-      department: 'Leadership', expertise: ['Strategy','Vision','Innovation'], email: 'akshay@company.com',
+      department: 'Leadership', expertise: ['Strategy', 'Vision', 'Innovation'], email: 'akshay@company.com',
       bio: 'Visionary leader...', socialLinks: [{ platform: 'linkedin', url: 'https://linkedin.com/in/akshay' }, { platform: 'github', url: 'https://github.com/akshay' }]
     },
     {
       id: 2, name: 'Tanishq Sharma', designation: 'Lead Developer', initials: 'TS',
       image: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=800&auto=format&fit=crop',
-      department: 'Engineering', expertise: ['React','Node.js','Cloud'], email: 'tanishq@company.com',
+      department: 'Engineering', expertise: ['React', 'Node.js', 'Cloud'], email: 'tanishq@company.com',
       bio: 'Full-stack developer...', socialLinks: [{ platform: 'github', url: 'https://github.com/tanishq' }, { platform: 'twitter', url: 'https://twitter.com/tanishq' }]
     }
     // ... (short sample; component will accept real data)
@@ -182,10 +182,10 @@ const FacultyCoordinators: React.FC<{ data?: Coordinator[] }> = ({ data }) => {
 
   const coordinators = data && data.length ? data : sample;
 
-  const departments = useMemo(() => {
-    const deps = new Set(coordinators.map(c => c.department).filter(Boolean) as string[]);
-    return ['all', ...Array.from(deps)];
-  }, [coordinators]);
+  // const departments = useMemo(() => {
+  //   const deps = new Set(coordinators.map(c => c.department).filter(Boolean) as string[]);
+  //   return ['all', ...Array.from(deps)];
+  // }, [coordinators]);
 
   const filtered = useMemo(() => (filter === 'all' ? coordinators : coordinators.filter(c => c.department === filter)), [coordinators, filter]);
 
@@ -231,7 +231,7 @@ const FacultyCoordinators: React.FC<{ data?: Coordinator[] }> = ({ data }) => {
           <p className="section-subtitle">Talented individuals who make innovation possible</p>
 
           <div className="filter-tabs" role="tablist" aria-label="Filter by department">
-            {departments.map((d) => (
+            {/* {departments.map((d) => (
               <button
                 key={d}
                 className="filter-tab"
@@ -240,7 +240,7 @@ const FacultyCoordinators: React.FC<{ data?: Coordinator[] }> = ({ data }) => {
               >
                 {d === 'all' ? 'All' : d}
               </button>
-            ))}
+            ))} */}
           </div>
         </header>
 
