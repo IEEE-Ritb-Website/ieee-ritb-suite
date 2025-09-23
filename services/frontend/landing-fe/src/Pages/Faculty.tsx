@@ -3,7 +3,6 @@ import React from "react";
 import { facultyList } from "../staticData/FacultyCoord";
 import Particles from "@/Components/Particles";
 import Navbar from "../Components/Navbar";
-import { Text } from "@/component/luxe/ui/text";
 
 // Use type-only import for Coordinator
 import FacultyCoordinators, { type Coordinator } from "../Components/FacultyCoordinators";
@@ -44,15 +43,6 @@ const FacultyPage: React.FC = () => {
       <Navbar />
 
       <div className="faculty-page relative z-10 pt-16">
-        <div className="w-full text-center mt-5 px-4 sm:px-6 lg:px-8">
-          <Text
-            variant="shine"
-            className="section-title font-bold text-lg sm:text-xl md:text-2xl lg:text-3xl"
-          >
-            Faculty Coordinators
-          </Text>
-        </div>
-
         {/* Render the new component and pass mapped data */}
         <div className="mt-6 px-4">
           <FacultyCoordinators data={data} />
