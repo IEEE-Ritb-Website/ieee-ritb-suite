@@ -8,14 +8,15 @@
   },
   "scripts": {
     "build": "tsc",
-    "create-be": "node dist/index.js create-be",
-    "create-fe": "node dist/index.js create-fe"
+    "create-be": "node dist/index.js create-be"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.12.3",
   "dependencies": {
-    "@mrknown404/create-express-app": "^1.0.7"
+    "@mrknown404/create-express-app": "^1.0.13",
+    "inquirer": "^12.9.6",
+    "ora": "^9.0.0"
   }
 }

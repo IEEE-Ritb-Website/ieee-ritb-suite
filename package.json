@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "create-be": "pnpm --filter astranova-cli run create-be",
-    "create-fe": "pnpm --filter astranova-cli run create-fe",
+    "rs": "pnpm --filter scripting run",
     "build-all": "nx run-many --target=build --all"
   },
   "keywords": [],
@@ -13,7 +12,6 @@
   "license": "ISC",
   "packageManager": "pnpm@10.12.3",
   "devDependencies": {
-    "astranova-cli": "workspace:*",
     "@eslint/js": "^9.36.0",
     "@types/node": "^24.5.2",
     "eslint": "^9.25.1",
