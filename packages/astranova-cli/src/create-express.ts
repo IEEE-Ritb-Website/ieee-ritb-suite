@@ -3,6 +3,7 @@ import path from "path";
 import ora from "ora";
 import { ProjectBuilder, FEATURES, LANGUAGE } from "@mrknown404/create-express-app";
 import { getMonorepoRoot } from "./helper";
+import chalk from "chalk";
 
 export async function runCreateBE(projectName: string) {
     const rootDir = getMonorepoRoot();
@@ -49,10 +50,10 @@ export async function runCreateBE(projectName: string) {
             throw err;
         }
 
-        console.log(`\nNew backend service ${builder.projectName} created successfully`);
+        console.log(chalk.green(`\nNew backend service ${builder.projectName} created successfully`));
         builder.finalize();
     } catch (err) {
-        console.error("❌ Project creation failed:", err);
+        console.error(chalk.red("❌ Project creation failed:"), err);
         process.exit(1);
     }
 }

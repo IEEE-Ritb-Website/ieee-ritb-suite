@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "create-be": "astranova-cli run create-be"
+    "create-be": "astranova-cli run create-be",
+    "create-fe": "astranova-cli run create-fe"
   },
   "devDependencies": {
     "astranova-cli": "workspace:*"

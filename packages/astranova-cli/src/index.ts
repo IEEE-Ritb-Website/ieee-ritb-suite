@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { runCreateBE } from "./create-express";
+import { runCreateFE } from "./create-react";
 import { askProjectName } from "./helper";
 
 async function main() {
@@ -22,6 +23,13 @@ async function main() {
                 projectName = await askProjectName();
             }
             await runCreateBE(projectName);
+            break;
+
+        case "create-fe":
+            if (!projectName) {
+                projectName = await askProjectName();
+            }
+            await runCreateFE(projectName);
             break;
 
         default:
