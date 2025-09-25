@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  create-express-app: link:C:/Users/LENOVO/AppData/Local/pnpm/global/5/node_modules/@mrknown404/create-express-app
-
 importers:
 
   .:
