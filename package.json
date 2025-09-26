@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "create-be": "node scripting/dist/create-be.js",
+    "rs": "pnpm --filter scripting run",
     "build-all": "nx run-many --target=build --all"
   },
   "keywords": [],
@@ -12,14 +12,13 @@
   "license": "ISC",
   "packageManager": "pnpm@10.12.3",
   "devDependencies": {
-    "@eslint/js": "^9.25.1",
-    "@mrknown404/create-express-app": "^1.0.3",
-    "@types/node": "^22.15.2",
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.5.2",
     "eslint": "^9.25.1",
     "globals": "^16.0.0",
     "nx": "^21.1.2",
     "prettier": "^3.5.3",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.31.0"
+    "typescript-eslint": "^8.44.1"
   }
 }

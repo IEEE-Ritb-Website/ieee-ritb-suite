@@ -1,7 +1,5 @@
 # IEEE RIT-B Suite
 
-Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-
 <div align="center">
 
 [![contributors]][contributors-url]
@@ -20,6 +18,7 @@ Lorem ipsum dolor sit amet consectetur, adipisicing elit.
 - [Contributing](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
+
 - [Contact](#contact)
 
 <!-- About the Project -->
@@ -91,15 +90,25 @@ pnpm install
 
 **Note:** Make sure that you are in the root directory and then install all the packages. It might create issues if you are installing inside some other directory.
 
-5. Install the dependencies
+5. Build the project
 
 ```bash
 pnpm build-all
 ```
 
-6. Make your changes
+6. Create a new backend or frontend app using the custom CLI
 
-7. Push the code
+```bash
+# Create backend app inside services/backend
+pnpm rs create-be <app-name>
+
+# Create frontend app inside services/frontend
+pnpm rs create-fe <fe-name>
+```
+
+7. Make your changes
+
+8. Push the code
 
 ```bash
 git add .
@@ -107,9 +116,9 @@ git commit -m "write-a-relevant-commit-message"
 git push --set-upstream branch-name
 ```
 
-8. Create a pull request on github
+9. Create a pull request on github
 
-9. Make sure all checks are passing and there are no conflicts. Wait for review!
+10. Make sure all checks are passing and there are no conflicts. Wait for review!
 
 <!-- Contact -->
 

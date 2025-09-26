@@ -1,0 +1,24 @@
+{
+  "name": "astranova-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "astranova-cli": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "create-be": "node dist/index.js create-be",
+    "create-fe": "node dist/index.js create-fe"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.3",
+  "devDependencies": {
+    "@mrknown404/create-express-app": "^1.0.15",
+    "chalk": "^5.6.2",
+    "inquirer": "^12.9.6",
+    "ora": "^9.0.0"
+  }
+}

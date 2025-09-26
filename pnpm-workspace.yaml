@@ -1,5 +1,5 @@
 packages:
-  - "packages/*"
-  - "services/backend/*"
-  - "services/frontend/*"
-  - "scripting"
+  - packages/*
+  - services/backend/*
+  - services/frontend/*
+  - scripting

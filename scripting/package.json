@@ -1,12 +1,12 @@
 {
   "name": "scripting",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "build": "tsc"
+    "create-be": "astranova-cli run create-be",
+    "create-fe": "astranova-cli run create-fe"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "astranova-cli": "workspace:*"
+  }
 }
