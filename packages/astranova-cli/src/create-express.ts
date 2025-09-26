@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import ora from "ora";
 import { ProjectBuilder, FEATURES, LANGUAGE } from "@mrknown404/create-express-app";
 import { getMonorepoRoot } from "./helper";
 import chalk from "chalk";
@@ -25,7 +24,7 @@ export async function runCreateBE(projectName: string) {
 
     try {
         const builder = new ProjectBuilder(customConfig);
-
+        builder.scriptName = "🚀 Create Astranova Express App";
         builder.setProjectBasePath(baseDir);
         builder.projectName = projectName;
 
@@ -41,14 +40,7 @@ export async function runCreateBE(projectName: string) {
             }
         }, null, 2));
 
-        const spinner = ora("Installing dependencies...").start();
-        try {
-            await builder.runCommand("pnpm install"); // async already
-            spinner.succeed("Dependencies installed successfully");
-        } catch (err) {
-            spinner.fail("Dependency installation failed");
-            throw err;
-        }
+        await builder.runCommand("Install dependencies", "pnpm install");
 
         console.log(chalk.green(`\nNew backend service ${builder.projectName} created successfully`));
         builder.finalize();
