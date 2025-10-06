@@ -6,18 +6,21 @@ import Chapter from "./Pages/Chapter";
 import StudentBranch from "./Pages/SB";
 import Gallery from "./Pages/Gallery";
 import FacultyPage from "./Pages/Faculty";
+import { RootLayout } from "./layouts/root-layout";
 
 function App() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/chapters" element={<Chapters />} />
-        <Route path="/chapters/:id" element={<Chapter />} /> {/* Dynamic */}
-        <Route path="/student-branch" element={<StudentBranch />} />
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/faculty" element={<FacultyPage />} />
-      </Routes>
+      <RootLayout>
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/chapters" element={<Chapters />} />
+          <Route path="/chapters/:id" element={<Chapter />} /> {/* Dynamic */}
+          <Route path="/student-branch" element={<StudentBranch />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/faculty" element={<FacultyPage />} />
+        </Routes>
+      </RootLayout>
     </Router>
   );
 }

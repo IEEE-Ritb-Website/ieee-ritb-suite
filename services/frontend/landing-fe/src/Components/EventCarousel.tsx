@@ -1,11 +1,6 @@
-"use client";
-
-import type React from "react";
-
 import { motion, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Text } from "@/component/luxe/ui/text";
-import "./EventCarousel.css";
 
 export type EventType = {
   id: number;
@@ -58,54 +53,55 @@ const EventCarousel: React.FC<EventCarouselProps> = ({ events }) => {
   };
 
   return (
-    <>
-      <section className="relative bg-transparent py-20 mx-4 md:mx-20 lg:mx-36 xl:mx-50">
-        <div className="text-center mx-auto">
-          <Text variant="shine" className="section-title">
-            Events
-          </Text>
-        </div>
-        <div
-          className="flex items-center justify-center overflow-hidden px-6 mt-4"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+    <section className="w-full max-w-6xl mx-auto px-4 py-20">
+      <div className="text-center mb-12">
+        <Text variant="shine" className="text-4xl font-bold">
+          Events
+        </Text>
+      </div>
+
+      <div
+        className="flex items-center justify-center overflow-hidden"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <motion.div
+          className="flex gap-6"
+          animate={{ x: 0 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
         >
-          <motion.div
-            className="flex gap-6"
-            animate={{ x: 0 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-          >
-            <AnimatePresence mode="wait">
-              {getVisibleEvents().map((event, index) => (
-                <motion.div
-                  key={`${event.id}-${currentIndex}-${index}`}
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: index * 0.1,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <EventCard event={event} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-        <div className="flex justify-center mt-8 gap-2">
-          {extendedEvents.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-colors duration-300 ${index === currentIndex ? "bg-white" : "bg-white/30"
-                }`}
-            />
-          ))}
-        </div>
-      </section>
-    </>
+          <AnimatePresence mode="wait">
+            {getVisibleEvents().map((event, index) => (
+              <motion.div
+                key={`${event.id}-${currentIndex}-${index}`}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.1,
+                  ease: "easeInOut",
+                }}
+              >
+                <EventCard event={event} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
+      <div className="flex justify-center mt-8 gap-2">
+        {extendedEvents.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`w-2 h-2 rounded-full transition-colors duration-300 ${index === currentIndex ? "bg-white" : "bg-white/30"
+              }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+    </section>
   );
 };
 
@@ -124,9 +120,9 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
         }}
         className="absolute inset-0 z-0 transition-transform duration-500 group-hover:scale-105"
       />
-      <div className="absolute inset-0 z-5 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      <div className="absolute inset-0 z-[5] bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       <div className="absolute inset-0 z-10 flex flex-col justify-end p-6">
-        <div className="transform transition-transform duration-300 group-hover:translate-y-[-8px]">
+        <div className="transform transition-transform duration-300 group-hover:-translate-y-2">
           <h3 className="text-2xl font-bold text-white mb-2 leading-tight">
             {event.title}
           </h3>

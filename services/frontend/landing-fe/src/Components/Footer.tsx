@@ -1,129 +1,101 @@
 import React from "react";
-import { useFooterGlow } from "./useFooterGlow";
-import { Text } from "@/component/luxe/ui/text";
-import { Button } from "@/component/luxe/ui/button";
+import { Link } from "react-router-dom";
+import { CONFIG } from "@/configs/config";
 
 const Footer: React.FC = () => {
-  const footerRef = useFooterGlow();
-
   return (
-    <>
-      <hr className="h-px w-full bg-white/20" />
-      <footer
-        ref={footerRef}
-        id="footer"
-        className="relative py-16 px-4 sm:px-8 lg:px-16 bg-transparent text-white overflow-hidden z-0"
-      >
-        {/* Glow background */}
-        <div
-          id="glow"
-          className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none opacity-20"
-        />
+    <footer id="footer" className="relative py-10 px-4 md:px-0">
+      <div className="max-w-6xl mx-auto">
+        <div className="relative group overflow-hidden backdrop-blur-md rounded-3xl p-8 sm:p-12 mb-8 transition-all duration-300">
+          <div
+            className="absolute inset-0 z-0"
+            style={{
+              background: `
+          radial-gradient(ellipse 120% 80% at 70% 20%, rgba(255, 20, 147, 0.15), transparent 50%),
+          radial-gradient(ellipse 100% 60% at 30% 10%, rgba(0, 255, 255, 0.12), transparent 60%),
+          radial-gradient(ellipse 90% 70% at 50% 0%, rgba(138, 43, 226, 0.18), transparent 65%),
+          radial-gradient(ellipse 110% 50% at 80% 30%, rgba(255, 215, 0, 0.08), transparent 40%),
+          transparent
+        `,
+            }}
+          />
+          <div
+            className="absolute inset-0 z-0"
+            style={{
+              background: "radial-gradient(125% 125% at 50% 10%, transparent 40%, #0d1a36 100%)",
+            }}
+          />
+          {/* Glow Effect on Hover */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#00a3ff]/10 via-transparent to-[#00a3ff]/5 blur-xl"></div>
+          </div>
 
-        {/* Main Content Grid */}
-        <div className="relative z-10 max-w-screen-xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
-          {/* Logo + Quote */}
-          <div>
-            {/* <h1 className="text-3xl font-extrabold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-500">
-            IEEE RIT-B
-          </h1> */}
-            <div className="navbar-logo">
-              <span className="text-3xl">IEEE </span>
-              <span className="text-3xl">RIT-B</span>
+          {/* Content Grid */}
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+            {/* Logo + Quote */}
+            <div>
+              <div className="mb-4">
+                <span className="text-3xl font-bold text-[#00a3ff]">IEEE </span>
+                <span className="text-3xl font-bold text-white">RIT-B</span>
+              </div>
+              <p className="text-gray-400 italic leading-relaxed">
+                Made with love by our awesome team.
+              </p>
             </div>
-            <p className="text-gray-400 mt-3 italic">
-              “advancing technology for the benefit of humanity”
-            </p>
-          </div>
 
-          {/* Navigation */}
-          <div>
-            <h2 className="text-lg font-bold mb-4">Explore</h2>
-            <ul className="space-y-2 text-gray-400">
-              {["Home", "Chapters", "Faculty", "Gallery", "Contact"].map(
-                (item) => (
-                  <li key={item}>
-                    <Text variant="hover-decoration">
-                      <a href="/">{item}</a>
-                    </Text>
+            {/* Navigation */}
+            <div>
+              <h2 className="text-lg font-bold mb-4 text-white">Explore</h2>
+              <ul className="space-y-3">
+                {CONFIG.footerLinks.map((item) => (
+                  <li key={item.name}>
+                    <Link
+                      to={item.path}
+                      className="text-gray-400 hover:text-[#00a3ff] transition-colors duration-300 inline-block"
+                    >
+                      {item.name}
+                    </Link>
                   </li>
-                ),
-              )}
-            </ul>
+                ))}
+              </ul>
+            </div>
+
+            {/* Contact/Info Section */}
+            <div>
+              <h2 className="text-lg font-bold mb-4 text-white">Connect</h2>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Join us in our journey to innovate and inspire through technology and collaboration.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Bottom - Outside the rounded container */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-4">
+          {/* Copyright */}
+          <div className="text-sm text-gray-500 order-2 sm:order-1">
+            &copy; 2025 IEEE RIT-B. All rights reserved.
           </div>
 
-          {/* Socials */}
-          <div>
-            <h2 className="text-lg font-bold mb-4">Connect</h2>
-            <ul className="flex space-x-4 text-xl text-gray-400">
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition"
-                  aria-label="Instagram"
-                >
-                  <i className="fab fa-instagram"></i>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition"
-                  aria-label="Facebook"
-                >
-                  <i className="fab fa-facebook-f"></i>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition"
-                  aria-label="LinkedIn"
-                >
-                  <i className="fab fa-linkedin-in"></i>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition"
-                  aria-label="Twitter"
-                >
-                  <i className="fab fa-x-twitter"></i>
-                </a>
-              </li>
+          {/* Social Links */}
+          <div className="order-1 sm:order-2">
+            <ul className="flex space-x-6 text-xl">
+              {CONFIG.socialLinks.map((social) => (
+                <li>
+                  <a
+                    href={social.link}
+                    className="text-gray-400 hover:text-[#00a3ff] transition-colors duration-300"
+                    aria-label={social.name}
+                  >
+                    <social.icon />
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
-
-        {/* Newsletter Section */}
-        <div className="relative z-10 max-w-4xl mx-auto mt-10 bg-gray-800 rounded-2xl p-6 sm:p-10 text-center sm:text-left">
-          <h3 className="text-xl font-semibold mb-2">Stay updated!!</h3>
-          <p className="text-gray-400 text-sm mb-4">
-            Get updates about our latest activities.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              required
-              className="flex-1 w-full px-4 py-2 rounded-lg bg-black text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-50"
-            />
-            {/* <button className="px-6 py-2 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-blue-700 hover:to-cyan-700 transition">
-            Subscribe
-          </button> */}
-          </div>
-          <Button variant="animated-border" className="mt-4 bg-black ">
-            Connect
-          </Button>
-        </div>
-
-        {/* Footer Bottom */}
-        <div className="relative z-10 border-t border-gray-800 mt-10 pt-6 text-center text-sm text-gray-500">
-          &copy; 2025 IEEE RIT-B. All rights reserved.
-        </div>
-      </footer>
-    </>
+      </div>
+    </footer>
   );
 };
 

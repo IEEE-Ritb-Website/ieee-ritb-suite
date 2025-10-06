@@ -1,7 +1,5 @@
 import Particles from "../Components/Particles";
 import Hero from "../Components/Hero";
-import Navbar from "../Components/Navbar";
-import Footer from "../Components/Footer";
 import FAQ from "../Components/FAQ";
 import EventCarousel from "../Components/EventCarousel";
 import events from "../configs/events.json";
@@ -9,27 +7,23 @@ import events from "../configs/events.json";
 
 function App() {
   return (
-    <section className="relative min-h-screen bg-[#05060f] text-white overflow-hidden">
-      <Navbar />
-
+    <div className="relative">
       <Hero />
 
       <EventCarousel events={events} />
-      {/* <NewsSection /> */} 
+      {/* <NewsSection /> */}
 
       <FAQ />
-      
-      <Footer />
 
       <Particles
         className="absolute inset-0"
         quantity={400}
         ease={100}
         color="#ffffff"
-        size={0.05}
+        size={0}
         refresh
       />
-    </section>
+    </div>
   );
 }
 
