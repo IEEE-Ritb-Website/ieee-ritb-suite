@@ -1,5 +1,3 @@
-"use client"; // @NOTE: Add in case you are using Next.js
-
 import { motion, type MotionProps } from "motion/react";
 import * as Slot from "@radix-ui/react-slot";
 
