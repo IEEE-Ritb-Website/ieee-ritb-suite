@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { motion, useMotionValue, useMotionTemplate } from "framer-motion";
 import "./Gallery.css";
 import bckimg from "../assets/bckimg.jpg";
-import Navbar from "../Components/Navbar";
-import Footer from "../Components/Footer";
 import Particles from "../Components/Particles";
 interface GalleryImage {
   src: string;
@@ -182,7 +180,6 @@ const Gallery: React.FC = () => {
 
   return (
     <>
-      <Navbar />
       <section className="gallery-section mt-8">
         {/* Page Title */}
         <motion.div
@@ -299,7 +296,6 @@ const Gallery: React.FC = () => {
           </motion.div>
         )}
       </section>
-      <Footer />
       <Particles
         className="absolute inset-0"
         quantity={400}

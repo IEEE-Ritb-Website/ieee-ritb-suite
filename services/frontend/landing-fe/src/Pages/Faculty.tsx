@@ -2,7 +2,6 @@
 import React from "react";
 import { facultyList } from "../staticData/FacultyCoord";
 import Particles from "@/Components/Particles";
-import Navbar from "../Components/Navbar";
 
 // Use type-only import for Coordinator
 import FacultyCoordinators, { type Coordinator } from "../Components/FacultyCoordinators";
@@ -39,8 +38,6 @@ const FacultyPage: React.FC = () => {
         size={0.05}
         refresh
       />
-
-      <Navbar />
 
       <div className="faculty-page relative z-10 pt-16">
         {/* Render the new component and pass mapped data */}

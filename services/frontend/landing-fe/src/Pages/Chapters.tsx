@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import Navbar from "@/Components/Navbar";
-import Footer from "@/Components/Footer";
 import Particles from "../Components/Particles";
 
 import type { Variants } from "framer-motion";
@@ -95,7 +93,6 @@ const Chapters: React.FC = () => {
     <>
       <div className="min-h-screen bg-transparent relative mt-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
-          <Navbar />
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -160,7 +157,6 @@ const Chapters: React.FC = () => {
           refresh
         />
       </div>
-      <Footer />
     </>
   );
 };
