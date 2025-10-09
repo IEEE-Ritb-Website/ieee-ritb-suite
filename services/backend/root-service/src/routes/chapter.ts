@@ -1,10 +1,10 @@
 import Controllers from "@/controllers";
 import { validationMiddleware, withResponseValidation } from "@/middlewares/validationMiddleware";
 import { ResponseCreator } from "@/utils/responseCreator";
-import { 
-    ChaptersRequestValidator, 
-    ChaptersResponseValidator, 
-    IChaptersResponse 
+import {
+    GetChaptersRequestValidator,
+    GetChaptersResponseValidator,
+    IGetChaptersResponse
 } from "@/validators";
 import { getAstraLogger } from "astralogger";
 import { Router } from "express";
@@ -12,15 +12,14 @@ import { Router } from "express";
 const chapterRouter = Router();
 
 chapterRouter.get("/chapters",
-    validationMiddleware(ChaptersRequestValidator),
-    withResponseValidation<IChaptersResponse, typeof ChaptersRequestValidator>(
-        ChaptersResponseValidator,
+    validationMiddleware(GetChaptersRequestValidator),
+    withResponseValidation<IGetChaptersResponse, typeof GetChaptersRequestValidator>(
+        GetChaptersResponseValidator,
         (validatedData, res) => {
-            getAstraLogger().info("Hit the unified /chapters route");
-            return Controllers.chaptersController(
+            return Controllers.getChapters(
                 validatedData,
                 res,
-                new ResponseCreator<IChaptersResponse>("chaptersController"),
+                new ResponseCreator<IGetChaptersResponse>("getChapters"),
             )
         }
     )

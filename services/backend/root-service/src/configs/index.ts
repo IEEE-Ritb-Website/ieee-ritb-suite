@@ -8,6 +8,6 @@ export const CONFIG: ICONFIG = {
     },
     server: {
         port: SERVER_PORT,
-        name: "Root " + process.env.NODE_ENV,
+        name: "Root " + (process.env.NODE_ENV || "development"),
     },
 };

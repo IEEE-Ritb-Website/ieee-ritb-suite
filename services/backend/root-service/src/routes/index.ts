@@ -1,10 +1,8 @@
 import { Router } from 'express';
-import { pingRoute } from './ping';
-import chapterRouter from './chapters';
+import chapterRouter from './chapter';
 
 const router = Router();
 
-router.use(pingRoute);
 router.use(chapterRouter);
 
 export default router;

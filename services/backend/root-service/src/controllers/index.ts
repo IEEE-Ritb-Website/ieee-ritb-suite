@@ -1,17 +1,12 @@
 import { Request, Response } from "express";
-import { ChaptersController} from "./chapters";
+import { GetChaptersController } from "./chapters/getChapters";
 
 export class ControllerClass {
     constructor() {
         // do something
     }
 
-    async pingController(req: Request, res: Response) {
-        return res.status(201).json({ message: "Server running" });
-    }
-
-    chaptersController = ChaptersController;
-    
+    getChapters = GetChaptersController;
 }
 
 const Controllers = new ControllerClass();

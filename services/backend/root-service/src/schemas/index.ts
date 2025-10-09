@@ -5,5 +5,4 @@ export const SampleSchema = z.object({
   age: z.number().min(18),
 });
 
-export type ISample = z.infer<typeof SampleSchema>
-;
+export type ISample = z.infer<typeof SampleSchema>;
