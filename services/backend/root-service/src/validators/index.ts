@@ -32,7 +32,15 @@ export type IGetChaptersRequest = z.infer<typeof GetChaptersRequestValidator>;
 export const GetChaptersResponseValidator = defineResponseSchema(
     z.object({
         success: z.literal(true),
-        data: z.array(z.custom<IChapter>()),
+        data: z.array(
+            z.object({
+                name: z.string(),
+                type: z.enum(ChapterTypeValues),
+                acronym: z.string(),
+                shortDescription: z.string(),
+                logoUrl: z.string(),
+            })
+        ),
     })
 );
 

@@ -4,6 +4,7 @@ import { GetChaptersRequest, GetChaptersResponse, IGetChaptersResponse } from "@
 import { ResponseCreator } from "@/utils/responseCreator";
 import { getAstraLogger } from "astralogger";
 import { Chapters as ChaptersCatalogue } from "@astranova/catalogues";
+import { GetCloudinaryFileUrl } from "@/utils/cloudinary";
 
 export async function GetChaptersController(
     this: ControllerClass,
@@ -25,9 +26,12 @@ export async function GetChaptersController(
             chapters = chapters.filter((chapter) => chapter.type === type);
         }
 
-        // TODO: get logo of the chapters and map it here (use a cdn provider like cloudinary or imgix)
+        const chaptersWithLogo = chapters.map((chapter) => ({
+            ...chapter,
+            logoUrl: GetCloudinaryFileUrl(`chapters/${chapter.acronym.toLowerCase()}.png`),
+        }))
 
-        return responseCreator.ok({ success: true, data: chapters });
+        return responseCreator.ok({ success: true, data: chaptersWithLogo });
     } catch (error) {
         getAstraLogger().fatal(`Should Never Happen: Error at GetChaptersController. Error: ${error}`);
         return responseCreator.fatal("Should never happen");
