@@ -1,0 +1,40 @@
+{
+  "name": "root-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "exports": {
+    "types": "./dist/types/index.js"
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "start": "node dist/index.js",
+    "lint": "eslint . --ext .ts,.js",
+    "test": "echo 'no tests'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.3",
+  "dependencies": {
+    "dotenv": "^17.2.2",
+    "cors": "^2.8.5",
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "zod": "^4.1.11",
+    "astralogger": "workspace:*",
+    "@astranova/catalogues": "workspace:*",
+    "mongodb": "^6.20.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "prettier": "^3.6.2",
+    "@types/body-parser": "^1.19.6",
+    "@types/cors": "^2.8.19",
+    "eslint": "^9.36.0",
+    "typescript": "^5.9.2",
+    "tsc-alias": "^1.8.16",
+    "@typescript-eslint/parser": "^8.44.1",
+    "@typescript-eslint/eslint-plugin": "^8.44.1"
+  }
+}
