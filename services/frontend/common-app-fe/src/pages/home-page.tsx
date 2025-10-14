@@ -13,7 +13,7 @@ export function HomePage() {
         <section className="mx-auto max-w-6xl w-full px-4 py-10">
             <div className="mb-10">
                 <p className="text-balance text-muted-foreground">
-                    Minimal hacker-style utility hub for common dev tasks and a space to showcase select college projects.
+                    The only platform to explore the cool projects created in RIT-B by students.
                 </p>
             </div>
 
@@ -55,71 +55,75 @@ export function HomePage() {
                 </Card>
             </div>
 
-            <div className="font-mono text-lg font-semibold mb-2">Our Apps</div>
-            <div id="apps" className="grid gap-6 mb-10 md:grid-cols-2 *:min-w-0">
-                {APPS_CONFIG.apps.map((app) => (
-                    <Card className="bg-card/50 border-border">
-                        <CardHeader>
-                            <CardTitle className="font-mono text-primary flex gap-2 items-center">{app.icon} {app.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {app.description}
-                        </CardContent>
-                        <CardFooter>
-                            <Button asChild>
-                                <Link to={app.href}>{app.actionText}</Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                ))}
+            <div id="apps">
+                <div className="font-mono text-lg font-semibold mb-2">Our Apps</div>
+                <div className="grid gap-6 mb-10 md:grid-cols-2 *:min-w-0">
+                    {APPS_CONFIG.apps.map((app) => (
+                        <Card className="bg-card/50 border-border">
+                            <CardHeader>
+                                <CardTitle className="font-mono text-primary flex gap-2 items-center">{app.icon} {app.name}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {app.description}
+                            </CardContent>
+                            <CardFooter>
+                                <Button asChild>
+                                    <Link to={app.href}>{app.actionText}</Link>
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
             </div>
 
-            <div className="font-mono text-lg font-semibold mb-2">Common Tools</div>
-            <div id="tools" className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 *:min-w-0">
-                <Card className="bg-card/50 border-border">
-                    <CardHeader>
-                        <CardTitle className="font-mono text-primary">{"> base64"}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Base64Tool />
-                    </CardContent>
-                </Card>
+            <div id="tools">
+                <div className="font-mono text-lg font-semibold mb-2">Common Tools</div>
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 *:min-w-0">
+                    <Card className="bg-card/50 border-border">
+                        <CardHeader>
+                            <CardTitle className="font-mono text-primary">{"> base64"}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <Base64Tool />
+                        </CardContent>
+                    </Card>
 
-                <Card className="bg-card/50 border-border">
-                    <CardHeader>
-                        <CardTitle className="font-mono text-primary">{"> json-format"}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <JsonTool />
-                    </CardContent>
-                </Card>
+                    <Card className="bg-card/50 border-border">
+                        <CardHeader>
+                            <CardTitle className="font-mono text-primary">{"> json-format"}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <JsonTool />
+                        </CardContent>
+                    </Card>
 
-                <Card className="bg-card/50 border-border">
-                    <CardHeader>
-                        <CardTitle className="font-mono text-primary">{"> uuid"}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <UuidTool />
-                    </CardContent>
-                </Card>
+                    <Card className="bg-card/50 border-border">
+                        <CardHeader>
+                            <CardTitle className="font-mono text-primary">{"> uuid"}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <UuidTool />
+                        </CardContent>
+                    </Card>
 
-                <Card className="bg-card/50 border-border">
-                    <CardHeader>
-                        <CardTitle className="font-mono text-primary">{"> sha-256"}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <HashTool />
-                    </CardContent>
-                </Card>
+                    <Card className="bg-card/50 border-border">
+                        <CardHeader>
+                            <CardTitle className="font-mono text-primary">{"> sha-256"}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <HashTool />
+                        </CardContent>
+                    </Card>
 
-                <Card className="bg-card/50 border-border xl:col-span-2">
-                    <CardHeader>
-                        <CardTitle className="font-mono text-primary">{"> color-utils"}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ColorTool />
-                    </CardContent>
-                </Card>
+                    <Card className="bg-card/50 border-border xl:col-span-2">
+                        <CardHeader>
+                            <CardTitle className="font-mono text-primary">{"> color-utils"}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ColorTool />
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </section>
     )
