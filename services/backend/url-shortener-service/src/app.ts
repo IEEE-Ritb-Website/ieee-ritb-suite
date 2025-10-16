@@ -1,21 +1,16 @@
 import express from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
-
-import router from "./routes";
+import helmet from "helmet";
+import morgan from "morgan";
+import urlRoutes from "./routes/url.routes";
 
 const app = express();
 
-app.use(cors({origin: "*", credentials: true,}));
+app.use(helmet());
+app.use(express.json());
+app.use(morgan("tiny"));
 
-app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(
-    bodyParser.urlencoded({
-    extended: true,
-    })
-);
+app.use(urlRoutes);
 
-app.use("/api", router);
-    
+app.get("/health", (_req, res) => res.json({ ok: true }));
+
 export default app;
