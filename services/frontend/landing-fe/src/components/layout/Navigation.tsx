@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './Navigation.css';
 
-export default function Navigation() {
+export default function Navigation({ showNavigation }: { showNavigation: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isScrolled, setIsScrolled] = useState(false);
@@ -131,6 +131,8 @@ export default function Navigation() {
 
     return () => document.removeEventListener('keydown', handleTabKey);
   }, [isMenuOpen]);
+
+  if (!showNavigation) return null;
 
   return (
     <nav

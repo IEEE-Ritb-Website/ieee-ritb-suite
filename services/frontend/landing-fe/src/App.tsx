@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Navigation from './components/layout/Navigation';
 import Footer from './components/layout/Footer';
 import Hero from './components/sections/Hero';
@@ -13,6 +13,7 @@ import { ToastProvider } from './contexts/ToastContext';
 import { initSmoothScroll, initParallax, initMagneticElements } from './utils/smoothScroll';
 
 function App() {
+  const [showNavigation, setShowNavigation] = useState(false);
   useEffect(() => {
     // Initialize smooth scroll behavior
     initSmoothScroll();
@@ -126,11 +127,11 @@ function App() {
       </a>
 
       {/* Navigation */}
-      <Navigation />
+      <Navigation showNavigation={showNavigation} />
 
       {/* Main Content */}
       <main id="main-content" role="main">
-        <Hero />
+        <Hero onAnimationComplete={() => setShowNavigation(true)} />
         <About />
         <Features />
         <Chapters />
