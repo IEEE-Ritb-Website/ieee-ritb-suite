@@ -1,0 +1,21 @@
+/* Parallax Layer Component */
+
+.parallax-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Disable on mobile for performance */
+@media (max-width: 768px) {
+  .parallax-layer {
+    transform: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-layer {
+    transform: none !important;
+  }
+}

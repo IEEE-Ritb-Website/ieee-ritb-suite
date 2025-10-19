@@ -1,0 +1,38 @@
+/* Circuit Board Background Effect - Tier 1 (Always Enabled) */
+
+.circuit-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: var(--z-background);
+}
+
+.circuit-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, var(--color-accent-subtle) 1px, transparent 1px),
+    linear-gradient(180deg, var(--color-accent-subtle) 1px, transparent 1px),
+    radial-gradient(circle at 20% 80%, var(--color-accent-mist) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 180, 255, 0.1) 0%, transparent 50%);
+  background-size: 50px 50px, 50px 50px, 600px 600px, 400px 400px;
+  opacity: 0.3;
+  animation: circuitFlow 20s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circuit-bg::before {
+    animation: none;
+  }
+}
+
+/* Disable on mobile for performance */
+@media (max-width: 768px) {
+  .circuit-bg::before {
+    animation: none;
+    opacity: 0.2;
+  }
+}

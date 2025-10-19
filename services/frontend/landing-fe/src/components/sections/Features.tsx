@@ -1,0 +1,108 @@
+import ParallaxLayer from '../effects/ParallaxLayer';
+import './Features.css';
+
+const features = [
+  {
+    title: 'Technical Excellence',
+    description: 'Cutting-edge workshops, seminars, and hands-on sessions led by industry experts and professors.',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    ),
+  },
+  {
+    title: '18 Active Chapters',
+    description: 'Diverse technical societies covering AI, Robotics, Computer Science, Electronics, and more.',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    ),
+  },
+  {
+    title: 'Global Network',
+    description: 'Connect with IEEE members worldwide and access exclusive resources and opportunities.',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    ),
+  },
+  {
+    title: 'Innovation Hub',
+    description: 'State-of-the-art labs and project spaces for prototyping and research initiatives.',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+        <polyline points="2 17 12 22 22 17"/>
+        <polyline points="2 12 12 17 22 12"/>
+      </svg>
+    ),
+  },
+  {
+    title: 'Career Development',
+    description: 'Professional development programs, internships, and industry collaboration opportunities.',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+    ),
+  },
+  {
+    title: 'Community Impact',
+    description: 'Social initiatives and outreach programs making technology accessible to all.',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    ),
+  },
+];
+
+export default function Features() {
+  return (
+    <section className="features" id="features" aria-labelledby="features-heading">
+      {/* Parallax Background Elements */}
+      <ParallaxLayer speed={0.25} zIndex={-1}>
+        <div className="features-bg-glow" />
+      </ParallaxLayer>
+
+      <div className="features-container">
+        <div className="features-header animate-slideUp">
+          <span className="section-overline">What We Offer</span>
+          <h2 id="features-heading" className="section-heading">
+            Empowering the Next Generation
+            <span className="section-heading-accent"> of Engineers</span>
+          </h2>
+          <p className="section-description">
+            Join a vibrant community of innovators, researchers, and technology enthusiasts
+            working together to advance technology for humanity.
+          </p>
+        </div>
+
+        <div className="features-grid stagger-children">
+          {features.map((feature, index) => (
+            <article
+              key={index}
+              className="feature-card holographic"
+              data-index={index}
+            >
+              <div className="feature-icon" aria-hidden="true">
+                {feature.icon}
+              </div>
+              <h3 className="feature-title">{feature.title}</h3>
+              <p className="feature-description">{feature.description}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

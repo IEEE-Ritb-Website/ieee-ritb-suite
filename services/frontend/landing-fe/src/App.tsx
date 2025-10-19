@@ -1,43 +1,139 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import { useEffect } from 'react';
+import Navigation from './components/layout/Navigation';
+import Footer from './components/layout/Footer';
+import Hero from './components/sections/Hero';
+import About from './components/sections/About';
+import Features from './components/sections/Features';
+import Chapters from './components/sections/Chapters';
+import CTA from './components/sections/CTA';
+import MagneticCursor from './components/effects/MagneticCursor';
+import { initSmoothScroll, initParallax, initMagneticElements } from './utils/smoothScroll';
 
 function App() {
-  const [count, setCount] = useState(0)
+  useEffect(() => {
+    // Initialize smooth scroll behavior
+    initSmoothScroll();
+
+    // Initialize parallax effects (with slight delay to ensure DOM is ready)
+    const parallaxCleanup = setTimeout(() => {
+      initParallax();
+    }, 100);
+
+    // Initialize magnetic elements
+    const magneticCleanup = setTimeout(() => {
+      initMagneticElements();
+    }, 500);
+
+    return () => {
+      clearTimeout(parallaxCleanup);
+      clearTimeout(magneticCleanup);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px',
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all elements with animation classes
+    const elementsToAnimate = document.querySelectorAll(
+      '.animate-fadeIn, .animate-slideUp, .animate-slideInRight, .animate-scaleIn, .stagger-children'
+    );
+
+    elementsToAnimate.forEach((el) => observer.observe(el));
+
+    // Cleanup
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    // Device performance detection for low-end devices
+    const isLowEndDevice = () => {
+      const deviceMemory = (navigator as any).deviceMemory;
+      const hardwareConcurrency = navigator.hardwareConcurrency;
+
+      return (
+        (deviceMemory && deviceMemory < 4) ||
+        (hardwareConcurrency && hardwareConcurrency < 4)
+      );
+    };
+
+    if (isLowEndDevice()) {
+      document.body.classList.add('low-performance-mode');
+    }
+
+    // Frame rate monitoring
+    let lastFrameTime = performance.now();
+    let frameCount = 0;
+    let fps = 60;
+
+    const measurePerformance = () => {
+      const now = performance.now();
+      frameCount++;
+
+      if (now >= lastFrameTime + 1000) {
+        fps = Math.round((frameCount * 1000) / (now - lastFrameTime));
+        frameCount = 0;
+        lastFrameTime = now;
+
+        // Automatically degrade if fps drops below 30
+        if (fps < 30 && !document.body.classList.contains('low-performance-mode')) {
+          console.warn('Low FPS detected, enabling performance mode');
+          document.body.classList.add('low-performance-mode');
+        }
+      }
+
+      requestAnimationFrame(measurePerformance);
+    };
+
+    // Start monitoring after page load
+    const timer = setTimeout(() => {
+      requestAnimationFrame(measurePerformance);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-      <div className="max-w-md mx-auto p-8 bg-white rounded-xl shadow-lg text-center space-y-6">
-        <div className="flex justify-center space-x-4 mb-6">
-          <a href="https://react.dev" target="_blank" className="transition-transform hover:scale-110">
-            <img src={reactLogo} className="h-16 w-16 animate-spin" alt="React logo" />
-          </a>
-        </div>
-        
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          landing-fe
-        </h1>
-        
-        <p className="text-gray-600 mb-6">
-          Vite + React + TypeScript + Tailwind CSS v4
-        </p>
-        
-        <div className="space-y-4">
-          <button
-            onClick={() => setCount((count) => count + 1)}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold 
-                     hover:bg-indigo-700 transition-colors transform hover:scale-105 
-                     focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Count is {count}
-          </button>
-          
-          <p className="text-sm text-gray-500">
-            Edit <code className="bg-gray-100 px-2 py-1 rounded text-indigo-600 font-mono">src/App.tsx</code> and save to test HMR
-          </p>
-        </div>
-      </div>
-    </div>
-  )
+    <>
+      {/* Magnetic Cursor Effect */}
+      <MagneticCursor />
+
+      {/* Skip Navigation for Accessibility */}
+      <a href="#main-content" className="skip-nav">
+        Skip to main content
+      </a>
+      <a href="#nav" className="skip-nav">
+        Skip to navigation
+      </a>
+
+      {/* Navigation */}
+      <Navigation />
+
+      {/* Main Content */}
+      <main id="main-content" role="main">
+        <Hero />
+        <About />
+        <Features />
+        <Chapters />
+        <CTA />
+      </main>
+
+      {/* Footer */}
+      <Footer />
+    </>
+  );
 }
 
-export default App
+export default App;
