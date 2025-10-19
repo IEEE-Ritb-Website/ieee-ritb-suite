@@ -1,0 +1,71 @@
+/* Quantum Particles Effect - Tier 3 (High-End Desktop Only) */
+
+.quantum-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1; /* Above background layers but below content */
+}
+
+.quantum-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--color-ieee-electric);
+  border-radius: 50%;
+  box-shadow:
+    0 0 20px var(--color-ieee-electric),
+    0 0 40px var(--color-ieee-electric),
+    0 0 60px rgba(0, 180, 255, 0.3);
+  animation: quantumFloat 10s infinite;
+  will-change: transform, opacity;
+  filter: blur(1px);
+}
+
+.quantum-particle::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: radial-gradient(circle, var(--color-ieee-electric) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quantum-particle {
+    animation: none;
+    opacity: 0.5;
+    transform: none;
+  }
+
+  .quantum-particle::before {
+    animation: none;
+  }
+}
+
+/* Hide on mobile and tablets for performance */
+@media (max-width: 768px) {
+  .quantum-field {
+    display: none;
+  }
+}
+
+/* Simplify on medium screens */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .quantum-particle {
+    width: 6px;
+    height: 6px;
+    box-shadow: 0 0 15px var(--color-ieee-electric);
+  }
+
+  .quantum-particle::before {
+    display: none;
+  }
+}
+
+/* Low performance mode */
+.low-performance-mode .quantum-field {
+  display: none;
+}

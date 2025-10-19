@@ -1,0 +1,76 @@
+/* Magnetic Cursor Effect - Desktop Only */
+
+.magnetic-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+}
+
+.magnetic-cursor.hidden {
+  opacity: 0;
+}
+
+.cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--color-ieee-electric);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width var(--duration-fast) var(--ease-out),
+              height var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+  box-shadow: 0 0 10px var(--color-ieee-electric);
+}
+
+.cursor-ring {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--color-ieee-primary);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width var(--duration-base) var(--ease-out),
+              height var(--duration-base) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              opacity var(--duration-fast) var(--ease-out);
+  opacity: 0.5;
+}
+
+.magnetic-cursor.pointer .cursor-dot {
+  width: 16px;
+  height: 16px;
+  background: var(--color-ieee-primary);
+}
+
+.magnetic-cursor.pointer .cursor-ring {
+  width: 60px;
+  height: 60px;
+  border-color: var(--color-ieee-electric);
+  opacity: 0.8;
+}
+
+/* Hide default cursor on interactive elements */
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
+
+  a, button, .magnetic, [role="button"] {
+    cursor: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .magnetic-cursor {
+    display: none;
+  }
+}
+
+/* Hide on mobile/touch devices */
+@media (hover: none) {
+  .magnetic-cursor {
+    display: none;
+  }
+}
