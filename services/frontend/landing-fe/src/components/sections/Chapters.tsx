@@ -1,24 +1,34 @@
 import { useState } from 'react';
 import ParallaxLayer from '../effects/ParallaxLayer';
+import ChapterIcon from '../ui/ChapterIcon';
 import './Chapters.css';
 
 const chapters = [
-  { name: 'Computer Society', acronym: 'CS', color: '#4d7fff', icon: '💻', description: 'Software development, algorithms, and computing' },
-  { name: 'Robotics & Automation', acronym: 'RAS', color: '#00b4ff', icon: '🤖', description: 'Robotics, automation, and intelligent systems' },
-  { name: 'Power & Energy', acronym: 'PES', color: '#10b981', icon: '⚡', description: 'Sustainable energy and power systems' },
-  { name: 'Signal Processing', acronym: 'SPS', color: '#8b5cf6', icon: '📡', description: 'Audio, image, and signal processing' },
-  { name: 'Communications', acronym: 'ComSoc', color: '#f59e0b', icon: '📶', description: 'Telecommunications and networking' },
-  { name: 'Aerospace & Electronics', acronym: 'AES', color: '#ef4444', icon: '✈️', description: 'Aerospace systems and avionics' },
-  { name: 'Photonics Society', acronym: 'PhS', color: '#ec4899', icon: '💡', description: 'Optics, lasers, and photonics' },
-  { name: 'Computational Intelligence', acronym: 'CIS', color: '#06b6d4', icon: '🧠', description: 'AI, machine learning, and neural networks' },
-  { name: 'Engineering in Medicine', acronym: 'EMBS', color: '#84cc16', icon: '🏥', description: 'Biomedical engineering and healthcare tech' },
-  { name: 'Electron Devices', acronym: 'EDS', color: '#6366f1', icon: '🔬', description: 'Semiconductor devices and materials' },
-  { name: 'Microwave Theory', acronym: 'MTT', color: '#f97316', icon: '📻', description: 'RF, microwave, and antenna systems' },
-  { name: 'Women in Engineering', acronym: 'WIE', color: '#d946ef', icon: '👩‍💻', description: 'Promoting women in STEM fields' },
+  { name: 'Computer Society', acronym: 'CS', color: '#4d7fff', description: 'Software development, algorithms, and computing' },
+  { name: 'Robotics & Automation', acronym: 'RAS', color: '#00b4ff', description: 'Robotics, automation, and intelligent systems' },
+  { name: 'Power & Energy', acronym: 'PES', color: '#10b981', description: 'Sustainable energy and power systems' },
+  { name: 'Signal Processing', acronym: 'SPS', color: '#8b5cf6', description: 'Audio, image, and signal processing' },
+  { name: 'Communications', acronym: 'ComSoc', color: '#f59e0b', description: 'Telecommunications and networking' },
+  { name: 'Aerospace & Electronics', acronym: 'AES', color: '#ef4444', description: 'Aerospace systems and avionics' },
+  { name: 'Photonics Society', acronym: 'PhS', color: '#ec4899', description: 'Optics, lasers, and photonics' },
+  { name: 'Computational Intelligence', acronym: 'CIS', color: '#06b6d4', description: 'AI, machine learning, and neural networks' },
+  { name: 'Engineering in Medicine', acronym: 'EMBS', color: '#84cc16', description: 'Biomedical engineering and healthcare tech' },
+  { name: 'Electron Devices', acronym: 'EDS', color: '#6366f1', description: 'Semiconductor devices and materials' },
+  { name: 'Microwave Theory', acronym: 'MTT', color: '#f97316', description: 'RF, microwave, and antenna systems' },
+  { name: 'Women in Engineering', acronym: 'WIE', color: '#d946ef', description: 'Promoting women in STEM fields' },
 ];
 
 export default function Chapters() {
   const [activeChapter, setActiveChapter] = useState<number | null>(null);
+
+  const handleChapterKeyDown = (event: React.KeyboardEvent, index: number) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setActiveChapter(index);
+      // Could trigger navigation or modal here
+      console.log(`Chapter ${index} activated via keyboard`);
+    }
+  };
 
   return (
     <section className="chapters" id="chapters" aria-labelledby="chapters-heading">
@@ -52,14 +62,16 @@ export default function Chapters() {
               onMouseLeave={() => setActiveChapter(null)}
               onFocus={() => setActiveChapter(index)}
               onBlur={() => setActiveChapter(null)}
+              onKeyDown={(e) => handleChapterKeyDown(e, index)}
               tabIndex={0}
               role="button"
               aria-label={`${chapter.name} chapter`}
+              aria-describedby={`chapter-desc-${index}`}
             >
               <div className="chapter-glow" style={{ background: `radial-gradient(circle at center, ${chapter.color}40, transparent)` }} />
 
-              <div className="chapter-icon" aria-hidden="true">
-                <span className="icon-emoji">{chapter.icon}</span>
+              <div className="chapter-icon" aria-hidden="true" style={{ color: chapter.color }}>
+                <ChapterIcon acronym={chapter.acronym} size={40} />
               </div>
 
               <div className="chapter-header">
@@ -69,7 +81,9 @@ export default function Chapters() {
                 </span>
               </div>
 
-              <p className="chapter-description">{chapter.description}</p>
+              <p className="chapter-description" id={`chapter-desc-${index}`}>
+                {chapter.description}
+              </p>
 
               <div className="chapter-footer">
                 <button className="chapter-link magnetic" aria-label={`Learn more about ${chapter.name}`}>

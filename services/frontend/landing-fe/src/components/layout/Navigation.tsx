@@ -4,6 +4,8 @@ import './Navigation.css';
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
     // Check for saved theme preference or default to dark
@@ -17,11 +19,60 @@ export default function Navigation() {
     }
   }, []);
 
+  useEffect(() => {
+    // Handle scroll for glassmorphism effect
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 50);
+    };
+
+    // Throttle scroll events for performance
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledScroll);
+    return () => window.removeEventListener('scroll', throttledScroll);
+  }, []);
+
+  useEffect(() => {
+    // Intersection Observer for active section highlighting
+    const sections = document.querySelectorAll('section[id]');
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: [0.3], rootMargin: '-20% 0px -70% 0px' }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('ieee-theme-preference', newTheme);
+
+    // Announce theme change to screen readers
+    const announcement = document.getElementById('theme-announcement');
+    if (announcement) {
+      announcement.textContent = `Switched to ${newTheme} mode`;
+    }
   };
 
   const toggleMenu = () => {
@@ -44,8 +95,49 @@ export default function Navigation() {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    // Focus trap for mobile menu accessibility
+    if (!isMenuOpen) return;
+
+    const menu = document.querySelector('.nav-menu');
+    if (!menu) return;
+
+    const focusableElements = menu.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+
+      if (e.shiftKey) {
+        // Shift + Tab: moving backwards
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab: moving forwards
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleTabKey);
+    firstElement?.focus(); // Auto-focus first element when menu opens
+
+    return () => document.removeEventListener('keydown', handleTabKey);
+  }, [isMenuOpen]);
+
   return (
-    <nav className="nav" role="navigation" aria-label="Main navigation">
+    <nav
+      className={`nav ${isScrolled ? 'scrolled' : ''}`}
+      role="navigation"
+      aria-label="Main navigation"
+    >
       <div className="nav-container">
         <a href="#" className="nav-logo" aria-label="IEEE RITB Home">
           <span className="nav-logo-text">IEEE</span>
@@ -65,29 +157,54 @@ export default function Navigation() {
           </span>
         </button>
 
-        <ul className={`nav-menu ${isMenuOpen ? 'open' : ''}`}>
+        <ul className={`nav-menu ${isMenuOpen ? 'open' : ''}`} role="list">
           <li>
-            <a href="#about" className="nav-link" onClick={closeMenu}>
+            <a
+              href="#about"
+              className={`nav-link ${activeSection === 'about' ? 'active' : ''}`}
+              onClick={closeMenu}
+              aria-current={activeSection === 'about' ? 'page' : undefined}
+            >
               About
             </a>
           </li>
           <li>
-            <a href="#features" className="nav-link" onClick={closeMenu}>
+            <a
+              href="#features"
+              className={`nav-link ${activeSection === 'features' ? 'active' : ''}`}
+              onClick={closeMenu}
+              aria-current={activeSection === 'features' ? 'page' : undefined}
+            >
               Features
             </a>
           </li>
           <li>
-            <a href="#events" className="nav-link" onClick={closeMenu}>
+            <a
+              href="#events"
+              className={`nav-link ${activeSection === 'events' ? 'active' : ''}`}
+              onClick={closeMenu}
+              aria-current={activeSection === 'events' ? 'page' : undefined}
+            >
               Events
             </a>
           </li>
           <li>
-            <a href="#chapters" className="nav-link" onClick={closeMenu}>
+            <a
+              href="#chapters"
+              className={`nav-link ${activeSection === 'chapters' ? 'active' : ''}`}
+              onClick={closeMenu}
+              aria-current={activeSection === 'chapters' ? 'page' : undefined}
+            >
               Chapters
             </a>
           </li>
           <li>
-            <a href="#contact" className="nav-link" onClick={closeMenu}>
+            <a
+              href="#contact"
+              className={`nav-link ${activeSection === 'contact' ? 'active' : ''}`}
+              onClick={closeMenu}
+              aria-current={activeSection === 'contact' ? 'page' : undefined}
+            >
               Contact
             </a>
           </li>
@@ -140,6 +257,15 @@ export default function Navigation() {
           </li>
         </ul>
       </div>
+
+      {/* Screen reader announcements */}
+      <div
+        id="theme-announcement"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      />
     </nav>
   );
 }

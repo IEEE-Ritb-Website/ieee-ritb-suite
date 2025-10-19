@@ -13,7 +13,11 @@ export default function CTA() {
             advancing technology for humanity.
           </p>
           <div className="cta-buttons">
-            <a href="#membership" className="btn-cta em-field">
+            <a
+              href="#membership"
+              className="btn-cta em-field"
+              aria-label="Apply for IEEE RIT-B membership"
+            >
               Become a Member
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +35,11 @@ export default function CTA() {
                 <polyline points="12 5 19 12 12 19" />
               </svg>
             </a>
-            <a href="#contact" className="btn-cta-secondary">
+            <a
+              href="#contact"
+              className="btn-cta-secondary"
+              aria-label="Get in touch with IEEE RIT-B"
+            >
               Contact Us
             </a>
           </div>

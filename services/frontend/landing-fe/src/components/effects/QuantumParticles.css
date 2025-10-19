@@ -6,6 +6,8 @@
   overflow: hidden;
   pointer-events: none;
   z-index: 1; /* Above background layers but below content */
+  /* Contain layout and paint for better performance */
+  contain: layout style paint;
 }
 
 .quantum-particle {
@@ -14,34 +16,28 @@
   height: 8px;
   background: var(--color-ieee-electric);
   border-radius: 50%;
+  /* Reduced box-shadow layers for better performance */
   box-shadow:
     0 0 20px var(--color-ieee-electric),
-    0 0 40px var(--color-ieee-electric),
-    0 0 60px rgba(0, 180, 255, 0.3);
-  animation: quantumFloat 10s infinite;
-  will-change: transform, opacity;
-  filter: blur(1px);
+    0 0 35px rgba(0, 180, 255, 0.4);
+  animation: quantumFloat 10s infinite ease-in-out;
+  /* Single will-change property for the animation */
+  will-change: transform;
+  /* Force GPU acceleration */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  /* Optimize compositing */
+  isolation: isolate;
 }
 
-.quantum-particle::before {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  background: radial-gradient(circle, var(--color-ieee-electric) 0%, transparent 70%);
-  border-radius: 50%;
-  opacity: 0.6;
-  animation: pulse 3s ease-in-out infinite;
-}
+/* Removed ::before pseudo-element to reduce compositor overhead */
+/* The glow effect is now handled by box-shadow only */
 
 @media (prefers-reduced-motion: reduce) {
   .quantum-particle {
     animation: none;
-    opacity: 0.5;
-    transform: none;
-  }
-
-  .quantum-particle::before {
-    animation: none;
+    opacity: 0.3;
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -58,10 +54,7 @@
     width: 6px;
     height: 6px;
     box-shadow: 0 0 15px var(--color-ieee-electric);
-  }
-
-  .quantum-particle::before {
-    display: none;
+    opacity: 0.8;
   }
 }
 

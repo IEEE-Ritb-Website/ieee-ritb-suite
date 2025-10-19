@@ -7,6 +7,9 @@ import Features from './components/sections/Features';
 import Chapters from './components/sections/Chapters';
 import CTA from './components/sections/CTA';
 import MagneticCursor from './components/effects/MagneticCursor';
+import ScrollProgress from './components/ui/ScrollProgress';
+import BackToTop from './components/ui/BackToTop';
+import { ToastProvider } from './contexts/ToastContext';
 import { initSmoothScroll, initParallax, initMagneticElements } from './utils/smoothScroll';
 
 function App() {
@@ -60,12 +63,13 @@ function App() {
   useEffect(() => {
     // Device performance detection for low-end devices
     const isLowEndDevice = () => {
-      const deviceMemory = (navigator as any).deviceMemory;
+      // deviceMemory is a non-standard property from Device Memory API
+      const deviceMemory = 'deviceMemory' in navigator ? (navigator as Navigator & { deviceMemory?: number }).deviceMemory : undefined;
       const hardwareConcurrency = navigator.hardwareConcurrency;
 
       return (
-        (deviceMemory && deviceMemory < 4) ||
-        (hardwareConcurrency && hardwareConcurrency < 4)
+        (deviceMemory !== undefined && deviceMemory < 4) ||
+        (hardwareConcurrency !== undefined && hardwareConcurrency < 4)
       );
     };
 
@@ -106,7 +110,10 @@ function App() {
   }, []);
 
   return (
-    <>
+    <ToastProvider>
+      {/* Scroll Progress Indicator */}
+      <ScrollProgress />
+
       {/* Magnetic Cursor Effect */}
       <MagneticCursor />
 
@@ -132,7 +139,10 @@ function App() {
 
       {/* Footer */}
       <Footer />
-    </>
+
+      {/* Back to Top Button */}
+      <BackToTop />
+    </ToastProvider>
   );
 }
 

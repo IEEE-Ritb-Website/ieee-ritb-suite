@@ -112,46 +112,67 @@
   }
 }
 
-/* Feature Card with Holographic Effect */
+/* Feature Card with Holographic Effect and 3D Tilt */
 .feature-card {
   position: relative;
   background: var(--color-elevated);
   border: 1px solid var(--color-border);
-  border-radius: 16px;
-  padding: var(--space-6);
-  transition: all var(--duration-moderate) var(--ease-default);
+  border-radius: 20px;
+  padding: var(--space-7);
+  transition: all var(--duration-moderate) var(--ease-smooth);
   overflow: hidden;
   cursor: default;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
 }
 
+/* Enhanced mouse spotlight effect */
 .feature-card::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(77, 127, 255, 0.08), transparent 40%);
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(77, 127, 255, 0.15) 0%,
+    rgba(0, 180, 255, 0.1) 30%,
+    transparent 60%
+  );
   opacity: 0;
   transition: opacity var(--duration-moderate) var(--ease-out);
   pointer-events: none;
+  mix-blend-mode: screen;
 }
 
 .feature-card:hover::after {
   opacity: 1;
 }
 
+/* Enhanced depth and glow on hover */
 .feature-card:hover {
   border-color: var(--color-ieee-primary);
-  transform: translateY(-8px) scale(1.02);
   box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.3),
-    0 20px 60px rgba(0, 0, 0, 0.15),
-    0 0 0 1px var(--color-ieee-primary) inset;
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 30px 80px rgba(0, 0, 0, 0.2),
+    0 0 0 1px var(--color-ieee-primary) inset,
+    0 0 40px var(--color-accent-glow);
 }
 
 .feature-card:focus-within {
   outline: 2px solid var(--color-ieee-primary);
   outline-offset: 2px;
+}
+
+/* Add depth to card contents */
+.feature-card > * {
+  transform: translateZ(20px);
+}
+
+.feature-icon {
+  transform: translateZ(40px);
 }
 
 /* Holographic Effect */
@@ -236,7 +257,40 @@
     display: none;
   }
 
+  .feature-card {
+    transform-style: flat;
+    perspective: none;
+  }
+
   .feature-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px) !important;
+  }
+
+  .feature-card > *,
+  .feature-icon {
+    transform: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .feature-card {
+    transform-style: flat;
+    perspective: none;
+    transition: box-shadow var(--duration-base) var(--ease-default);
+  }
+
+  .feature-card:hover {
+    transform: none !important;
+  }
+
+  .feature-card > *,
+  .feature-icon {
+    transform: none;
+  }
+
+  .holographic::before {
+    animation: none;
+    opacity: 0;
   }
 }

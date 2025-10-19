@@ -11,10 +11,10 @@ export default function GradientOrb({ position = 'top-right', className = '' }: 
 
   useEffect(() => {
     // Check device capabilities (Tier 3 effect)
-    const deviceMemory = (navigator as any).deviceMemory;
+    const deviceMemory = 'deviceMemory' in navigator ? (navigator as Navigator & { deviceMemory?: number }).deviceMemory : undefined;
     const hardwareConcurrency = navigator.hardwareConcurrency;
 
-    const isLowEnd = (deviceMemory && deviceMemory < 8) || (hardwareConcurrency && hardwareConcurrency < 8);
+    const isLowEnd = (deviceMemory !== undefined && deviceMemory < 8) || (hardwareConcurrency !== undefined && hardwareConcurrency < 8);
 
     if (isLowEnd) {
       setIsLowPerformance(true);

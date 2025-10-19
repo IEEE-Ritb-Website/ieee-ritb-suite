@@ -132,34 +132,57 @@
 
 /* Chapter Icon */
 .chapter-icon {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-accent-subtle);
-  border: 1px solid var(--color-accent);
-  border-radius: 12px;
-  font-size: 32px;
-  transition: all var(--duration-base) var(--ease-default);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  transition: all var(--duration-moderate) var(--ease-elastic);
   position: relative;
   z-index: var(--z-content);
 }
 
+/* Icon glow effect on hover */
+.chapter-icon::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  filter: blur(12px);
+  transition: opacity var(--duration-moderate) var(--ease-out);
+}
+
+.chapter-card:hover .chapter-icon::before,
+.chapter-card.active .chapter-icon::before {
+  opacity: 0.3;
+}
+
 .chapter-card:hover .chapter-icon,
 .chapter-card.active .chapter-icon {
-  transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 8px 20px var(--color-accent-glow);
+  transform: translateY(-4px) scale(1.15) rotate(3deg);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: currentColor;
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.2),
+    0 0 40px currentColor;
 }
 
-.icon-emoji {
-  filter: grayscale(0.3);
-  transition: filter var(--duration-base) var(--ease-default);
+/* SVG icon animations */
+.chapter-icon svg {
+  transition: all var(--duration-moderate) var(--ease-elastic);
+  stroke-width: 2;
 }
 
-.chapter-card:hover .icon-emoji,
-.chapter-card.active .icon-emoji {
-  filter: grayscale(0);
+.chapter-card:hover .chapter-icon svg,
+.chapter-card.active .chapter-icon svg {
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 8px currentColor);
 }
 
 /* Chapter Header */

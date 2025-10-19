@@ -1,0 +1,70 @@
+/* Scroll Progress Indicator - Signature IEEE Style */
+
+.scroll-progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: calc(var(--z-navigation) + 10);
+  background: transparent;
+  pointer-events: none;
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  background: var(--gradient-ieee);
+  transition: width 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: left;
+  position: relative;
+  box-shadow:
+    0 0 8px var(--color-accent-glow),
+    0 0 16px var(--color-accent-glow);
+}
+
+/* Animated glow at the leading edge */
+.scroll-progress-bar::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 6px;
+  background: radial-gradient(
+    ellipse at center,
+    var(--color-ieee-electric) 0%,
+    transparent 70%
+  );
+  filter: blur(3px);
+  animation: progressGlow 2s ease-in-out infinite;
+}
+
+@keyframes progressGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.2);
+  }
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress-bar {
+    transition: none;
+  }
+
+  .scroll-progress-bar::after {
+    animation: none;
+  }
+}
+
+/* Light mode adjustments */
+[data-theme="light"] .scroll-progress-bar {
+  box-shadow:
+    0 0 6px rgba(41, 82, 204, 0.4),
+    0 0 12px rgba(41, 82, 204, 0.2);
+}
