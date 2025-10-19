@@ -1,59 +1,37 @@
-/* Gradient Orb Effect - Tier 3 (High-End Desktop Only) */
-
-.gradient-orb {
-  position: fixed;
-  width: 600px;
-  height: 600px;
+.gradient-orb-canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1200px; /* Large size for a soft, diffused look */
+  height: 1200px;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  filter: blur(100px); /* Increased blur for a softer effect */
   border-radius: 50%;
-  background: radial-gradient(
-    circle at center,
-    var(--color-ieee-electric) 0%,
-    var(--color-ieee-primary) 25%,
-    var(--color-quantum) 50%,
-    transparent 70%
-  );
-  filter: blur(80px);
-  opacity: 0.3;
   pointer-events: none;
-  animation: orbFloat 20s infinite ease-in-out;
-  will-change: transform;
-  z-index: var(--z-background);
+  z-index: 0; /* Sits behind constellation (z-index: 1) */
+  animation: fadeIn 3s ease-out forwards;
+  animation-delay: 0.2s;
+  will-change: opacity;
+
+  /* Pass theme colors to the JavaScript canvas */
+  --color1: var(--color-ieee-primary);
+  --color2: var(--color-ieee-electric);
+  --color3: var(--color-quantum);
 }
 
-.gradient-orb-top-left {
-  top: -300px;
-  left: -300px;
-}
-
-.gradient-orb-top-right {
-  top: -300px;
-  right: -300px;
-}
-
-.gradient-orb-bottom-left {
-  bottom: -300px;
-  left: -300px;
-}
-
-.gradient-orb-bottom-right {
-  bottom: -300px;
-  right: -300px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gradient-orb {
-    animation: none;
+@keyframes fadeIn {
+  to {
+    opacity: 0.5; /* Fade to a subtle opacity, not fully opaque */
   }
 }
 
-/* Hide on mobile and tablets for performance */
-@media (max-width: 1024px) {
-  .gradient-orb {
+@media (max-width: 768px) {
+  .gradient-orb-canvas {
     display: none;
   }
 }
 
-/* Low performance mode */
-.low-performance-mode .gradient-orb {
+.low-performance-mode .gradient-orb-canvas {
   display: none;
 }

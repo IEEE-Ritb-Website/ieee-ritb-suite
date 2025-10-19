@@ -1,18 +1,12 @@
 /* Chapters Section - Enhanced Interactive Design */
 
-.chapters {
-  position: relative;
-  padding: var(--space-section-y) var(--space-5);
-  background: var(--color-surface);
-  overflow: hidden;
-}
-
 /* Parallax background shapes */
 .chapters-bg-shape {
   position: absolute;
   border-radius: 50%;
   filter: blur(70px);
   opacity: 0.3;
+  pointer-events: none;
 }
 
 .chapters-bg-shape-1 {
@@ -31,50 +25,10 @@
   right: -5%;
 }
 
-@media (min-width: 768px) {
-  .chapters {
-    padding: var(--space-section-y) var(--space-6);
-  }
-}
-
-@media (min-width: 1024px) {
-  .chapters {
-    padding: var(--space-section-y) var(--space-8);
-  }
-}
-
-.chapters-container {
-  max-width: 1536px;
-  margin: 0 auto;
-}
-
-.chapters-header {
+/* Chapters CTA */
+.chapters-cta {
   text-align: center;
-  margin-bottom: var(--space-12);
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Chapters Grid */
-.chapters-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-5);
-  margin-bottom: var(--space-12);
-}
-
-@media (min-width: 640px) {
-  .chapters-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .chapters-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-6);
-  }
+  margin-top: var(--space-12);
 }
 
 @media (min-width: 1280px) {

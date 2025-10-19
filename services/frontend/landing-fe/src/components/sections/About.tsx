@@ -62,7 +62,7 @@ function AnimatedNumber({ end, duration = 2000, suffix = '' }: AnimatedNumberPro
 
 export default function About() {
   return (
-    <section className="about" id="about" aria-labelledby="about-heading">
+    <section className="section section-padding section-bg-base" id="about" aria-labelledby="about-heading">
       {/* Parallax Background Elements */}
       <ParallaxLayer speed={0.3} zIndex={-2}>
         <div className="about-bg-shape about-bg-shape-1" />
@@ -71,8 +71,8 @@ export default function About() {
         <div className="about-bg-shape about-bg-shape-2" />
       </ParallaxLayer>
 
-      <div className="about-container">
-        <div className="about-content">
+      <div className="section-container">
+        <div className="section-two-col">
           <div className="about-text animate-slideUp">
             <span className="section-overline">About IEEE RITB</span>
             <h2 id="about-heading" className="section-heading">

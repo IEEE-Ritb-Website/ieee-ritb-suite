@@ -90,14 +90,14 @@ export default function Features() {
   };
 
   return (
-    <section className="features" id="features" aria-labelledby="features-heading">
+    <section className="section section-padding section-bg-gradient" id="features" aria-labelledby="features-heading">
       {/* Parallax Background Elements */}
       <ParallaxLayer speed={0.25} zIndex={-1}>
         <div className="features-bg-glow" />
       </ParallaxLayer>
 
-      <div className="features-container">
-        <div className="features-header animate-slideUp">
+      <div className="section-container">
+        <div className="section-header animate-slideUp">
           <span className="section-overline">What We Offer</span>
           <h2 id="features-heading" className="section-heading">
             Empowering the Next Generation
@@ -109,7 +109,7 @@ export default function Features() {
           </p>
         </div>
 
-        <div className="features-grid stagger-children">
+        <div className="grid-features stagger-children">
           {features.map((feature, index) => (
             <article
               key={index}

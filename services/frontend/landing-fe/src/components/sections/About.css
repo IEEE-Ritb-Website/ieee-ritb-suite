@@ -1,18 +1,12 @@
 /* About Section - Enhanced Design */
 
-.about {
-  position: relative;
-  padding: var(--space-section-y) var(--space-5);
-  background: var(--color-base);
-  overflow: hidden;
-}
-
 /* Parallax background shapes */
 .about-bg-shape {
   position: absolute;
   border-radius: 50%;
   filter: blur(60px);
   opacity: 0.4;
+  pointer-events: none;
 }
 
 .about-bg-shape-1 {
@@ -29,48 +23,6 @@
   background: radial-gradient(circle, rgba(0, 180, 255, 0.15) 0%, transparent 70%);
   bottom: 10%;
   left: 5%;
-}
-
-@media (min-width: 768px) {
-  .about {
-    padding: var(--space-section-y) var(--space-6);
-  }
-}
-
-@media (min-width: 1024px) {
-  .about {
-    padding: var(--space-section-y) var(--space-8);
-  }
-}
-
-.about-container {
-  max-width: 1536px;
-  margin: 0 auto;
-}
-
-.about-content {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-12);
-  align-items: start;
-}
-
-@media (min-width: 1024px) {
-  .about-content {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-10);
-  }
-}
-
-/* About Text */
-.about-text {
-  max-width: 600px;
-}
-
-@media (min-width: 1024px) {
-  .about-text {
-    max-width: none;
-  }
 }
 
 .about-description {

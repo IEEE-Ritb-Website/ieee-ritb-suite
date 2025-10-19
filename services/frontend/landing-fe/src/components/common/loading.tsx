@@ -1,3 +1,4 @@
+// Legacy simple loader - kept for fallback
 export const Loader = () => {
     return (
         <div className="fixed w-full h-screen flex items-center justify-center z-50">
@@ -7,3 +8,6 @@ export const Loader = () => {
         </div>
     );
 };
+
+// Export enhanced loader as default
+export { EnhancedLoader as default } from './EnhancedLoader';

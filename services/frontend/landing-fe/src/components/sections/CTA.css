@@ -1,33 +1,9 @@
 /* CTA Section - Foundation Design System */
 
-.cta {
-  position: relative;
-  padding: var(--space-section-y) var(--space-5);
-  background: var(--gradient-surface);
-  overflow: hidden;
-}
-
-@media (min-width: 768px) {
-  .cta {
-    padding: var(--space-section-y) var(--space-6);
-  }
-}
-
-@media (min-width: 1024px) {
-  .cta {
-    padding: var(--space-section-y) var(--space-8);
-  }
-}
-
-.cta-container {
-  max-width: 1536px;
+.cta-content {
+  max-width: 900px;
   margin: 0 auto;
   text-align: center;
-}
-
-.cta-content {
-  max-width: 800px;
-  margin: 0 auto;
 }
 
 .cta-heading {

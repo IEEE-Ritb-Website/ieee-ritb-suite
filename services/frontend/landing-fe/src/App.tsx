@@ -11,8 +11,10 @@ import ScrollProgress from './components/ui/ScrollProgress';
 import BackToTop from './components/ui/BackToTop';
 import { ToastProvider } from './contexts/ToastContext';
 import { initSmoothScroll, initParallax, initMagneticElements } from './utils/smoothScroll';
+import EnhancedLoader from './components/common/loading';
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [showNavigation, setShowNavigation] = useState(false);
   useEffect(() => {
     // Initialize smooth scroll behavior
@@ -112,6 +114,15 @@ function App() {
 
   return (
     <ToastProvider>
+      {/* Enhanced Loader */}
+      <EnhancedLoader
+        isLoading={isLoading}
+        onLoaded={() => {
+          setIsLoading(false);
+          setShowNavigation(true);
+        }}
+      />
+
       {/* Scroll Progress Indicator */}
       <ScrollProgress />
 
@@ -131,7 +142,7 @@ function App() {
 
       {/* Main Content */}
       <main id="main-content" role="main">
-        <Hero onAnimationComplete={() => setShowNavigation(true)} />
+        <Hero isLoading={isLoading} />
         <About />
         <Features />
         <Chapters />

@@ -31,7 +31,7 @@ export default function Chapters() {
   };
 
   return (
-    <section className="chapters" id="chapters" aria-labelledby="chapters-heading">
+    <section className="section section-padding section-bg-surface" id="chapters" aria-labelledby="chapters-heading">
       {/* Parallax Background Elements */}
       <ParallaxLayer speed={0.35} zIndex={-2}>
         <div className="chapters-bg-shape chapters-bg-shape-1" />
@@ -40,8 +40,8 @@ export default function Chapters() {
         <div className="chapters-bg-shape chapters-bg-shape-2" />
       </ParallaxLayer>
 
-      <div className="chapters-container">
-        <div className="chapters-header animate-slideUp">
+      <div className="section-container">
+        <div className="section-header animate-slideUp">
           <span className="section-overline">Our Ecosystem</span>
           <h2 id="chapters-heading" className="section-heading">
             Explore Our
@@ -53,7 +53,7 @@ export default function Chapters() {
           </p>
         </div>
 
-        <div className="chapters-grid stagger-children">
+        <div className="grid-chapters stagger-children">
           {chapters.map((chapter, index) => (
             <article
               key={index}

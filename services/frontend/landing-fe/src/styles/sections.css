@@ -1,0 +1,414 @@
+/* ========================================
+   Shared Section Styles - Foundation Design System
+   Uniform layout system for all sections
+   ======================================== */
+
+/* ========================================
+   Section Base Styles
+   ======================================== */
+
+/* Universal Section Container */
+.section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Standard Section Padding */
+.section-padding {
+  padding: var(--space-section-y) var(--space-5);
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding: var(--space-section-y) var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding: var(--space-section-y) var(--space-8);
+  }
+}
+
+/* Content Container - Unified Max Width */
+.section-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Wider container for hero/fullwidth sections */
+.section-container-wide {
+  max-width: 1536px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ========================================
+   Section Headers (Unified Styling)
+   ======================================== */
+
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-12);
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 1024px) {
+  .section-header {
+    margin-bottom: var(--space-14);
+  }
+}
+
+/* Section Overline Badge */
+.section-overline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-ieee-primary);
+  margin-bottom: var(--space-5);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-accent-subtle);
+  border: 1px solid var(--color-accent);
+  border-radius: 9999px;
+  box-shadow: 0 0 20px var(--color-accent-glow);
+}
+
+@media (min-width: 768px) {
+  .section-overline {
+    font-size: var(--text-sm);
+  }
+}
+
+/* Section Heading */
+.section-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: var(--font-black);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-6) 0;
+}
+
+@media (min-width: 1024px) {
+  .section-heading {
+    margin-bottom: var(--space-7);
+  }
+}
+
+/* Accent Text in Headings */
+.section-heading-accent {
+  display: inline-block;
+  background: var(--gradient-ieee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Section Description */
+.section-description {
+  font-family: var(--font-primary);
+  font-size: var(--text-lg);
+  font-weight: var(--font-regular);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-secondary);
+  max-width: 65ch;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .section-description {
+    font-size: var(--text-xl);
+  }
+}
+
+/* ========================================
+   Content Layouts
+   ======================================== */
+
+/* Two Column Layout */
+.section-two-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-12);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .section-two-col {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-10);
+  }
+}
+
+/* Asymmetric Two Column (60/40) */
+.section-two-col-asymmetric {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-12);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .section-two-col-asymmetric {
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: var(--space-10);
+  }
+}
+
+/* ========================================
+   Grid Systems
+   ======================================== */
+
+/* Feature Grid (3 columns) */
+.grid-features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 640px) {
+  .grid-features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-features {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-7);
+  }
+}
+
+/* Chapter Grid (4 columns max) */
+.grid-chapters {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 640px) {
+  .grid-chapters {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-chapters {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-chapters {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-7);
+  }
+}
+
+/* Stats Grid (2x2) */
+.grid-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+@media (min-width: 640px) {
+  .grid-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+/* ========================================
+   Vertical Rhythm & Spacing
+   ======================================== */
+
+/* Section Spacing (between sections) */
+.section + .section {
+  margin-top: var(--space-10);
+}
+
+@media (min-width: 1024px) {
+  .section + .section {
+    margin-top: var(--space-12);
+  }
+}
+
+/* Content Block Spacing */
+.content-block {
+  margin-bottom: var(--space-10);
+}
+
+@media (min-width: 1024px) {
+  .content-block {
+    margin-bottom: var(--space-12);
+  }
+}
+
+/* ========================================
+   Background Patterns
+   ======================================== */
+
+/* Section Background Variants */
+.section-bg-base {
+  background: var(--color-base);
+}
+
+.section-bg-surface {
+  background: var(--color-surface);
+}
+
+.section-bg-elevated {
+  background: var(--color-elevated);
+}
+
+.section-bg-gradient {
+  background: linear-gradient(
+    180deg,
+    var(--color-surface) 0%,
+    var(--color-base) 50%,
+    var(--color-surface) 100%
+  );
+}
+
+/* ========================================
+   Accessibility & Print
+   ======================================== */
+
+@media print {
+  .section-padding {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .section-header {
+    margin-bottom: var(--space-6);
+  }
+
+  .section + .section {
+    margin-top: var(--space-8);
+    page-break-before: always;
+  }
+}
+
+/* Screen Reader Only Content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ========================================
+   Animation Classes
+   ======================================== */
+
+/* Stagger children animations */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeInUp var(--duration-moderate) var(--ease-out) both;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 400ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 500ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 600ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 700ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 800ms; }
+.stagger-children > *:nth-child(9) { animation-delay: 900ms; }
+
+/* Intersection Observer trigger */
+.animate-visible.stagger-children > * {
+  animation-play-state: running;
+}
+
+/* Individual animation classes */
+.animate-fadeIn {
+  opacity: 0;
+  animation: fadeIn var(--duration-moderate) var(--ease-out) both;
+}
+
+.animate-slideUp {
+  opacity: 0;
+  animation: slideUp var(--duration-moderate) var(--ease-out) both;
+}
+
+.animate-slideInRight {
+  opacity: 0;
+  animation: slideInRight var(--duration-moderate) var(--ease-out) both;
+}
+
+.animate-scaleIn {
+  opacity: 0;
+  animation: scaleIn var(--duration-moderate) var(--ease-out) both;
+}
+
+/* Trigger animations when visible */
+.animate-visible {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .stagger-children > *,
+  .animate-fadeIn,
+  .animate-slideUp,
+  .animate-slideInRight,
+  .animate-scaleIn {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

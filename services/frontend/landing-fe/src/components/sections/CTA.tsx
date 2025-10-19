@@ -2,8 +2,8 @@ import './CTA.css';
 
 export default function CTA() {
   return (
-    <section className="cta" id="join" aria-labelledby="cta-heading">
-      <div className="cta-container">
+    <section className="section section-padding section-bg-gradient" id="join" aria-labelledby="cta-heading">
+      <div className="section-container">
         <div className="cta-content animate-slideUp">
           <h2 id="cta-heading" className="cta-heading">
             Ready to Shape the Future?
