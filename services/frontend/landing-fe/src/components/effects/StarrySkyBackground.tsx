@@ -87,6 +87,22 @@ const StarsField = ({ onAnimationComplete }: { onAnimationComplete: () => void }
   }, [starCount]);
 
   useEffect(() => {
+    // Attach BufferAttributes programmatically so TS doesn't require the JSX `args` prop
+    if (pointsRef.current) {
+      const geom = pointsRef.current.geometry as THREE.BufferGeometry;
+      geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    }
+
+    if (linesRef.current) {
+      const geom = linesRef.current.geometry as THREE.BufferGeometry;
+      geom.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    }
+    // positions/colors/linePositions are stable (from useMemo), but include them
+    // so the attributes are reattached if starCount changes.
+  }, [positions, colors, linePositions]);
+
+  useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -176,20 +192,7 @@ const StarsField = ({ onAnimationComplete }: { onAnimationComplete: () => void }
     <>
       {/* Points (circles) */}
       <points ref={pointsRef}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={starCount}
-            array={positions}
-            itemSize={3}
-          />
-          <bufferAttribute
-            attach="attributes-color"
-            count={starCount}
-            array={colors}
-            itemSize={3}
-          />
-        </bufferGeometry>
+        <bufferGeometry />         {/* attributes are set in useEffect */}
         <pointsMaterial
           size={0.15}
           vertexColors
@@ -204,14 +207,7 @@ const StarsField = ({ onAnimationComplete }: { onAnimationComplete: () => void }
 
       {/* Lines (streaks) */}
       <lineSegments ref={linesRef}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={starCount * 2}
-            array={linePositions}
-            itemSize={3}
-          />
-        </bufferGeometry>
+        <bufferGeometry />         {/* attributes are set in useEffect */}
         <lineBasicMaterial
           color={0xaaccff}
           transparent
