@@ -1,0 +1,60 @@
+/* ========================================
+   Hero Starfield - 3D Space Background Effect
+   Foundation Design System Compliant
+   ======================================== */
+
+.hero-starfield {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Below hero-content */
+  opacity: 0;
+  animation: fadeInStarfield 2s ease-out forwards;
+  animation-delay: 0.3s;
+  pointer-events: none; /* Allow clicks to pass through to content */
+  overflow: hidden;
+  background: linear-gradient(to bottom, #0a0a1a 0%, #000000 50%, #0a0a1a 100%);
+}
+
+/* Canvas should fill the container */
+.hero-starfield canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Fade in animation */
+@keyframes fadeInStarfield {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .hero-starfield {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Performance optimization for low-end devices */
+/* Note: Starfield has built-in device detection and star count optimization,
+   so we don't need to hide it entirely in low-performance mode.
+   The component will automatically use fewer stars (500 on mobile, 1200 on low-end desktop) */
+.low-performance-mode .hero-starfield {
+  /* Don't hide - let the component's internal optimization handle it */
+}
+
+/* Mobile optimization - reduce complexity on small screens */
+@media (max-width: 640px) {
+  .hero-starfield {
+    /* Starfield remains visible on mobile, but with reduced star count
+       (handled by device detection in component logic) */
+  }
+}

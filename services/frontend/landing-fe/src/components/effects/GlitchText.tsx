@@ -99,6 +99,7 @@ const GlitchText = ({
         cancelAnimationFrame(animationRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, isActive, glitchDuration, lockInDelay, onComplete]);
 
   const getStyleClasses = () => {

@@ -31,27 +31,66 @@ const ConstellationLines = ({
 }: ConstellationLinesProps) => {
   const lineSegmentsRef = useRef<THREE.LineSegments>(null);
   const timeRef = useRef(0);
+  const fadeInProgress = useRef(0); // For smooth appearance transition
 
-  // Generate connection pairs based on proximity
+  // Optimized: Generate connection pairs using spatial grid partitioning
+  // Reduces complexity from O(n²) to O(n) with grid-based neighbor lookup
   const connectionPairs = useMemo(() => {
     const pairs: [number, number][] = [];
     const connectionsCount = new Map<number, number>();
 
+    // Create spatial grid for fast neighbor lookup
+    const gridSize = maxDistance * 1.5;
+    const grid = new Map<string, number[]>();
+
+    // Populate grid with star indices
+    stars.forEach((star, index) => {
+      const gridX = Math.floor(star.position.x / gridSize);
+      const gridY = Math.floor(star.position.y / gridSize);
+      const gridZ = Math.floor(star.position.z / gridSize);
+      const key = `${gridX},${gridY},${gridZ}`;
+
+      if (!grid.has(key)) {
+        grid.set(key, []);
+      }
+      grid.get(key)!.push(index);
+    });
+
+    // Check only stars in neighboring grid cells
     for (let i = 0; i < stars.length; i++) {
       if ((connectionsCount.get(i) || 0) >= maxConnections) continue;
 
-      for (let j = i + 1; j < stars.length; j++) {
-        if ((connectionsCount.get(j) || 0) >= maxConnections) continue;
+      const star = stars[i];
+      const gridX = Math.floor(star.position.x / gridSize);
+      const gridY = Math.floor(star.position.y / gridSize);
+      const gridZ = Math.floor(star.position.z / gridSize);
 
-        const distance = stars[i].position.distanceTo(stars[j].position);
+      // Check 27 neighboring cells (3x3x3 cube around current cell)
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dz = -1; dz <= 1; dz++) {
+            const neighborKey = `${gridX + dx},${gridY + dy},${gridZ + dz}`;
+            const neighbors = grid.get(neighborKey) || [];
 
-        if (distance < maxDistance) {
-          pairs.push([i, j]);
-          connectionsCount.set(i, (connectionsCount.get(i) || 0) + 1);
-          connectionsCount.set(j, (connectionsCount.get(j) || 0) + 1);
+            for (const j of neighbors) {
+              if (j <= i) continue; // Avoid duplicate pairs and self-connections
+              if ((connectionsCount.get(j) || 0) >= maxConnections) continue;
 
+              const distance = star.position.distanceTo(stars[j].position);
+
+              if (distance < maxDistance) {
+                pairs.push([i, j]);
+                connectionsCount.set(i, (connectionsCount.get(i) || 0) + 1);
+                connectionsCount.set(j, (connectionsCount.get(j) || 0) + 1);
+
+                if ((connectionsCount.get(i) || 0) >= maxConnections) break;
+              }
+            }
+            if ((connectionsCount.get(i) || 0) >= maxConnections) break;
+          }
           if ((connectionsCount.get(i) || 0) >= maxConnections) break;
         }
+        if ((connectionsCount.get(i) || 0) >= maxConnections) break;
       }
     }
 
@@ -104,8 +143,23 @@ const ConstellationLines = ({
   }, [connectionPairs, stars]);
 
   // Update line positions when stars move (parallax)
+  // Optimized: Only update when phase is 'stopped' (parallax active)
+  const prevStarsRef = useRef(stars);
+
   useEffect(() => {
-    if (!lineSegmentsRef.current) return;
+    if (!lineSegmentsRef.current || phase !== 'stopped') return;
+
+    // Skip if stars haven't moved (performance optimization)
+    let starsChanged = false;
+    for (let i = 0; i < Math.min(5, stars.length); i++) {
+      if (!prevStarsRef.current[i] ||
+          !stars[i].position.equals(prevStarsRef.current[i].position)) {
+        starsChanged = true;
+        break;
+      }
+    }
+
+    if (!starsChanged) return;
 
     const positions = lineSegmentsRef.current.geometry.attributes
       .position.array as Float32Array;
@@ -124,9 +178,10 @@ const ConstellationLines = ({
     });
 
     lineSegmentsRef.current.geometry.attributes.position.needsUpdate = true;
-  });
+    prevStarsRef.current = stars.map(s => ({ ...s, position: s.position.clone() }));
+  }, [stars, connectionPairs, phase]);
 
-  // Animate opacity - pulsing effect
+  // Animate opacity - pulsing effect with smooth transitions
   useFrame((_state, delta) => {
     if (!lineSegmentsRef.current) return;
 
@@ -134,15 +189,29 @@ const ConstellationLines = ({
 
     const material = lineSegmentsRef.current.material as THREE.LineBasicMaterial;
 
-    // Only show when animation is stopped
+    // Smooth fade-in when transitioning to stopped phase
     if (phase === 'stopped') {
-      // Pulsing effect
+      // Ease-in fade over 1.5 seconds
+      fadeInProgress.current = Math.min(fadeInProgress.current + delta * 0.8, 1);
+
+      // Smooth easing function (ease-out cubic)
+      const easedProgress = 1 - Math.pow(1 - fadeInProgress.current, 3);
+
+      // Pulsing effect combined with fade-in
       const pulseOpacity = 0.1 + Math.sin(timeRef.current * 0.8) * 0.08;
-      material.opacity = pulseOpacity;
+      material.opacity = pulseOpacity * easedProgress;
       material.visible = true;
     } else {
-      // Hide during warp/slowing
-      material.visible = false;
+      // Fade out when transitioning away from stopped
+      fadeInProgress.current = Math.max(fadeInProgress.current - delta * 2, 0);
+
+      if (fadeInProgress.current > 0) {
+        // Still visible during fade-out
+        material.opacity = 0.15 * fadeInProgress.current;
+        material.visible = true;
+      } else {
+        material.visible = false;
+      }
     }
   });
 

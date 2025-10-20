@@ -104,10 +104,11 @@ function App() {
       requestAnimationFrame(measurePerformance);
     };
 
-    // Start monitoring after page load
+    // Start monitoring after page load and starfield initialization
+    // Increased delay to allow starfield warp animation to complete
     const timer = setTimeout(() => {
       requestAnimationFrame(measurePerformance);
-    }, 2000);
+    }, 5000); // Wait 5 seconds instead of 2
 
     return () => clearTimeout(timer);
   }, []);

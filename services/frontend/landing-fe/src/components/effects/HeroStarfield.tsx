@@ -1,17 +1,13 @@
 import { useRef, useMemo, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import StaticStarfield from './StaticStarfield';
 import ShootingStars from './ShootingStars';
-import ConstellationLines from './ConstellationLines';
-import NebulaClouds from './NebulaClouds';
-import SpaceDust from './SpaceDust';
 import { getOptimalStarCount, prefersReducedMotion } from '@/utils/deviceDetection';
 import { hasWebGLSupport } from '@/utils/webglSupport';
 import { throttle } from '@/utils/throttle';
+import './HeroStarfield.css';
 
 // ==================== CONSTANTS ====================
-// Extract all magic numbers for maintainability
 
 const ANIMATION_CONFIG = {
   // Star counts (adaptive based on device)
@@ -54,7 +50,8 @@ const ANIMATION_CONFIG = {
   MOUSE_THROTTLE_MS: 16, // ~60fps
 } as const;
 
-const SESSION_STORAGE_KEY = 'ieee-hero-animation-seen';
+// TEMPORARILY DISABLED for testing
+// const SESSION_STORAGE_KEY = 'ieee-hero-animation-seen';
 
 // ==================== TYPES ====================
 
@@ -86,6 +83,19 @@ const StarsField = ({ isLoading, starCount }: StarsFieldProps) => {
   const speedMultiplier = useRef(1);
   const lineToCircleProgress = useRef(0);
 
+  // Debug logging
+  useEffect(() => {
+    console.log('[StarsField] Initialized with', { isLoading, starCount, phase });
+  }, []);
+
+  useEffect(() => {
+    console.log('[StarsField] isLoading changed:', isLoading);
+  }, [isLoading]);
+
+  useEffect(() => {
+    console.log('[StarsField] Phase changed:', phase);
+  }, [phase]);
+
   // Memoize star data generation
   const { stars, positions, colors, linePositions, starTexture } = useMemo(() => {
     const stars: StarData[] = [];
@@ -112,7 +122,7 @@ const StarsField = ({ isLoading, starCount }: StarsFieldProps) => {
 
     const starTexture = new THREE.CanvasTexture(canvas);
 
-    // Generate stars
+    // Generate stars with IEEE-themed temperature-based colors
     for (let i = 0; i < starCount; i++) {
       const x = (Math.random() - 0.5) * ANIMATION_CONFIG.STAR_FIELD_WIDTH;
       const y = (Math.random() - 0.5) * ANIMATION_CONFIG.STAR_FIELD_HEIGHT;
@@ -145,7 +155,7 @@ const StarsField = ({ isLoading, starCount }: StarsFieldProps) => {
       positions[i * 3 + 2] = z;
 
       // Color attributes - Realistic star colors based on temperature
-      // 70% blue/white (IEEE theme), 20% yellow, 10% red
+      // IEEE theme: 70% blue/white, 20% yellow, 10% red
       const colorType = Math.random();
       let r, g, b;
 
@@ -338,8 +348,7 @@ const StarsField = ({ isLoading, starCount }: StarsFieldProps) => {
       lineToCircleProgress.current *
         (ANIMATION_CONFIG.POINT_OPACITY_MAX - ANIMATION_CONFIG.POINT_OPACITY_MIN);
 
-    // FIXED: Seeded twinkling effect (was using Math.random() per frame)
-    // Now uses time-based sine waves with deterministic phase
+    // Deterministic twinkling effect with time-based sine waves
     if (phase === 'stopped') {
       baseOpacity += Math.sin(timeRef.current * 2.5) * 0.08;
     }
@@ -349,9 +358,6 @@ const StarsField = ({ isLoading, starCount }: StarsFieldProps) => {
 
   return (
     <>
-      {/* Background Effects (render first for depth) */}
-      <NebulaClouds layerCount={3} enabled={phase === 'stopped'} />
-
       {/* Points (circles) - Multi-colored stars */}
       <points ref={pointsRef}>
         <bufferGeometry />
@@ -378,32 +384,26 @@ const StarsField = ({ isLoading, starCount }: StarsFieldProps) => {
         />
       </lineSegments>
 
-      {/* Constellation Lines - connects nearby stars */}
-      <ConstellationLines stars={stars} maxDistance={30} maxConnections={3} phase={phase} />
-
       {/* Shooting Stars - meteors streaking across */}
-      <ShootingStars count={3} spawnInterval={5} />
-
-      {/* Space Dust - subtle micro-particles */}
-      <SpaceDust count={150} enabled={phase === 'stopped'} />
+      <ShootingStars count={2} spawnInterval={8} />
     </>
   );
 };
 
 // ==================== MAIN COMPONENT ====================
 
-interface StarrySkyBackgroundProps {
+interface HeroStarfieldProps {
   isLoading: boolean;
 }
 
-export default function StarrySkyBackground({ isLoading }: StarrySkyBackgroundProps) {
-
+export default function HeroStarfield({ isLoading }: HeroStarfieldProps) {
   // Check for accessibility preferences
   const hasReducedMotion = prefersReducedMotion();
   const hasWebGL = hasWebGLSupport();
 
-  // Check session storage for repeat visits
-  const hasSeenAnimation = sessionStorage.getItem(SESSION_STORAGE_KEY) === 'true';
+  // Check session storage for repeat visits (TEMPORARILY DISABLED for testing)
+  // const hasSeenAnimation = sessionStorage.getItem(SESSION_STORAGE_KEY) === 'true';
+  const hasSeenAnimation = false; // ALWAYS show animation for now
 
   // Get optimal star count based on device
   const starCount = useMemo(
@@ -411,42 +411,39 @@ export default function StarrySkyBackground({ isLoading }: StarrySkyBackgroundPr
     []
   );
 
+  // Debug logging
+  useEffect(() => {
+    console.log('[HeroStarfield] Component mounted', {
+      isLoading,
+      hasReducedMotion,
+      hasWebGL,
+      hasSeenAnimation,
+      starCount
+    });
+  }, [isLoading, hasReducedMotion, hasWebGL, hasSeenAnimation, starCount]);
 
+  // Mark animation as seen for future visits (DISABLED for testing)
+  // useEffect(() => {
+  //   if (!hasSeenAnimation && !isLoading) {
+  //     sessionStorage.setItem(SESSION_STORAGE_KEY, 'true');
+  //   }
+  // }, [hasSeenAnimation, isLoading]);
 
-  // Show static fallback for accessibility or repeat visits
-  if (hasReducedMotion || !hasWebGL || hasSeenAnimation) {
-    return <StaticStarfield />;
+  // Show static fallback for accessibility only
+  if (hasReducedMotion || !hasWebGL) {
+    return (
+      <div className="hero-starfield hero-starfield-static">
+        {/* Simple dark background for reduced motion */}
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-black to-indigo-950/20"
+          aria-hidden="true"
+        />
+      </div>
+    );
   }
 
   return (
-    <div className="fixed inset-0 w-full h-full bg-black overflow-hidden">
-      {/* Dark gradient with nebula glares */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-black to-slate-950" />
-
-      {/* Nebula glares - responsive sizing */}
-      <div
-        className="absolute top-20 left-1/4 w-48 h-48 md:w-64 md:h-64 bg-blue-500/5 rounded-full blur-3xl animate-pulse"
-        style={{ animationDuration: '4s' }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute top-1/3 right-1/3 w-32 h-32 md:w-48 md:h-48 bg-indigo-500/5 rounded-full blur-3xl animate-pulse"
-        style={{ animationDuration: '5s', animationDelay: '1s' }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute bottom-1/4 left-1/2 w-40 h-40 md:w-56 md:h-56 bg-purple-500/5 rounded-full blur-3xl animate-pulse"
-        style={{ animationDuration: '6s', animationDelay: '2s' }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute bottom-1/3 right-1/4 w-28 h-28 md:w-40 md:h-40 bg-cyan-500/5 rounded-full blur-3xl animate-pulse"
-        style={{ animationDuration: '5.5s', animationDelay: '0.5s' }}
-        aria-hidden="true"
-      />
-
-
-
+    <div className="hero-starfield">
       {/* Three.js Canvas */}
       <Canvas
         camera={{ position: [0, 0, 30], fov: 75 }}
@@ -456,23 +453,6 @@ export default function StarrySkyBackground({ isLoading }: StarrySkyBackgroundPr
           <StarsField isLoading={isLoading} starCount={starCount} />
         </Suspense>
       </Canvas>
-
-      {/* Text overlay - responsive sizing */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <h1
-          className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-bold text-white tracking-wider transition-all duration-1000 ${
-            !isLoading ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
-          }`}
-          style={{
-            textShadow:
-              '0 0 12px rgba(255, 255, 255, 0.8), 0 0 40px rgba(147, 197, 253, 0.6), 0 0 60px rgba(59, 130, 246, 0.4)',
-            fontFamily: 'system-ui, -apple-system, sans-serif',
-            fontWeight: 900,
-          }}
-        >
-          IEEE RIT-B
-        </h1>
-      </div>
     </div>
   );
 }

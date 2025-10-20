@@ -22,6 +22,8 @@ interface ShootingStar {
   lifetime: number;
   maxLifetime: number;
   isActive: boolean;
+  color: THREE.Color; // Temperature-based color
+  burstTimeoutId?: number; // Track timeout for cleanup
 }
 
 interface ShootingStarsProps {
@@ -78,6 +80,9 @@ const ShootingStars = ({ count = 3, spawnInterval = 5 }: ShootingStarsProps) => 
 
   // Initialize shooting star pool
   useEffect(() => {
+    // Capture ref value for cleanup
+    const group = groupRef.current;
+
     const stars: ShootingStar[] = [];
     const lines: THREE.LineSegments[] = [];
     const bursts: THREE.Points[] = [];
@@ -93,6 +98,8 @@ const ShootingStars = ({ count = 3, spawnInterval = 5 }: ShootingStarsProps) => 
         lifetime: 0,
         maxLifetime: 0,
         isActive: false,
+        color: new THREE.Color(0x4d7fff),
+        burstTimeoutId: undefined,
       };
 
       // Create line for trail
@@ -126,18 +133,25 @@ const ShootingStars = ({ count = 3, spawnInterval = 5 }: ShootingStarsProps) => 
 
     // Cleanup
     return () => {
+      // Clear all pending timeouts (MEMORY LEAK FIX)
+      stars.forEach(star => {
+        if (star.burstTimeoutId !== undefined) {
+          clearTimeout(star.burstTimeoutId);
+        }
+      });
+
       lines.forEach(line => {
         line.geometry.dispose();
-        groupRef.current?.remove(line);
+        group?.remove(line);
       });
       bursts.forEach(burst => {
         burst.geometry.dispose();
-        groupRef.current?.remove(burst);
+        group?.remove(burst);
       });
     };
   }, [count, trailMaterial, burstMaterial]);
 
-  // Spawn a new shooting star
+  // Spawn a new shooting star with varied colors
   const spawnShootingStar = (index: number) => {
     const star = shootingStarsRef.current[index];
     if (!star) return;
@@ -177,13 +191,38 @@ const ShootingStars = ({ count = 3, spawnInterval = 5 }: ShootingStarsProps) => 
     star.maxLifetime = 2 + Math.random() * 1.5; // 2-3.5 seconds
     star.isActive = true;
 
-    linesRef.current[index].visible = true;
+    // Temperature-based color variation (like real meteors)
+    const colorType = Math.random();
+    if (colorType < 0.4) {
+      // Hot blue-white (most common)
+      star.color = new THREE.Color(0x4d7fff);
+    } else if (colorType < 0.7) {
+      // Electric cyan
+      star.color = new THREE.Color(0x00d4ff);
+    } else if (colorType < 0.9) {
+      // Warm white
+      star.color = new THREE.Color(0xffffee);
+    } else {
+      // Rare: Green (magnesium)
+      star.color = new THREE.Color(0x00ff88);
+    }
+
+    // Update line material color
+    const line = linesRef.current[index];
+    (line.material as THREE.LineBasicMaterial).color = star.color;
+    line.visible = true;
   };
 
   // Trigger burst effect
   const triggerBurst = (position: THREE.Vector3, index: number) => {
+    const star = shootingStarsRef.current[index];
     const burst = burstParticlesRef.current[index];
-    if (!burst) return;
+    if (!burst || !star) return;
+
+    // Clear previous timeout if exists (MEMORY LEAK FIX)
+    if (star.burstTimeoutId !== undefined) {
+      clearTimeout(star.burstTimeoutId);
+    }
 
     const positions = burst.geometry.attributes.position.array as Float32Array;
     const burstCount = positions.length / 3;
@@ -199,9 +238,10 @@ const ShootingStars = ({ count = 3, spawnInterval = 5 }: ShootingStarsProps) => 
     burst.geometry.attributes.position.needsUpdate = true;
     burst.visible = true;
 
-    // Fade out burst over time
-    setTimeout(() => {
+    // Fade out burst over time and store timeout ID
+    star.burstTimeoutId = window.setTimeout(() => {
       burst.visible = false;
+      star.burstTimeoutId = undefined;
     }, 500);
   };
 

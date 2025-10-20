@@ -9,12 +9,14 @@
  * @param limit - Minimum time (in ms) between function executions
  * @returns Throttled version of the function
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean = false;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function (this: any, ...args: Parameters<T>): void {
     if (!inThrottle) {
       func.apply(this, args);
@@ -33,12 +35,14 @@ export function throttle<T extends (...args: any[]) => any>(
  * @param delay - Time (in ms) to wait before executing
  * @returns Debounced version of the function with cancel method
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   delay: number
 ): ((...args: Parameters<T>) => void) & { cancel: () => void } {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const debounced = function (this: any, ...args: Parameters<T>): void {
     if (timeoutId !== null) {
       clearTimeout(timeoutId);
@@ -65,11 +69,13 @@ export function debounce<T extends (...args: any[]) => any>(
  * @param func - The function to throttle
  * @returns RAF-throttled version of the function
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function rafThrottle<T extends (...args: any[]) => any>(
   func: T
 ): (...args: Parameters<T>) => void {
   let rafId: number | null = null;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function (this: any, ...args: Parameters<T>): void {
     if (rafId === null) {
       rafId = requestAnimationFrame(() => {

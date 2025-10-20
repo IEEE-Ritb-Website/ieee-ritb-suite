@@ -1,19 +1,68 @@
 import './Hero.css';
-import GenerativeConstellation from '../effects/GenerativeConstellation';
-import { useCountUp } from '@/hooks/useCountUp';
-import InteractivePulse from '../effects/InteractivePulse';
-import GradientOrb from '../effects/GradientOrb';
+import HeroStarfield from '../effects/HeroStarfield';
+import { useEffect, useRef, useState } from 'react';
 
 interface Props {
   isLoading: boolean;
 }
 
+interface AnimatedNumberProps {
+  end: number;
+  duration?: number;
+  delay?: number;
+}
+
+function AnimatedNumber({ end, duration = 2000, delay = 0 }: AnimatedNumberProps) {
+  const [count, setCount] = useState(0);
+  const hasStartedRef = useRef(false);
+
+  useEffect(() => {
+    // Start animation immediately on mount (Hero is always visible)
+    if (hasStartedRef.current) return;
+    hasStartedRef.current = true;
+
+    console.log(`[AnimatedNumber] Starting animation for ${end} with delay ${delay}ms`);
+
+    const startTime = Date.now() + delay;
+
+    const updateCount = () => {
+      const now = Date.now();
+
+      if (now < startTime) {
+        requestAnimationFrame(updateCount);
+        return;
+      }
+
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      const currentCount = Math.floor(easeOutQuart * end);
+
+      setCount(currentCount);
+
+      if (progress < 1) {
+        requestAnimationFrame(updateCount);
+      } else {
+        setCount(end);
+        console.log(`[AnimatedNumber] Animation complete for ${end}`);
+      }
+    };
+
+    requestAnimationFrame(updateCount);
+  }, [end, duration, delay]);
+
+  return (
+    <span className="stat-number">
+      {count}
+    </span>
+  );
+}
+
 const StatItem = ({ value, label, delay }: { value: number; label: string; delay: number }) => {
-  const count = useCountUp({ end: value, duration: 2500, delay });
   return (
     <div className="stat-item" style={{ animationDelay: `${delay}ms` }}>
       <div className="stat-value">
-        <span className="stat-number">{count}</span>
+        <AnimatedNumber end={value} duration={2500} delay={delay} />
         <span className="stat-plus">+</span>
       </div>
       <span className="stat-label">{label}</span>
@@ -24,8 +73,8 @@ const StatItem = ({ value, label, delay }: { value: number; label: string; delay
 export default function Hero({ isLoading }: Props) {
   return (
     <section className="hero" id="home" aria-labelledby="hero-title">
-      <GradientOrb />
-      <GenerativeConstellation isLoading={isLoading} />
+      {/* Background layer - 3D starfield with built-in nebula effects */}
+      <HeroStarfield isLoading={isLoading} />
 
       <div className="hero-content">
         <div className="hero-text">
@@ -52,16 +101,11 @@ export default function Hero({ isLoading }: Props) {
           </div>
 
           <h1 className="hero-title" id="hero-title" data-animate="slideUp">
-            <span className="hero-title-line">
-              <span className="hero-title-main">Innovate. Collaborate.</span>
-            </span>
-            <span className="hero-title-line">
-              <span className="hero-title-accent">Inspire.</span>
-            </span>
+            <span className="hero-title-accent">IEEE-RITB</span>
           </h1>
 
           <p className="hero-subtitle" data-animate="slideUp">
-            Welcome to the hub of innovation at Rochester Institute of Technology.
+            Welcome to the hub of innovation at Ramaiah Institute of Technology.
             We are a community of thinkers, builders, and leaders shaping the future of technology.
           </p>
 
@@ -70,11 +114,11 @@ export default function Hero({ isLoading }: Props) {
           </p>
 
           <div className="hero-stats" data-animate="fadeIn">
-            <StatItem value={18} label="Chapters" delay={200} />
+            <StatItem value={18} label="Chapters" delay={2000} />
             <div className="stat-divider" aria-hidden="true"></div>
-            <StatItem value={1200} label="Members" delay={400} />
+            <StatItem value={1200} label="Members" delay={2200} />
             <div className="stat-divider" aria-hidden="true"></div>
-            <StatItem value={50} label="Events/Year" delay={600} />
+            <StatItem value={50} label="Events/Year" delay={2400} />
           </div>
 
           <div className="hero-cta" data-animate="fadeIn">
@@ -103,21 +147,6 @@ export default function Hero({ isLoading }: Props) {
             </a>
           </div>
         </div>
-
-        <div className="hero-visual" data-animate="fadeIn">
-          <div className="hero-visual-wrapper">
-            <InteractivePulse />
-          </div>
-        </div>
-      </div>
-
-      <div className="scroll-indicator">
-        <a href="#about" aria-label="Scroll to next section">
-          <div className="scroll-mouse">
-            <div className="scroll-wheel"></div>
-          </div>
-          <span className="scroll-text">Scroll</span>
-        </a>
       </div>
     </section>
   );

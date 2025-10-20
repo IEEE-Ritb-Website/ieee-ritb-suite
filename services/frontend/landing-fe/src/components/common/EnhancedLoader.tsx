@@ -18,11 +18,17 @@ import OrbitalParticles from '../effects/OrbitalParticles';
  * - Electromagnetic pulses
  */
 
+interface LoadingMessage {
+  text: string;
+  delay?: number;
+  type?: 'system' | 'success' | 'info' | 'gpu';
+}
+
 interface LoadingStage {
   name: string;
   progress: [number, number]; // [start, end] percentage
   duration: number; // milliseconds
-  messages: Array<{ text: string; delay?: number; type?: 'system' | 'success' | 'info' | 'gpu' }>;
+  messages: LoadingMessage[];
 }
 
 const LOADING_STAGES: LoadingStage[] = [
@@ -82,7 +88,7 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
   const [progress, setProgress] = useState(0);
   const [currentStage, setCurrentStage] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
-  const [allMessages, setAllMessages] = useState<any[]>([]);
+  const [allMessages, setAllMessages] = useState<LoadingMessage[]>([]);
 
   useEffect(() => {
     let totalElapsed = 0;

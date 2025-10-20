@@ -7,19 +7,33 @@ interface Props {
   isLoading: boolean;
 }
 
-// Helper to convert hex/rgb to rgba
-const toRgba = (cssVar: string, alpha: number = 1) => {
-  if (!cssVar) return `rgba(255, 255, 255, ${alpha})`;
+// Cached rgba conversion results (PERFORMANCE FIX)
+const rgbaCache = new Map<string, { r: number; g: number; b: number }>();
+
+// Optimized: Parse CSS color once, cache RGB values
+const parseColor = (cssVar: string): { r: number; g: number; b: number } => {
+  if (rgbaCache.has(cssVar)) {
+    return rgbaCache.get(cssVar)!;
+  }
+
+  let r = 255, g = 255, b = 255;
+
   if (cssVar.startsWith('#')) {
-    const r = parseInt(cssVar.slice(1, 3), 16);
-    const g = parseInt(cssVar.slice(3, 5), 16);
-    const b = parseInt(cssVar.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    r = parseInt(cssVar.slice(1, 3), 16);
+    g = parseInt(cssVar.slice(3, 5), 16);
+    b = parseInt(cssVar.slice(5, 7), 16);
+  } else if (cssVar.startsWith('rgb')) {
+    const match = cssVar.match(/\d+/g);
+    if (match) {
+      r = parseInt(match[0]);
+      g = parseInt(match[1]);
+      b = parseInt(match[2]);
+    }
   }
-  if (cssVar.startsWith('rgb')) {
-    return cssVar.replace('rgb', 'rgba').replace(')', `, ${alpha})`);
-  }
-  return `rgba(255, 255, 255, ${alpha})`; // Fallback
+
+  const result = { r, g, b };
+  rgbaCache.set(cssVar, result);
+  return result;
 };
 
 const getOptimalParticleCount = (): number => {
@@ -35,6 +49,7 @@ const GenerativeConstellation: React.FC<Props> = ({ isLoading }) => {
   const animationFrameId = useRef<number | null>(null);
   const mouse = useRef({ x: -1000, y: -1000, down: false });
   const colors = useRef({ particle: '', line: '' });
+  const parsedColors = useRef<{ particle: { r: number; g: number; b: number }; line: { r: number; g: number; b: number } } | null>(null);
 
   useEffect(() => {
     if (isLoading) return;
@@ -45,6 +60,12 @@ const GenerativeConstellation: React.FC<Props> = ({ isLoading }) => {
     const computedStyle = getComputedStyle(canvas);
     colors.current.particle = computedStyle.getPropertyValue('--particle-color').trim();
     colors.current.line = computedStyle.getPropertyValue('--line-color').trim();
+
+    // Parse colors once and cache (PERFORMANCE FIX)
+    parsedColors.current = {
+      particle: parseColor(colors.current.particle),
+      line: parseColor(colors.current.line),
+    };
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -91,7 +112,7 @@ const GenerativeConstellation: React.FC<Props> = ({ isLoading }) => {
         const dy = p.y - mouse.current.y;
         const dist = Math.hypot(dx, dy);
         let force = 0;
-        let angle = Math.atan2(dy, dx);
+        const angle = Math.atan2(dy, dx);
 
         if (dist < INTERACTION_RADIUS) {
           if (mouse.current.down) { force = -0.05 * (1 - dist / INTERACTION_RADIUS); }
@@ -117,23 +138,55 @@ const GenerativeConstellation: React.FC<Props> = ({ isLoading }) => {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = toRgba(colors.current.particle, 0.8);
+        // Use cached parsed colors (PERFORMANCE FIX)
+        if (parsedColors.current) {
+          const { r, g, b } = parsedColors.current.particle;
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.8)`;
+        }
         ctx.fill();
       });
 
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
-          if (dist < MAX_LINK_DISTANCE) {
-            const opacity = 1 - dist / MAX_LINK_DISTANCE;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = toRgba(colors.current.line, opacity * 0.5);
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
+      // Optimized: Use spatial grid for line connections (reduce from O(n²))
+      if (parsedColors.current) {
+        const gridSize = MAX_LINK_DISTANCE;
+        const grid = new Map<string, typeof particles>();
+
+        // Populate grid
+        particles.forEach(p => {
+          const gridX = Math.floor(p.x / gridSize);
+          const gridY = Math.floor(p.y / gridSize);
+          const key = `${gridX},${gridY}`;
+          if (!grid.has(key)) grid.set(key, []);
+          grid.get(key)!.push(p);
+        });
+
+        // Check only nearby particles
+        particles.forEach(p => {
+          const gridX = Math.floor(p.x / gridSize);
+          const gridY = Math.floor(p.y / gridSize);
+
+          for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+              const key = `${gridX + dx},${gridY + dy}`;
+              const neighbors = grid.get(key) || [];
+
+              neighbors.forEach(q => {
+                if (p === q || !parsedColors.current) return;
+                const dist = Math.hypot(p.x - q.x, p.y - q.y);
+                if (dist < MAX_LINK_DISTANCE) {
+                  const opacity = 1 - dist / MAX_LINK_DISTANCE;
+                  ctx.beginPath();
+                  ctx.moveTo(p.x, p.y);
+                  ctx.lineTo(q.x, q.y);
+                  const { r, g, b } = parsedColors.current.line;
+                  ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity * 0.5})`;
+                  ctx.lineWidth = 0.8;
+                  ctx.stroke();
+                }
+              });
+            }
           }
-        }
+        });
       }
 
       animationFrameId.current = requestAnimationFrame(animate);
