@@ -40,7 +40,7 @@ export default function CTA() {
               className="btn-cta-secondary"
               aria-label="Get in touch with IEEE RIT-B"
             >
-              Contact Us
+              <span>Contact Us</span>
             </a>
           </div>
         </div>

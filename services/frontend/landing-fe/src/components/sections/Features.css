@@ -18,6 +18,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  display: block;
 }
 
 .section-description {
@@ -25,25 +26,31 @@
   line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
   max-width: 700px;
-  margin: 0 auto;
+  margin: var(--space-5) auto 0;
+}
+
+/* Section Header Spacing */
+.section-header {
+  margin-bottom: var(--space-12);
 }
 
 /* Features Grid */
-.features-grid {
+.grid-features {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-6);
 }
 
 @media (min-width: 768px) {
-  .features-grid {
+  .grid-features {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 1024px) {
-  .features-grid {
+  .grid-features {
     grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-7);
   }
 }
 
@@ -156,26 +163,29 @@
   align-items: center;
   justify-content: center;
   background: var(--color-accent-subtle);
-  border: 1px solid var(--color-accent);
-  border-radius: 12px;
-  margin-bottom: var(--space-5);
+  border: 1.5px solid var(--color-accent);
+  border-radius: 14px;
+  margin-bottom: var(--space-6);
   color: var(--color-ieee-primary);
-  transition: all var(--duration-base) var(--ease-default);
+  transition: all var(--duration-moderate) var(--ease-elastic);
 }
 
 .feature-card:hover .feature-icon {
-  transform: scale(1.1);
-  box-shadow: 0 0 20px var(--color-accent-glow);
+  transform: translateZ(40px) scale(1.15) rotate(-3deg);
+  box-shadow:
+    0 0 30px var(--color-accent-glow),
+    0 8px 16px rgba(0, 0, 0, 0.2);
+  border-color: var(--color-ieee-vivid);
 }
 
 /* Feature Title */
 .feature-title {
   font-family: var(--font-display);
   font-size: var(--text-xl);
-  font-weight: var(--font-semibold);
+  font-weight: var(--font-bold);
   color: var(--color-text-primary);
-  margin-bottom: var(--space-3);
-  line-height: var(--leading-snug);
+  margin-bottom: var(--space-4);
+  line-height: var(--leading-tight);
 }
 
 /* Feature Description */
@@ -195,6 +205,7 @@
   .feature-card {
     transform-style: flat;
     perspective: none;
+    padding: var(--space-6);
   }
 
   .feature-card:hover {
@@ -203,7 +214,11 @@
 
   .feature-card > *,
   .feature-icon {
-    transform: none;
+    transform: none !important;
+  }
+
+  .feature-card:hover .feature-icon {
+    transform: scale(1.05) !important;
   }
 }
 
