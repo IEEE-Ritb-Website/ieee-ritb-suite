@@ -16,6 +16,26 @@ import EnhancedLoader from './components/common/loading';
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showNavigation, setShowNavigation] = useState(false);
+  const [warpComplete, setWarpComplete] = useState(false);
+
+  // Lock scroll during loader and warp animation
+  useEffect(() => {
+    if (!warpComplete) {
+      // Prevent scrolling
+      document.body.style.overflow = 'hidden';
+      console.log('[App] Scroll locked - warp in progress');
+    } else {
+      // Allow scrolling
+      document.body.style.overflow = '';
+      console.log('[App] Scroll unlocked - warp complete');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [warpComplete]);
+
   useEffect(() => {
     // Initialize smooth scroll behavior
     initSmoothScroll();
@@ -147,7 +167,8 @@ function App() {
           isLoading={isLoading}
           onWarpComplete={() => {
             setShowNavigation(true);
-            console.log('[App] Warp complete, navigation revealed');
+            setWarpComplete(true);
+            console.log('[App] Warp complete, navigation revealed, scroll unlocked');
           }}
         />
         <About />
