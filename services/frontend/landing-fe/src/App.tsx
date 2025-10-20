@@ -120,7 +120,7 @@ function App() {
         isLoading={isLoading}
         onLoaded={() => {
           setIsLoading(false);
-          setShowNavigation(true);
+          // Navigation will be shown after warp completes, not here
         }}
       />
 
@@ -143,7 +143,13 @@ function App() {
 
       {/* Main Content */}
       <main id="main-content" role="main">
-        <Hero isLoading={isLoading} />
+        <Hero
+          isLoading={isLoading}
+          onWarpComplete={() => {
+            setShowNavigation(true);
+            console.log('[App] Warp complete, navigation revealed');
+          }}
+        />
         <About />
         <Features />
         <Chapters />

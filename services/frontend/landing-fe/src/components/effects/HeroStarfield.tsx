@@ -63,16 +63,17 @@ interface StarData {
   depth: number;
 }
 
-type AnimationPhase = 'warp' | 'slowing' | 'stopped';
+export type AnimationPhase = 'warp' | 'slowing' | 'stopped';
 
 // ==================== COMPONENTS ====================
 
 interface StarsFieldProps {
   isLoading: boolean;
   starCount: number;
+  onPhaseChange?: (phase: AnimationPhase) => void;
 }
 
-const StarsField = ({ isLoading, starCount }: StarsFieldProps) => {
+const StarsField = ({ isLoading, starCount, onPhaseChange }: StarsFieldProps) => {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
   const [phase, setPhase] = useState<AnimationPhase>('warp');
@@ -94,7 +95,11 @@ const StarsField = ({ isLoading, starCount }: StarsFieldProps) => {
 
   useEffect(() => {
     console.log('[StarsField] Phase changed:', phase);
-  }, [phase]);
+    // Notify parent component of phase change
+    if (onPhaseChange) {
+      onPhaseChange(phase);
+    }
+  }, [phase, onPhaseChange]);
 
   // Memoize star data generation
   const { stars, positions, colors, linePositions, starTexture } = useMemo(() => {
@@ -394,9 +399,10 @@ const StarsField = ({ isLoading, starCount }: StarsFieldProps) => {
 
 interface HeroStarfieldProps {
   isLoading: boolean;
+  onPhaseChange?: (phase: AnimationPhase) => void;
 }
 
-export default function HeroStarfield({ isLoading }: HeroStarfieldProps) {
+export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfieldProps) {
   // Check for accessibility preferences
   const hasReducedMotion = prefersReducedMotion();
   const hasWebGL = hasWebGLSupport();
@@ -450,7 +456,7 @@ export default function HeroStarfield({ isLoading }: HeroStarfieldProps) {
         gl={{ alpha: true, antialias: true }}
       >
         <Suspense fallback={null}>
-          <StarsField isLoading={isLoading} starCount={starCount} />
+          <StarsField isLoading={isLoading} starCount={starCount} onPhaseChange={onPhaseChange} />
         </Suspense>
       </Canvas>
     </div>

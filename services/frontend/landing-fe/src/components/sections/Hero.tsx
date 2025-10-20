@@ -1,24 +1,27 @@
 import './Hero.css';
 import HeroStarfield from '../effects/HeroStarfield';
+import type { AnimationPhase } from '../effects/HeroStarfield';
 import { useEffect, useRef, useState } from 'react';
 
 interface Props {
   isLoading: boolean;
+  onWarpComplete?: () => void;
 }
 
 interface AnimatedNumberProps {
   end: number;
   duration?: number;
   delay?: number;
+  shouldStart?: boolean;
 }
 
-function AnimatedNumber({ end, duration = 2000, delay = 0 }: AnimatedNumberProps) {
+function AnimatedNumber({ end, duration = 2000, delay = 0, shouldStart = true }: AnimatedNumberProps) {
   const [count, setCount] = useState(0);
   const hasStartedRef = useRef(false);
 
   useEffect(() => {
-    // Start animation immediately on mount (Hero is always visible)
-    if (hasStartedRef.current) return;
+    // Only start animation when shouldStart is true
+    if (!shouldStart || hasStartedRef.current) return;
     hasStartedRef.current = true;
 
     console.log(`[AnimatedNumber] Starting animation for ${end} with delay ${delay}ms`);
@@ -49,7 +52,7 @@ function AnimatedNumber({ end, duration = 2000, delay = 0 }: AnimatedNumberProps
     };
 
     requestAnimationFrame(updateCount);
-  }, [end, duration, delay]);
+  }, [end, duration, delay, shouldStart]);
 
   return (
     <span className="stat-number">
@@ -58,11 +61,11 @@ function AnimatedNumber({ end, duration = 2000, delay = 0 }: AnimatedNumberProps
   );
 }
 
-const StatItem = ({ value, label, delay }: { value: number; label: string; delay: number }) => {
+const StatItem = ({ value, label, delay, shouldStart }: { value: number; label: string; delay: number; shouldStart: boolean }) => {
   return (
     <div className="stat-item" style={{ animationDelay: `${delay}ms` }}>
       <div className="stat-value">
-        <AnimatedNumber end={value} duration={2500} delay={delay} />
+        <AnimatedNumber end={value} duration={2500} delay={delay} shouldStart={shouldStart} />
         <span className="stat-plus">+</span>
       </div>
       <span className="stat-label">{label}</span>
@@ -70,13 +73,45 @@ const StatItem = ({ value, label, delay }: { value: number; label: string; delay
   );
 };
 
-export default function Hero({ isLoading }: Props) {
+export default function Hero({ isLoading, onWarpComplete }: Props) {
+  const [warpPhase, setWarpPhase] = useState<AnimationPhase>('warp');
+  const [contentVisible, setContentVisible] = useState(false);
+
+  // Control content visibility based on warp phase
+  useEffect(() => {
+    if (warpPhase === 'slowing') {
+      // Start fading in during slowing phase
+      const timer = setTimeout(() => {
+        setContentVisible(true);
+        console.log('[Hero] Content fade-in started');
+
+        // Notify parent that warp is complete (navigation can appear)
+        if (onWarpComplete) {
+          onWarpComplete();
+        }
+      }, 300); // Small delay for better feel
+      return () => clearTimeout(timer);
+    }
+  }, [warpPhase, onWarpComplete]);
+
+  const handlePhaseChange = (phase: AnimationPhase) => {
+    console.log('[Hero] Warp phase changed to:', phase);
+    setWarpPhase(phase);
+  };
+
   return (
     <section className="hero" id="home" aria-labelledby="hero-title">
       {/* Background layer - 3D starfield with built-in nebula effects */}
-      <HeroStarfield isLoading={isLoading} />
+      <HeroStarfield isLoading={isLoading} onPhaseChange={handlePhaseChange} />
 
-      <div className="hero-content">
+      <div
+        className="hero-content"
+        style={{
+          opacity: contentVisible ? 1 : 0,
+          transition: 'opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          pointerEvents: contentVisible ? 'auto' : 'none'
+        }}
+      >
         <div className="hero-text">
           <div className="hero-overline" data-animate="fadeIn">
             <svg
@@ -114,11 +149,11 @@ export default function Hero({ isLoading }: Props) {
           </p>
 
           <div className="hero-stats" data-animate="fadeIn">
-            <StatItem value={18} label="Chapters" delay={2000} />
+            <StatItem value={18} label="Chapters" delay={400} shouldStart={contentVisible} />
             <div className="stat-divider" aria-hidden="true"></div>
-            <StatItem value={1200} label="Members" delay={2200} />
+            <StatItem value={1200} label="Members" delay={600} shouldStart={contentVisible} />
             <div className="stat-divider" aria-hidden="true"></div>
-            <StatItem value={50} label="Events/Year" delay={2400} />
+            <StatItem value={50} label="Events/Year" delay={800} shouldStart={contentVisible} />
           </div>
 
           <div className="hero-cta" data-animate="fadeIn">
