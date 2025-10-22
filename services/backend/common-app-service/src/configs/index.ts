@@ -10,4 +10,5 @@ export const CONFIG: ICONFIG = {
         port: SERVER_PORT,
         name: "Admin " + process.env.NODE_ENV,
     },
+    url: 'https://ritb.in',
 };

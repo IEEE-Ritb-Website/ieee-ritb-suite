@@ -1,5 +1,5 @@
 {
-  "name": "url-shortener-service",
+  "name": "common-app-service",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

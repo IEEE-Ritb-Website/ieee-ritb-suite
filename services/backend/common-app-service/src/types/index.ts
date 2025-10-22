@@ -10,6 +10,7 @@ export type ICONFIG = {
         port: number,
         name: string,
     },
+    url: string,
 }
 
 export type ReqSchemaMap = ZodObject<{

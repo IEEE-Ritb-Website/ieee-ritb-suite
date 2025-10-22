@@ -1,3 +1,4 @@
+import { ShortUrlSchema } from "@/schemas";
 import { CreateExpressRequest, CreateExpressResponse, ErrorResponseSchema, ReqSchemaMap } from "@/types";
 import z, { ZodObject } from "zod";
 
@@ -15,27 +16,32 @@ function defineResponseSchema<TSuccess extends ZodObject<any>>(successSchema: TS
 export const CreateShortUrlRequestValidator = defineRequestSchema(
     z.object({
         params: z.object({}),
-        body: z.object({
-            // TODO: 
-            long_url: z.url(),
+        body: ShortUrlSchema.pick({
+            long_url: true,
+            ttl_seconds: true,
+        }).extend({
+            code: z.string().optional(),
         }),
         query: z.object({}),
     })
 )
 
-export type ICreateShortUrlRequest = z.infer<typeof CreateShortUrlRequestValidator>;
-
 export const CreateShortUrlResponseValidator = defineResponseSchema(
     z.object({
         success: z.literal(true),
-        data: z.object({
-            // TODO:
-            shortUrl: z.url(),
+        data: ShortUrlSchema.pick({
+            long_url: true,
+            created_at: true,
+            expires_at: true,
+            ttl_seconds: true,
+        }).extend({
+            short_url: z.url(),
         }),
         message: z.string(),
     }),
 )
 
+export type ICreateShortUrlRequest = z.infer<typeof CreateShortUrlRequestValidator>;
 export type ICreateShortUrlResponse = z.infer<typeof CreateShortUrlResponseValidator>;
 export type CreateShortUrlResponse = CreateExpressResponse<ICreateShortUrlResponse>;
 export type CreateShortUrlRequest = CreateExpressRequest<ICreateShortUrlRequest, ICreateShortUrlResponse>;
