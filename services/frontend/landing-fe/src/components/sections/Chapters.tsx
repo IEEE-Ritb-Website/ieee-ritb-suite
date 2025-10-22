@@ -2,31 +2,61 @@ import { useState } from 'react';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import ChapterIcon from '../ui/ChapterIcon';
 import './Chapters.css';
+import { Chapters as IEEEChapters, ChapterType, type IChapterAcronyms } from "@astranova/catalogues";
 
-const chapters = [
-    { name: 'Computer Society', acronym: 'CS', color: '#4d7fff', description: 'Software development, algorithms, and computing' },
-    { name: 'Robotics & Automation', acronym: 'RAS', color: '#D22B2B', description: 'Robotics, automation, and intelligent systems' },
-    { name: 'Computational Intelligence', acronym: 'CIS', color: '#FFEA00', description: 'AI, machine learning, and neural networks' },
-    { name: 'Sensors Council', acronym: 'SC', color: '#ADF802', description: 'Sensor technologies' },
-    { name: 'Women in Engineering', acronym: 'WIE', color: '#d946ef', description: 'Promoting women in STEM fields' },
-    { name: 'Microwave Theory', acronym: 'MTTS', color: '#f97316', description: 'RF, microwave, and antenna systems' },
-    { name: 'Power & Energy', acronym: 'PES', color: '#10b981', description: 'Sustainable energy and power systems' },
-    { name: 'Signal Processing', acronym: 'SPS', color: '#8b5cf6', description: 'Audio, image, and signal processing' },
-    { name: 'Communications', acronym: 'ComSoc', color: '#f59e0b', description: 'Telecommunications and networking' },
-    { name: 'Antennas and Propagation', acronym: 'APS', color: '#ef4444', description: 'Antennas, electromagnetism, and microwave theory' },
-    { name: 'Engineering in Medicine and Biology', acronym: 'EMBS', color: '#6366f1', description: 'Biomedical engineering and healthcare tech' },
-    { name: 'IEEE Xtreme', acronym: 'IX', color: '#0FFF50', description: 'Global 24-hour coding competition' },
-];
+const chapterColors: Record<IChapterAcronyms, string> = {
+  CS: '#4d7fff',
+  RAS: '#D22B2B',
+  CIS: '#FFEA00',
+  SC: '#ADF802',
+  WIE: '#d946ef',
+  MTTS: '#f97316',
+  PES: '#10b981',
+  SPS: '#8b5cf6',
+  ComSoc: '#f59e0b',
+  APS: '#ef4444',
+  EMBS: '#6366f1',
+  IX: '#0FFF50',
+  Web: '#D22B2B',
+  CRTY: '#FFEA00',
+  COVR: '#ADF802',
+  DIGI: '#d946ef',
+  Doc: '#f97316',
+  PRSP: '#6366f1',
+};
+
+type TabType = 'all' | ChapterType.TECH | ChapterType.NON_TECH;
 
 export default function Chapters() {
   const [activeChapter, setActiveChapter] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>('all');
+
+  const chapters = IEEEChapters.map((ch) => ({
+    ...ch,
+    color: chapterColors[ch.acronym],
+  }));
+
+  const filteredChapters = chapters.filter(ch => {
+    if (activeTab === 'all') return true;
+    return ch.type === activeTab;
+  });
+
+  const techCount = chapters.filter(ch => ch.type === ChapterType.TECH).length;
+  const nonTechCount = chapters.filter(ch => ch.type === ChapterType.NON_TECH).length;
 
   const handleChapterKeyDown = (event: React.KeyboardEvent, index: number) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       setActiveChapter(index);
-      // Could trigger navigation or modal here
       console.log(`Chapter ${index} activated via keyboard`);
+    }
+  };
+
+  const handleTabKeyDown = (event: React.KeyboardEvent, tab: TabType) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setActiveTab(tab);
+      setActiveChapter(null);
     }
   };
 
@@ -48,15 +78,65 @@ export default function Chapters() {
             <span className="section-heading-accent"> Technical Chapters</span>
           </h2>
           <p className="section-description">
-            Join any of our 18 diverse technical societies and special interest groups.
+            Join any of our {chapters.length} diverse technical societies and special interest groups.
             Each chapter organizes workshops, projects, and events tailored to specific domains.
           </p>
         </div>
 
-        <div className="grid-chapters stagger-children">
-          {chapters.map((chapter, index) => (
+        {/* Tabs */}
+        <div className="chapters-tabs" role="tablist" aria-label="Chapter categories">
+          <button
+            role="tab"
+            aria-selected={activeTab === 'all'}
+            aria-controls="chapters-panel"
+            className={`tab-button ${activeTab === 'all' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('all');
+              setActiveChapter(null);
+            }}
+            onKeyDown={(e) => handleTabKeyDown(e, 'all')}
+          >
+            <span className="tab-text">All Chapters</span>
+            <span className="tab-count">{chapters.length}</span>
+          </button>
+          <button
+            role="tab"
+            aria-selected={activeTab === ChapterType.TECH}
+            aria-controls="chapters-panel"
+            className={`tab-button ${activeTab === ChapterType.TECH ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab(ChapterType.TECH);
+              setActiveChapter(null);
+            }}
+            onKeyDown={(e) => handleTabKeyDown(e, ChapterType.TECH)}
+          >
+            <span className="tab-text">Technical</span>
+            <span className="tab-count">{techCount}</span>
+          </button>
+          <button
+            role="tab"
+            aria-selected={activeTab === ChapterType.NON_TECH}
+            aria-controls="chapters-panel"
+            className={`tab-button ${activeTab === ChapterType.NON_TECH ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab(ChapterType.NON_TECH);
+              setActiveChapter(null);
+            }}
+            onKeyDown={(e) => handleTabKeyDown(e, ChapterType.NON_TECH)}
+          >
+            <span className="tab-text">Non-Technical</span>
+            <span className="tab-count">{nonTechCount}</span>
+          </button>
+        </div>
+
+        <div
+          className="grid-chapters stagger-children"
+          id="chapters-panel"
+          role="tabpanel"
+        >
+          {filteredChapters.map((chapter, index) => (
             <article
-              key={index}
+              key={`${chapter.acronym}-${index}`}
               className={`chapter-card ${activeChapter === index ? 'active' : ''}`}
               onMouseEnter={() => setActiveChapter(index)}
               onMouseLeave={() => setActiveChapter(null)}
@@ -82,7 +162,7 @@ export default function Chapters() {
               </div>
 
               <p className="chapter-description" id={`chapter-desc-${index}`}>
-                {chapter.description}
+                {chapter.shortDescription.slice(0, 48) + '...'}
               </p>
 
               <div className="chapter-footer">

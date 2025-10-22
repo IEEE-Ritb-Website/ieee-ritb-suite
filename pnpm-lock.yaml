@@ -482,6 +482,9 @@ importers:
 
   services/frontend/landing-fe:
     dependencies:
+      '@astranova/catalogues':
+        specifier: workspace:^
+        version: link:../../../packages/catalogues
       '@react-three/fiber':
         specifier: ^9.4.0
         version: 9.4.0(@types/react@19.2.2)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(three@0.180.0)

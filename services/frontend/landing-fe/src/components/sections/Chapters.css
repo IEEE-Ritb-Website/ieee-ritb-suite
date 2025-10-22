@@ -27,7 +27,86 @@
 
 /* Section Header Spacing */
 .section-header {
-  margin-bottom: var(--space-12);
+  margin-bottom: var(--space-8);
+}
+
+/* Tabs */
+.chapters-tabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-elevated);
+  border: 2px solid var(--color-border);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-default);
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-ieee);
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-default);
+  z-index: 0;
+}
+
+.tab-button:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-ieee-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tab-button.active {
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 16px var(--color-accent-glow);
+}
+
+.tab-button.active::before {
+  opacity: 1;
+}
+
+.tab-button:focus-visible {
+  outline: 2px solid var(--color-ieee-primary);
+  outline-offset: 3px;
+}
+
+.tab-text,
+.tab-count {
+  position: relative;
+  z-index: 1;
+}
+
+.tab-count {
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.tab-button.active .tab-count {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 /* Chapters Grid */
@@ -369,7 +448,8 @@
   .chapter-card,
   .chapter-icon,
   .chapter-link,
-  .chapter-acronym {
+  .chapter-acronym,
+  .tab-button {
     transition: none;
   }
 
@@ -385,5 +465,9 @@
 
   .chapter-glow {
     display: none;
+  }
+  
+  .tab-button:hover {
+    transform: none;
   }
 }

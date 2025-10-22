@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './About.css';
+import { Chapters, ChapterType } from '@astranova/catalogues';
 
 interface AnimatedNumberProps {
   end: number;
@@ -96,8 +97,8 @@ export default function About() {
               <div className="highlight-item">
                 <div className="highlight-icon" aria-hidden="true">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
                   </svg>
                 </div>
                 <div className="highlight-content">
@@ -111,9 +112,9 @@ export default function About() {
               <div className="highlight-item">
                 <div className="highlight-icon" aria-hidden="true">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="2" y1="12" x2="22" y2="12"/>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                   </svg>
                 </div>
                 <div className="highlight-content">
@@ -127,15 +128,15 @@ export default function About() {
               <div className="highlight-item">
                 <div className="highlight-icon" aria-hidden="true">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                    <polyline points="2 17 12 22 22 17"/>
-                    <polyline points="2 12 12 17 22 12"/>
+                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                    <polyline points="2 17 12 22 22 17" />
+                    <polyline points="2 12 12 17 22 12" />
                   </svg>
                 </div>
                 <div className="highlight-content">
                   <h3 className="highlight-title">Multidisciplinary Focus</h3>
                   <p className="highlight-text">
-                    12 technical chapters covering AI, Robotics, IoT, and emerging fields
+                    {Chapters.filter(c => c.type === ChapterType.TECH).length} technical chapters covering AI, Robotics, IoT, and emerging fields
                   </p>
                 </div>
               </div>

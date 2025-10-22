@@ -125,9 +125,12 @@ export const Chapters = [
 
 type ChapterTuple = typeof Chapters;
 type ChapterNameTuple = ChapterTuple[number]["name"];
+type ChapterAcronymTuple = ChapterTuple[number]["acronym"];
 
 export const ChapterNames = Chapters.map(c => c.name);
+export const ChapterAcronyms = Chapters.map(c => c.acronym);
 export type IChapterNames = ChapterNameTuple;
+export type IChapterAcronyms = ChapterAcronymTuple;
 
 export const ChapterNameSchema = z.enum(
     Chapters.map(c => c.name)

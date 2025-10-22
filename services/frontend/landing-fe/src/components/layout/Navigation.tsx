@@ -3,21 +3,21 @@ import './Navigation.css';
 
 export default function Navigation({ showNavigation }: { showNavigation: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  // const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
-  useEffect(() => {
-    // Check for saved theme preference or default to dark
-    const savedTheme = localStorage.getItem('ieee-theme-preference') as 'dark' | 'light' | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    } else {
-      // Default to dark mode
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  }, []);
+  // useEffect(() => {
+  //   // Check for saved theme preference or default to dark
+  //   const savedTheme = localStorage.getItem('ieee-theme-preference') as 'dark' | 'light' | null;
+  //   if (savedTheme) {
+  //     setTheme(savedTheme);
+  //     document.documentElement.setAttribute('data-theme', savedTheme);
+  //   } else {
+  //     // Default to dark mode
+  //     document.documentElement.setAttribute('data-theme', 'dark');
+  //   }
+  // }, []);
 
   useEffect(() => {
     // Handle scroll for glassmorphism effect
@@ -62,18 +62,18 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
     return () => observer.disconnect();
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('ieee-theme-preference', newTheme);
+  // const toggleTheme = () => {
+  //   const newTheme = theme === 'dark' ? 'light' : 'dark';
+  //   setTheme(newTheme);
+  //   document.documentElement.setAttribute('data-theme', newTheme);
+  //   localStorage.setItem('ieee-theme-preference', newTheme);
 
-    // Announce theme change to screen readers
-    const announcement = document.getElementById('theme-announcement');
-    if (announcement) {
-      announcement.textContent = `Switched to ${newTheme} mode`;
-    }
-  };
+  //   // Announce theme change to screen readers
+  //   const announcement = document.getElementById('theme-announcement');
+  //   if (announcement) {
+  //     announcement.textContent = `Switched to ${newTheme} mode`;
+  //   }
+  // };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -210,7 +210,7 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
               Contact
             </a>
           </li>
-          <li>
+          {/* <li>
             <button
               className="theme-toggle"
               onClick={toggleTheme}
@@ -256,7 +256,7 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
                 </svg>
               )}
             </button>
-          </li>
+          </li> */}
         </ul>
       </div>
 
