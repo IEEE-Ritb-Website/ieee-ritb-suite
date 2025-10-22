@@ -1,0 +1,246 @@
+/* Features Section - Foundation Design System - Enhanced */
+
+/* Parallax background glow */
+.features-bg-glow {
+  position: absolute;
+  top: 30%;
+  left: 20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 180, 255, 0.1) 0%, transparent 60%);
+  filter: blur(80px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.section-heading-accent {
+  background: var(--gradient-ieee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+}
+
+.section-description {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-secondary);
+  max-width: 700px;
+  margin: var(--space-5) auto 0;
+}
+
+/* Section Header Spacing */
+.section-header {
+  margin-bottom: var(--space-12);
+}
+
+/* Features Grid */
+.grid-features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .grid-features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-features {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-7);
+  }
+}
+
+/* Feature Card with Holographic Effect and 3D Tilt */
+.feature-card {
+  position: relative;
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: var(--space-7);
+  transition: all var(--duration-moderate) var(--ease-smooth);
+  overflow: hidden;
+  cursor: default;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+/* Enhanced mouse spotlight effect */
+.feature-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(77, 127, 255, 0.15) 0%,
+    rgba(0, 180, 255, 0.1) 30%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity var(--duration-moderate) var(--ease-out);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.feature-card:hover::after {
+  opacity: 1;
+}
+
+/* Enhanced depth and glow on hover */
+.feature-card:hover {
+  border-color: var(--color-ieee-primary);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 30px 80px rgba(0, 0, 0, 0.2),
+    0 0 0 1px var(--color-ieee-primary) inset,
+    0 0 40px var(--color-accent-glow);
+}
+
+.feature-card:focus-within {
+  outline: 2px solid var(--color-ieee-primary);
+  outline-offset: 2px;
+}
+
+/* Add depth to card contents */
+.feature-card > * {
+  transform: translateZ(20px);
+}
+
+.feature-icon {
+  transform: translateZ(40px);
+}
+
+/* Holographic Effect */
+.holographic::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    var(--color-ieee-primary) 10%,
+    var(--color-ieee-electric) 20%,
+    var(--color-quantum) 30%,
+    transparent 40%,
+    transparent 60%,
+    var(--color-quantum) 70%,
+    var(--color-ieee-electric) 80%,
+    var(--color-ieee-primary) 90%,
+    transparent 100%
+  );
+  background-size: 300% 300%;
+  opacity: 0;
+  transition: opacity var(--duration-moderate) var(--ease-out);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.holographic:hover::before {
+  opacity: 0.4;
+  animation: holographicShine 3s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .holographic::before {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* Feature Icon */
+.feature-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent-subtle);
+  border: 1.5px solid var(--color-accent);
+  border-radius: 14px;
+  margin-bottom: var(--space-6);
+  color: var(--color-ieee-primary);
+  transition: all var(--duration-moderate) var(--ease-elastic);
+}
+
+.feature-card:hover .feature-icon {
+  transform: translateZ(40px) scale(1.15) rotate(-3deg);
+  box-shadow:
+    0 0 30px var(--color-accent-glow),
+    0 8px 16px rgba(0, 0, 0, 0.2);
+  border-color: var(--color-ieee-vivid);
+}
+
+/* Feature Title */
+.feature-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+  line-height: var(--leading-tight);
+}
+
+/* Feature Description */
+.feature-description {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Performance: Reduce effects on mobile */
+@media (max-width: 768px) {
+  .holographic::before {
+    display: none;
+  }
+
+  .feature-card {
+    transform-style: flat;
+    perspective: none;
+    padding: var(--space-6);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px) !important;
+  }
+
+  .feature-card > *,
+  .feature-icon {
+    transform: none !important;
+  }
+
+  .feature-card:hover .feature-icon {
+    transform: scale(1.05) !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .feature-card {
+    transform-style: flat;
+    perspective: none;
+    transition: box-shadow var(--duration-base) var(--ease-default);
+  }
+
+  .feature-card:hover {
+    transform: none !important;
+  }
+
+  .feature-card > *,
+  .feature-icon {
+    transform: none;
+  }
+
+  .holographic::before {
+    animation: none;
+    opacity: 0;
+  }
+}

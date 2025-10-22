@@ -1,0 +1,473 @@
+/* Chapters Section - Enhanced Interactive Design */
+
+/* Parallax background shapes */
+.chapters-bg-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.chapters-bg-shape-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+  top: 10%;
+  left: -10%;
+}
+
+.chapters-bg-shape-2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(77, 127, 255, 0.12) 0%, transparent 70%);
+  bottom: 20%;
+  right: -5%;
+}
+
+/* Section Header Spacing */
+.section-header {
+  margin-bottom: var(--space-8);
+}
+
+/* Tabs */
+.chapters-tabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-elevated);
+  border: 2px solid var(--color-border);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-default);
+  position: relative;
+  overflow: hidden;
+}
+
+.tab-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-ieee);
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-default);
+  z-index: 0;
+}
+
+.tab-button:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-ieee-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tab-button.active {
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 16px var(--color-accent-glow);
+}
+
+.tab-button.active::before {
+  opacity: 1;
+}
+
+.tab-button:focus-visible {
+  outline: 2px solid var(--color-ieee-primary);
+  outline-offset: 3px;
+}
+
+.tab-text,
+.tab-count {
+  position: relative;
+  z-index: 1;
+}
+
+.tab-count {
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.tab-button.active .tab-count {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Chapters Grid */
+.grid-chapters {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+@media (min-width: 640px) {
+  .grid-chapters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-chapters {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-chapters {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Chapter Card */
+.chapter-card {
+  position: relative;
+  background: var(--color-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: var(--space-6);
+  transition: all var(--duration-moderate) var(--ease-default);
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-height: 240px;
+}
+
+.chapter-card:hover,
+.chapter-card:focus-visible,
+.chapter-card.active {
+  transform: translateY(-8px) scale(1.02);
+  border-color: transparent;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.chapter-card:focus-visible {
+  outline: 2px solid var(--color-ieee-primary);
+  outline-offset: 2px;
+}
+
+/* Chapter Glow Effect */
+.chapter-glow {
+  position: absolute;
+  inset: -50%;
+  opacity: 0;
+  transition: opacity var(--duration-moderate) var(--ease-out);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: var(--z-background);
+}
+
+.chapter-card:hover .chapter-glow,
+.chapter-card.active .chapter-glow {
+  opacity: 0.6;
+}
+
+/* Chapter Icon */
+.chapter-icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  transition: all var(--duration-moderate) var(--ease-elastic);
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* Icon glow effect on hover */
+.chapter-icon::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  filter: blur(12px);
+  transition: opacity var(--duration-moderate) var(--ease-out);
+}
+
+.chapter-card:hover .chapter-icon::before,
+.chapter-card.active .chapter-icon::before {
+  opacity: 0.3;
+}
+
+.chapter-card:hover .chapter-icon,
+.chapter-card.active .chapter-icon {
+  transform: translateY(-4px) scale(1.15) rotate(3deg);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: currentColor;
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.2),
+    0 0 40px currentColor;
+}
+
+/* SVG icon animations */
+.chapter-icon svg {
+  transition: all var(--duration-moderate) var(--ease-elastic);
+  stroke-width: 2;
+}
+
+.chapter-card:hover .chapter-icon svg,
+.chapter-card.active .chapter-icon svg {
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* Chapter Header */
+.chapter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  position: relative;
+  z-index: var(--z-content);
+  margin-bottom: var(--space-2);
+}
+
+.chapter-name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+  margin: 0;
+  flex: 1;
+}
+
+.chapter-acronym {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-accent-subtle);
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: all var(--duration-base) var(--ease-default);
+}
+
+.chapter-card:hover .chapter-acronym,
+.chapter-card.active .chapter-acronym {
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px currentColor;
+}
+
+/* Chapter Description */
+.chapter-description {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-secondary);
+  margin: 0;
+  flex: 1;
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* Chapter Footer */
+.chapter-footer {
+  margin-top: auto;
+  position: relative;
+  z-index: var(--z-content);
+}
+
+.chapter-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.chapter-link:hover,
+.chapter-link:focus-visible {
+  color: var(--color-ieee-primary);
+  gap: var(--space-3);
+}
+
+.chapter-link:focus-visible {
+  outline: 2px solid var(--color-ieee-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+  padding: var(--space-1) var(--space-2);
+  margin: calc(var(--space-1) * -1) calc(var(--space-2) * -1);
+}
+
+.chapter-link svg {
+  transition: transform var(--duration-fast) var(--ease-default);
+}
+
+.chapter-link:hover svg,
+.chapter-link:focus-visible svg {
+  transform: translateX(2px);
+}
+
+/* Animated Border */
+.chapter-border {
+  position: absolute;
+  inset: 0;
+  border: 2px solid;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--duration-moderate) var(--ease-out);
+  pointer-events: none;
+  z-index: var(--z-content);
+}
+
+.chapter-card:hover .chapter-border,
+.chapter-card.active .chapter-border {
+  opacity: 1;
+}
+
+/* Chapters CTA */
+.chapters-cta {
+  margin-top: var(--space-12);
+  padding: var(--space-8) var(--space-6);
+  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-elevated) 100%);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.chapters-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--color-accent-subtle) 0%,
+    transparent 70%
+  );
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .chapters-cta {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    padding: var(--space-10) var(--space-8);
+  }
+}
+
+.cta-text {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-primary);
+  margin: 0;
+  max-width: 600px;
+  position: relative;
+  z-index: var(--z-content);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-7);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: 2px solid var(--color-ieee-primary);
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-default);
+  min-height: var(--min-touch-target);
+  white-space: nowrap;
+  position: relative;
+  z-index: var(--z-content);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline:hover {
+  background: var(--gradient-ieee);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 10px 20px var(--color-accent-glow);
+}
+
+.btn-outline:focus-visible {
+  outline: 2px solid var(--color-ieee-primary);
+  outline-offset: 3px;
+}
+
+/* Performance optimizations */
+@media (max-width: 768px) {
+  .chapter-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .chapter-glow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-card,
+  .chapter-icon,
+  .chapter-link,
+  .chapter-acronym,
+  .tab-button {
+    transition: none;
+  }
+
+  .chapter-card:hover,
+  .chapter-card.active {
+    transform: none;
+  }
+
+  .chapter-card:hover .chapter-icon,
+  .chapter-card.active .chapter-icon {
+    transform: none;
+  }
+
+  .chapter-glow {
+    display: none;
+  }
+  
+  .tab-button:hover {
+    transform: none;
+  }
+}

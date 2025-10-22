@@ -1,0 +1,64 @@
+/* Quantum Particles Effect - Tier 3 (High-End Desktop Only) */
+
+.quantum-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1; /* Above background layers but below content */
+  /* Contain layout and paint for better performance */
+  contain: layout style paint;
+}
+
+.quantum-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--color-ieee-electric);
+  border-radius: 50%;
+  /* Reduced box-shadow layers for better performance */
+  box-shadow:
+    0 0 20px var(--color-ieee-electric),
+    0 0 35px rgba(0, 180, 255, 0.4);
+  animation: quantumFloat 10s infinite ease-in-out;
+  /* Single will-change property for the animation */
+  will-change: transform;
+  /* Force GPU acceleration */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  /* Optimize compositing */
+  isolation: isolate;
+}
+
+/* Removed ::before pseudo-element to reduce compositor overhead */
+/* The glow effect is now handled by box-shadow only */
+
+@media (prefers-reduced-motion: reduce) {
+  .quantum-particle {
+    animation: none;
+    opacity: 0.3;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Hide on mobile and tablets for performance */
+@media (max-width: 768px) {
+  .quantum-field {
+    display: none;
+  }
+}
+
+/* Simplify on medium screens */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .quantum-particle {
+    width: 6px;
+    height: 6px;
+    box-shadow: 0 0 15px var(--color-ieee-electric);
+    opacity: 0.8;
+  }
+}
+
+/* Low performance mode */
+.low-performance-mode .quantum-field {
+  display: none;
+}

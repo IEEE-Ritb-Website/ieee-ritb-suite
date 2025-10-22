@@ -7,3 +7,6 @@ build
 .nx/cache
 .nx/workspace-data
 .idea/
+
+CLAUDE.md
+.claude/
