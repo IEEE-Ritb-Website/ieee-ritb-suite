@@ -35,26 +35,34 @@ export default function ChapterIcon({ acronym, size = 32, className = '' }: Chap
 
     // Robotics & Automation
     RAS: (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-      >
-        <rect x="6" y="4" width="12" height="16" rx="2" />
-        <circle cx="12" cy="10" r="2" />
-        <path d="M12 14v4" />
-        <path d="M8 18h8" />
-        <path d="M6 8h2" />
-        <path d="M16 8h2" />
-        <path d="M4 12h2" />
-        <path d="M18 12h2" />
-      </svg>
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+        >
+            {/* Antenna */}
+            <circle cx="12" cy="2" r="1" />
+            <path d="M12 3v2" />
+            {/* Head */}
+            <rect x="7" y="5" width="10" height="7" rx="2" />
+            {/* Eyes */}
+            <circle cx="10" cy="8.5" r="1" />
+            <circle cx="14" cy="8.5" r="1" />
+            {/* Body */}
+            <rect x="8" y="12" width="8" height="6" rx="1" />
+            {/* Arms */}
+            <path d="M8 14H6a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2" />
+            <path d="M16 14h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2" />
+            {/* Legs */}
+            <path d="M10 18v3a1 1 0 0 1-1 1H8" />
+            <path d="M14 18v3a1 1 0 0 0 1 1h1" />
+        </svg>
     ),
 
     // Power & Energy
@@ -116,46 +124,76 @@ export default function ChapterIcon({ acronym, size = 32, className = '' }: Chap
       </svg>
     ),
 
-    // Aerospace & Electronics
-    AES: (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-      >
-        <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
-      </svg>
+    // Antennas and Propagation
+    APS: (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+        >
+            {/* Outer wave ring */}
+            <path d="M12 3a9 9 0 0 1 9 9" />
+            <path d="M12 3a9 9 0 0 0-9 9" />
+            {/* Middle wave ring */}
+            <path d="M12 6a6 6 0 0 1 6 6" />
+            <path d="M12 6a6 6 0 0 0-6 6" />
+            {/* Inner wave ring */}
+            <path d="M12 9a3 3 0 0 1 3 3" />
+            <path d="M12 9a3 3 0 0 0-3 3" />
+            {/* Center point */}
+            <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+            {/* Vertical line to base */}
+            <path d="M12 13.5v5.5" />
+            {/* Triangular base */}
+            <path d="M9 21h6l-3-2z" />
+        </svg>
     ),
 
-    // Photonics Society
-    PhS: (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-      >
-        <circle cx="12" cy="12" r="5" />
-        <line x1="12" y1="1" x2="12" y2="3" />
-        <line x1="12" y1="21" x2="12" y2="23" />
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-        <line x1="1" y1="12" x2="3" y2="12" />
-        <line x1="21" y1="12" x2="23" y2="12" />
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-      </svg>
+    // Sensors Council
+    SC: (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+        >
+            {/* chip body */}
+            <rect x="6" y="6" width="12" height="12" rx="2" />
+            {/* internal sensor element */}
+            <circle cx="12" cy="11.5" r="2" />
+            <path d="M12 14.5v2" />
+
+            {/* left pins */}
+            <path d="M2 8.5h4" />
+            <path d="M2 11.5h4" />
+            <path d="M2 14.5h4" />
+
+            {/* right pins */}
+            <path d="M22 8.5h-4" />
+            <path d="M22 11.5h-4" />
+            <path d="M22 14.5h-4" />
+
+            {/* top pins */}
+            <path d="M8.5 2v4" />
+            <path d="M12 2v4" />
+            <path d="M15.5 2v4" />
+
+            {/* bottom pins */}
+            <path d="M8.5 22v-4" />
+            <path d="M12 22v-4" />
+            <path d="M15.5 22v-4" />
+        </svg>
     ),
 
     // Computational Intelligence
@@ -180,7 +218,7 @@ export default function ChapterIcon({ acronym, size = 32, className = '' }: Chap
       </svg>
     ),
 
-    // Engineering in Medicine
+    // Engineering in Medicine and Biology
     EMBS: (
       <svg
         width={size}
@@ -198,33 +236,31 @@ export default function ChapterIcon({ acronym, size = 32, className = '' }: Chap
       </svg>
     ),
 
-    // Electron Devices
-    EDS: (
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={className}
-      >
-        <circle cx="12" cy="12" r="3" />
-        <path d="M12 2v4" />
-        <path d="M12 18v4" />
-        <path d="m4.93 4.93 2.83 2.83" />
-        <path d="m16.24 16.24 2.83 2.83" />
-        <path d="M2 12h4" />
-        <path d="M18 12h4" />
-        <path d="m4.93 19.07 2.83-2.83" />
-        <path d="m16.24 7.76 2.83-2.83" />
-      </svg>
+    // IEEEXtreme
+    IX: (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+        >
+            {/* soft ring for emphasis (very subtle) */}
+            <circle cx="12" cy="12" r="9" strokeOpacity="0.06" />
+            <rect x="11" y="11" width="2" height="2" rx="0.4" fill="currentColor" />
+
+            {/* main X — rounded ends, slightly thicker for presence */}
+            <path d="M8.5 8.5 L15.5 15.5" />
+            <path d="M15.5 8.5 L8.5 15.5" />
+        </svg>
     ),
 
     // Microwave Theory
-    MTT: (
+    MTTS: (
       <svg
         width={size}
         height={size}

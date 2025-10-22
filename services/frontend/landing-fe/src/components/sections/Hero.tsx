@@ -149,9 +149,9 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
           </p>
 
           <div className="hero-stats" data-animate="fadeIn">
-            <StatItem value={18} label="Chapters" delay={400} shouldStart={contentVisible} />
+            <StatItem value={12} label="Chapters" delay={400} shouldStart={contentVisible} />
             <div className="stat-divider" aria-hidden="true"></div>
-            <StatItem value={1200} label="Members" delay={600} shouldStart={contentVisible} />
+            <StatItem value={500} label="Members" delay={600} shouldStart={contentVisible} />
             <div className="stat-divider" aria-hidden="true"></div>
             <StatItem value={50} label="Events/Year" delay={800} shouldStart={contentVisible} />
           </div>

@@ -28,3 +28,6 @@ foundation/
 
 #Gemini CLI
 GEMINI.md
+
+#MCP
+.playwright-mcp/

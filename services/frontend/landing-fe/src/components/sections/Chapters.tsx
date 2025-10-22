@@ -4,18 +4,18 @@ import ChapterIcon from '../ui/ChapterIcon';
 import './Chapters.css';
 
 const chapters = [
-  { name: 'Computer Society', acronym: 'CS', color: '#4d7fff', description: 'Software development, algorithms, and computing' },
-  { name: 'Robotics & Automation', acronym: 'RAS', color: '#00b4ff', description: 'Robotics, automation, and intelligent systems' },
-  { name: 'Power & Energy', acronym: 'PES', color: '#10b981', description: 'Sustainable energy and power systems' },
-  { name: 'Signal Processing', acronym: 'SPS', color: '#8b5cf6', description: 'Audio, image, and signal processing' },
-  { name: 'Communications', acronym: 'ComSoc', color: '#f59e0b', description: 'Telecommunications and networking' },
-  { name: 'Aerospace & Electronics', acronym: 'AES', color: '#ef4444', description: 'Aerospace systems and avionics' },
-  { name: 'Photonics Society', acronym: 'PhS', color: '#ec4899', description: 'Optics, lasers, and photonics' },
-  { name: 'Computational Intelligence', acronym: 'CIS', color: '#06b6d4', description: 'AI, machine learning, and neural networks' },
-  { name: 'Engineering in Medicine', acronym: 'EMBS', color: '#84cc16', description: 'Biomedical engineering and healthcare tech' },
-  { name: 'Electron Devices', acronym: 'EDS', color: '#6366f1', description: 'Semiconductor devices and materials' },
-  { name: 'Microwave Theory', acronym: 'MTT', color: '#f97316', description: 'RF, microwave, and antenna systems' },
-  { name: 'Women in Engineering', acronym: 'WIE', color: '#d946ef', description: 'Promoting women in STEM fields' },
+    { name: 'Computer Society', acronym: 'CS', color: '#4d7fff', description: 'Software development, algorithms, and computing' },
+    { name: 'Robotics & Automation', acronym: 'RAS', color: '#D22B2B', description: 'Robotics, automation, and intelligent systems' },
+    { name: 'Computational Intelligence', acronym: 'CIS', color: '#FFEA00', description: 'AI, machine learning, and neural networks' },
+    { name: 'Sensors Council', acronym: 'SC', color: '#ADF802', description: 'Sensor technologies' },
+    { name: 'Women in Engineering', acronym: 'WIE', color: '#d946ef', description: 'Promoting women in STEM fields' },
+    { name: 'Microwave Theory', acronym: 'MTTS', color: '#f97316', description: 'RF, microwave, and antenna systems' },
+    { name: 'Power & Energy', acronym: 'PES', color: '#10b981', description: 'Sustainable energy and power systems' },
+    { name: 'Signal Processing', acronym: 'SPS', color: '#8b5cf6', description: 'Audio, image, and signal processing' },
+    { name: 'Communications', acronym: 'ComSoc', color: '#f59e0b', description: 'Telecommunications and networking' },
+    { name: 'Antennas and Propagation', acronym: 'APS', color: '#ef4444', description: 'Antennas, electromagnetism, and microwave theory' },
+    { name: 'Engineering in Medicine and Biology', acronym: 'EMBS', color: '#6366f1', description: 'Biomedical engineering and healthcare tech' },
+    { name: 'IEEE Xtreme', acronym: 'IX', color: '#0FFF50', description: 'Global 24-hour coding competition' },
 ];
 
 export default function Chapters() {

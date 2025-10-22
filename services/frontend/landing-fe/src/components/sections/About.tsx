@@ -135,7 +135,7 @@ export default function About() {
                 <div className="highlight-content">
                   <h3 className="highlight-title">Multidisciplinary Focus</h3>
                   <p className="highlight-text">
-                    18 technical chapters covering AI, Robotics, IoT, and emerging fields
+                    12 technical chapters covering AI, Robotics, IoT, and emerging fields
                   </p>
                 </div>
               </div>
@@ -153,7 +153,7 @@ export default function About() {
               </div>
 
               <div className="stat-card holographic">
-                <AnimatedNumber end={18} />
+                <AnimatedNumber end={12} />
                 <div className="stat-label">Technical Chapters</div>
                 <div className="stat-description">
                   Diverse societies and special interest groups

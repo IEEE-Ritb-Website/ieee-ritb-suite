@@ -13,7 +13,7 @@ const features = [
     ),
   },
   {
-    title: '18 Active Chapters',
+    title: '12 Active Chapters',
     description: 'Diverse technical societies covering AI, Robotics, Computer Science, Electronics, and more.',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
