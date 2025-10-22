@@ -15,14 +15,14 @@ function defineResponseSchema<TSuccess extends ZodObject<any>>(successSchema: TS
 
 export const CreateShortUrlRequestValidator = defineRequestSchema(
     z.object({
-        params: z.object({}),
+        params: z.object({}).optional().default({}),
         body: ShortUrlSchema.pick({
             long_url: true,
             ttl_seconds: true,
         }).extend({
-            code: z.string().optional(),
+            code: ShortUrlSchema.shape.code.optional(),
         }),
-        query: z.object({}),
+        query: z.object({}).optional().default({}),
     })
 )
 
@@ -45,3 +45,25 @@ export type ICreateShortUrlRequest = z.infer<typeof CreateShortUrlRequestValidat
 export type ICreateShortUrlResponse = z.infer<typeof CreateShortUrlResponseValidator>;
 export type CreateShortUrlResponse = CreateExpressResponse<ICreateShortUrlResponse>;
 export type CreateShortUrlRequest = CreateExpressRequest<ICreateShortUrlRequest, ICreateShortUrlResponse>;
+
+export const GetShortUrlRequestValidator = defineRequestSchema(
+    z.object({
+        params: ShortUrlSchema.pick({
+            code: true,
+        }),
+        body: z.object({}).optional().default({}),
+        query: z.object({}).optional().default({}),
+    })
+)
+
+export const GetShortUrlResponseValidator = defineResponseSchema(
+    z.object({
+        success: z.literal(true),
+        _redirect: z.url(),
+    }),
+)
+
+export type IGetShortUrlRequest = z.infer<typeof GetShortUrlRequestValidator>;
+export type IGetShortUrlResponse = z.infer<typeof GetShortUrlResponseValidator>;
+export type GetShortUrlResponse = CreateExpressResponse<IGetShortUrlResponse>;
+export type GetShortUrlRequest = CreateExpressRequest<IGetShortUrlRequest, IGetShortUrlResponse>;

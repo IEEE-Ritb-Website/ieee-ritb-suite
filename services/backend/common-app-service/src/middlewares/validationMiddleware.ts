@@ -77,6 +77,12 @@ export function withResponseValidation<
 
             // For success responses, validate data
             const validatedData = responseSchema.parse(result.data);
+
+            // redirect if _redirect is found 
+            if (validatedData._redirect) {
+                return res.redirect(result.status, validatedData._redirect);
+            }
+
             return res.status(result.status).json(validatedData);
         } catch (error) {
             getAstraLogger().error(`Response validation failed: ${error}`);

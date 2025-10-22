@@ -23,6 +23,14 @@ export class ResponseCreator<T extends Record<string, any>> {
         };
     }
 
+    redirect(data: T & { _redirect: string }): ApiResponse<T & { _redirect: string }> {
+        return {
+            status: 302,
+            success: true,
+            data,
+        };
+    }
+
     unauthorized(message = "Unauthorized action"): ApiResponse<T> {
         return {
             status: 401,

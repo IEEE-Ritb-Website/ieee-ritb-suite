@@ -1,12 +1,14 @@
 import { mongodbClient } from "@/db";
-import { ShortenUrlController } from "./shortenUrl";
+import { CreateShortUrlController } from "./shortUrl/createShortUrl";
+import { GetShortUrlController } from "./shortUrl/getShortUrl";
 
 export class ControllerClass {
     constructor() {
         mongodbClient.init();
     }
 
-    shortenUrl = ShortenUrlController;
+    getShortUrl = GetShortUrlController;
+    createShortUrl = CreateShortUrlController;
 }
 
 const Controllers = new ControllerClass();
