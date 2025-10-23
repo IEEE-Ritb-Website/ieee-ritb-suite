@@ -1,7 +1,9 @@
+import { CONFIG } from "@/configs";
 import { ApiResponse, CreateExpressRequest, ErrorResponse, ExtractValidatedData, InferSchemaTypes, ReqSchemaMap, ValidatedRequest } from "@/types";
 import { ResponseCreator } from "@/utils/responseCreator";
 import { getAstraLogger } from "astralogger";
 import { NextFunction, Request, Response } from "express";
+import path from "path";
 import { ZodError, ZodType } from "zod";
 
 declare global {
@@ -28,11 +30,15 @@ export function validationMiddleware<T extends ReqSchemaMap>(schema: T) {
             next();
         } catch (error: unknown) {
             getAstraLogger().trace(`Request validation failed: ${error}`);
+            const wantsHTML = req.accepts(["json", "html"]) === "html"
             if (error instanceof ZodError) {
                 const details = error.issues.map(e => ({
                     path: e.path.join("."),
                     message: e.message,
                 }));
+                if (wantsHTML) {
+                    return res.status(500).sendFile(path.resolve(CONFIG.static.html.notFound));
+                }
                 return res.status(400).json({
                     success: false,
                     error: { type: "validation", message: "Validation failed", details }
@@ -70,13 +76,32 @@ export function withResponseValidation<
             // If handler already sent response, return early
             if (res.headersSent) return;
 
+            const wantsJson = req.accepts(["json", "html"]) === "json";
+
             // Check if result is an error response
-            if (!("success" in result) || result.success === false) {
+            if ("success" in result && result.success === false) {
                 return res.status(result.status).json(result);
+            }
+
+            // send html response
+            if ("_sendFile" in result) {
+                if (wantsJson) {
+                    return res.status(result.status).json(result as any);
+                }
+                return res.status(result.status).sendFile(result._sendFile);
+            }
+
+            // redirect to another url
+            if ("_redirect" in result) {
+                if (wantsJson) {
+                    return res.status(result.status).json(result as any);
+                }
+                return res.redirect(result.status, result._redirect);
             }
 
             // For success responses, validate data
             const validatedData = responseSchema.parse(result.data);
+
             return res.status(result.status).json(validatedData);
         } catch (error) {
             getAstraLogger().error(`Response validation failed: ${error}`);

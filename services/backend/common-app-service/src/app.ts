@@ -6,16 +6,16 @@ import router from "./routes";
 
 const app = express();
 
-app.use(cors({origin: "*", credentials: true,}));
+app.use(cors({ origin: true, credentials: true, }));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(
     bodyParser.urlencoded({
-    extended: true,
+        extended: true,
     })
 );
 
-app.use("/api", router);
-    
+app.use("/", router);
+
 export default app;

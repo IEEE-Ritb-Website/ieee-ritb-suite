@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>404 - Page Not Found</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: #fff9f2;
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 5rem;
+            margin: 0.5rem 0;
+        }
+
+        p {
+            font-size: 1.25rem;
+            margin: 0.5rem 0 2rem;
+        }
+
+        svg {
+            width: 180px;
+            height: 180px;
+            margin-bottom: 1.5rem;
+        }
+
+        a {
+            color: #fff;
+            background: #ff6f61;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        a:hover {
+            background: #ff4a3a;
+        }
+    </style>
+</head>
+
+<body>
+    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- Gradients for fur depth -->
+            <radialGradient id="headGrad" cx="50%" cy="40%">
+                <stop offset="0%" style="stop-color:#F5DEB3;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#DEB887;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#BC9F77;stop-opacity:1" />
+            </radialGradient>
+
+            <radialGradient id="bodyGrad" cx="50%" cy="30%">
+                <stop offset="0%" style="stop-color:#E8D4B8;stop-opacity:1" />
+                <stop offset="60%" style="stop-color:#D4A574;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#B8936A;stop-opacity:1" />
+            </radialGradient>
+
+            <radialGradient id="earGrad" cx="40%" cy="30%">
+                <stop offset="0%" style="stop-color:#E8D4B8;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#BC9F77;stop-opacity:1" />
+            </radialGradient>
+
+            <radialGradient id="eyeShine" cx="30%" cy="30%">
+                <stop offset="0%" style="stop-color:#7FB069;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#5A9045;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#3D6B2F;stop-opacity:1" />
+            </radialGradient>
+
+            <radialGradient id="noseGrad" cx="30%" cy="20%">
+                <stop offset="0%" style="stop-color:#E8A5B5;stop-opacity:1" />
+                <stop offset="60%" style="stop-color:#D87B93;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#B85A70;stop-opacity:1" />
+            </radialGradient>
+
+            <radialGradient id="pawGrad" cx="50%" cy="40%">
+                <stop offset="0%" style="stop-color:#F5E6D3;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#D4A574;stop-opacity:1" />
+            </radialGradient>
+
+            <!-- Shadow filters -->
+            <filter id="softShadow">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                <feOffset dx="2" dy="3" result="offsetblur" />
+                <feComponentTransfer>
+                    <feFuncA type="linear" slope="0.3" />
+                </feComponentTransfer>
+                <feMerge>
+                    <feMergeNode />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+        </defs>
+
+        <!-- Background -->
+        <rect width="400" height="400" fill="#F8F8F5" />
+
+        <!-- Tail with gradient -->
+        <path d="M 290 240 Q 340 200 360 160 Q 375 130 370 100 Q 368 85 360 80" stroke="url(#bodyGrad)"
+            stroke-width="35" fill="none" stroke-linecap="round" opacity="0.95" />
+        <path d="M 290 240 Q 340 200 360 160 Q 375 130 370 100" stroke="#A88F6F" stroke-width="2" fill="none"
+            stroke-linecap="round" opacity="0.4" />
+
+        <!-- Body shadow -->
+        <ellipse cx="200" cy="320" rx="70" ry="15" fill="#000000" opacity="0.15" />
+
+        <!-- Body -->
+        <ellipse cx="200" cy="260" rx="85" ry="95" fill="url(#bodyGrad)" filter="url(#softShadow)" />
+
+        <!-- Chest white patch with texture -->
+        <ellipse cx="200" cy="280" rx="45" ry="55" fill="#FEFEFE" />
+        <ellipse cx="200" cy="270" rx="40" ry="45" fill="#F5F5F0" opacity="0.6" />
+
+        <!-- Neck fur detail -->
+        <path d="M 170 200 Q 180 210 190 200" fill="#E8D4B8" opacity="0.5" />
+        <path d="M 210 200 Q 220 210 230 200" fill="#E8D4B8" opacity="0.5" />
+
+        <!-- Head -->
+        <circle cx="200" cy="160" r="65" fill="url(#headGrad)" filter="url(#softShadow)" />
+
+        <!-- Ear shadows -->
+        <ellipse cx="155" cy="115" rx="15" ry="10" fill="#000000" opacity="0.1" transform="rotate(-35 155 115)" />
+        <ellipse cx="245" cy="115" rx="15" ry="10" fill="#000000" opacity="0.1" transform="rotate(35 245 115)" />
+
+        <!-- Left ear -->
+        <path d="M 150 120 Q 130 80 140 60 Q 150 50 165 65 Z" fill="url(#earGrad)" />
+        <path d="M 150 115 Q 140 90 145 75 Q 150 68 158 78 Z" fill="#F5DEB3" />
+        <path d="M 145 80 L 148 85" stroke="#C4A57B" stroke-width="1" opacity="0.6" />
+        <path d="M 152 75 L 155 82" stroke="#C4A57B" stroke-width="1" opacity="0.6" />
+
+        <!-- Right ear -->
+        <path d="M 250 120 Q 270 80 260 60 Q 250 50 235 65 Z" fill="url(#earGrad)" />
+        <path d="M 250 115 Q 260 90 255 75 Q 250 68 242 78 Z" fill="#F5DEB3" />
+        <path d="M 255 80 L 252 85" stroke="#C4A57B" stroke-width="1" opacity="0.6" />
+        <path d="M 248 75 L 245 82" stroke="#C4A57B" stroke-width="1" opacity="0.6" />
+
+        <!-- Fur texture on head -->
+        <path d="M 185 145 Q 180 150 185 155" stroke="#C4A57B" stroke-width="0.8" opacity="0.3" fill="none" />
+        <path d="M 215 145 Q 220 150 215 155" stroke="#C4A57B" stroke-width="0.8" opacity="0.3" fill="none" />
+        <path d="M 200 130 Q 195 135 200 140" stroke="#C4A57B" stroke-width="0.8" opacity="0.3" fill="none" />
+
+        <!-- Eye white base -->
+        <ellipse cx="175" cy="155" rx="16" ry="20" fill="#FFFFFF" />
+        <ellipse cx="225" cy="155" rx="16" ry="20" fill="#FFFFFF" />
+
+        <!-- Iris -->
+        <ellipse cx="175" cy="157" rx="12" ry="16" fill="url(#eyeShine)" />
+        <ellipse cx="225" cy="157" rx="12" ry="16" fill="url(#eyeShine)" />
+
+        <!-- Pupils with realistic shape -->
+        <ellipse cx="175" cy="158" rx="4" ry="12" fill="#000000" />
+        <ellipse cx="225" cy="158" rx="4" ry="12" fill="#000000" />
+
+        <!-- Eye highlights -->
+        <ellipse cx="173" cy="152" rx="3" ry="4" fill="#FFFFFF" opacity="0.9" />
+        <ellipse cx="223" cy="152" rx="3" ry="4" fill="#FFFFFF" opacity="0.9" />
+        <circle cx="177" cy="165" r="1.5" fill="#FFFFFF" opacity="0.6" />
+        <circle cx="227" cy="165" r="1.5" fill="#FFFFFF" opacity="0.6" />
+
+        <!-- Eye outline detail -->
+        <ellipse cx="175" cy="155" rx="16" ry="20" fill="none" stroke="#8B7355" stroke-width="0.8" opacity="0.4" />
+        <ellipse cx="225" cy="155" rx="16" ry="20" fill="none" stroke="#8B7355" stroke-width="0.8" opacity="0.4" />
+
+        <!-- Upper eyelid shadow -->
+        <path d="M 160 148 Q 175 145 190 148" fill="#D4A574" opacity="0.3" />
+        <path d="M 210 148 Q 225 145 240 148" fill="#D4A574" opacity="0.3" />
+
+        <!-- Nose bridge -->
+        <path d="M 200 165 L 200 178" stroke="#C4A57B" stroke-width="1.5" opacity="0.4" />
+
+        <!-- Nose -->
+        <path d="M 200 178 L 194 185 L 200 188 L 206 185 Z" fill="url(#noseGrad)" />
+        <path d="M 197 181 L 196 184" stroke="#F5B5C5" stroke-width="1" opacity="0.6" />
+        <ellipse cx="200" cy="186" rx="2" ry="1.5" fill="#FFFFFF" opacity="0.5" />
+
+        <!-- Mouth line -->
+        <path d="M 200 188 L 200 193" stroke="#8B7355" stroke-width="1.5" />
+        <path d="M 200 193 Q 190 198 183 196" stroke="#8B7355" stroke-width="1.5" fill="none" stroke-linecap="round" />
+        <path d="M 200 193 Q 210 198 217 196" stroke="#8B7355" stroke-width="1.5" fill="none" stroke-linecap="round" />
+
+        <!-- Whisker dots -->
+        <circle cx="158" cy="168" r="2" fill="#8B7355" opacity="0.6" />
+        <circle cx="158" cy="176" r="2" fill="#8B7355" opacity="0.6" />
+        <circle cx="242" cy="168" r="2" fill="#8B7355" opacity="0.6" />
+        <circle cx="242" cy="176" r="2" fill="#8B7355" opacity="0.6" />
+
+        <!-- Whiskers -->
+        <line x1="158" y1="168" x2="115" y2="160" stroke="#F5F5F5" stroke-width="1.2" opacity="0.8" />
+        <line x1="158" y1="176" x2="110" y2="175" stroke="#F5F5F5" stroke-width="1.2" opacity="0.8" />
+        <line x1="158" y1="172" x2="108" y2="168" stroke="#F5F5F5" stroke-width="1.2" opacity="0.8" />
+
+        <line x1="242" y1="168" x2="285" y2="160" stroke="#F5F5F5" stroke-width="1.2" opacity="0.8" />
+        <line x1="242" y1="176" x2="290" y2="175" stroke="#F5F5F5" stroke-width="1.2" opacity="0.8" />
+        <line x1="242" y1="172" x2="292" y2="168" stroke="#F5F5F5" stroke-width="1.2" opacity="0.8" />
+
+        <!-- Front paws -->
+        <ellipse cx="170" cy="330" rx="22" ry="28" fill="url(#pawGrad)" filter="url(#softShadow)" />
+        <ellipse cx="230" cy="330" rx="22" ry="28" fill="url(#pawGrad)" filter="url(#softShadow)" />
+
+        <!-- Paw pads -->
+        <ellipse cx="170" cy="340" rx="12" ry="16" fill="#DBA8A0" />
+        <ellipse cx="230" cy="340" rx="12" ry="16" fill="#DBA8A0" />
+
+        <!-- Toe beans -->
+        <ellipse cx="163" cy="332" rx="4" ry="5" fill="#D89A92" />
+        <ellipse cx="177" cy="332" rx="4" ry="5" fill="#D89A92" />
+        <ellipse cx="165" cy="325" rx="3.5" ry="4" fill="#D89A92" />
+        <ellipse cx="175" cy="325" rx="3.5" ry="4" fill="#D89A92" />
+
+        <ellipse cx="223" cy="332" rx="4" ry="5" fill="#D89A92" />
+        <ellipse cx="237" cy="332" rx="4" ry="5" fill="#D89A92" />
+        <ellipse cx="225" cy="325" rx="3.5" ry="4" fill="#D89A92" />
+        <ellipse cx="235" cy="325" rx="3.5" ry="4" fill="#D89A92" />
+
+        <!-- Subtle fur detail strokes -->
+        <path d="M 180 260 Q 175 270 180 280" stroke="#BC9F77" stroke-width="0.5" opacity="0.2" fill="none" />
+        <path d="M 220 260 Q 225 270 220 280" stroke="#BC9F77" stroke-width="0.5" opacity="0.2" fill="none" />
+        <path d="M 200 240 Q 195 250 200 260" stroke="#BC9F77" stroke-width="0.5" opacity="0.2" fill="none" />
+    </svg>
+
+    <h1>404</h1>
+    <p>Oops! This URL doesn't exist or has expired.</p>
+</body>
+
+</html>
