@@ -59,7 +59,8 @@ export const GetShortUrlRequestValidator = defineRequestSchema(
 export const GetShortUrlResponseValidator = defineResponseSchema(
     z.object({
         success: z.literal(true),
-        _redirect: z.url(),
+        message: z.string(),
+        longUrl: z.string(),
     }),
 )
 

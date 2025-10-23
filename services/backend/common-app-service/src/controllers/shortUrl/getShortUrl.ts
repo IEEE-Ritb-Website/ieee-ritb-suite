@@ -4,6 +4,7 @@ import { ResponseCreator } from "@/utils/responseCreator";
 import { getAstraLogger } from "astralogger";
 import { GetShortUrlRequest, GetShortUrlResponse, IGetShortUrlResponse } from "@/validators";
 import { shortUrlCollection } from "@/storage";
+import { CONFIG } from "@/configs";
 
 export async function GetShortUrlController(
     this: ControllerClass,
@@ -17,9 +18,12 @@ export async function GetShortUrlController(
             code,
         });
         if (!doc) {
-            return responseCreator.notFound("Url not found");
+            return responseCreator.htmlFile({ filePath: CONFIG.static.html.notFound, message: "Url not found" }, 404);
         }
-        return responseCreator.redirect({ success: true, _redirect: doc.long_url });
+        if (doc.expires_at && doc.expires_at <= new Date()) {
+            return responseCreator.htmlFile({ filePath: CONFIG.static.html.linkExpired, message: "Link expired" }, 405);
+        }
+        return responseCreator.redirect({ success: true, url: doc.long_url, message: "Url found" });
     } catch (error) {
         getAstraLogger().fatal(`Error in GetShortUrlController: ${error}`);
         return responseCreator.fatal();

@@ -11,6 +11,9 @@ export type ICONFIG = {
         name: string,
     },
     url: string,
+    static: {
+        html: Record<string, string>,
+    }
 }
 
 export type ReqSchemaMap = ZodObject<{
@@ -44,7 +47,21 @@ export interface SuccessResponse<T> {
     message?: string; // optional message for UX clarity
 }
 
-export type ApiResponse<T> = SuccessResponse<T> & { status: number } | ErrorResponse & { status: number };
+export interface SendFileResponse {
+    _sendFile: string;
+    message: string;
+}
+
+export interface RedirectResponse {
+    _redirect: string;
+    message: string;
+}
+
+export type ApiResponse<T> =
+    SuccessResponse<T> & { status: number }
+    | ErrorResponse & { status: number }
+    | RedirectResponse & { status: number }
+    | SendFileResponse & { status: number };
 
 export type WithResponsePromise<T> = Promise<ApiResponse<T>>;
 

@@ -1,7 +1,6 @@
 import { CONFIG } from "@/configs";
 import { IShortUrl } from "@/schemas";
 import { shortUrlCollection } from "@/storage";
-import { getAstraLogger } from "astralogger";
 import { createHash, randomBytes } from "crypto";
 import { Collection, ObjectId } from "mongodb";
 

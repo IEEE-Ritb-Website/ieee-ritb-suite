@@ -1,4 +1,5 @@
 import { ApiResponse } from "@/types";
+import path from "path";
 
 export class ResponseCreator<T extends Record<string, any>> {
     constructor(private readonly defaultType: string) { }
@@ -23,11 +24,19 @@ export class ResponseCreator<T extends Record<string, any>> {
         };
     }
 
-    redirect(data: T & { _redirect: string }): ApiResponse<T & { _redirect: string }> {
+    redirect(options: { success: boolean; url: string, message: string }, status = 302): ApiResponse<T> {
         return {
-            status: 302,
-            success: true,
-            data,
+            status,
+            message: options.message,
+            _redirect: options.url,
+        };
+    }
+
+    htmlFile(options: { filePath: string, message: string }, status = 200): ApiResponse<T> {
+        return {
+            status,
+            _sendFile: path.resolve(options.filePath),
+            message: options.message,
         };
     }
 

@@ -15,4 +15,10 @@ export const CONFIG: ICONFIG = {
         name: "Admin " + process.env.NODE_ENV,
     },
     url: 'https://ritb.in',
+    static: {
+        html: {
+            notFound: "public/templates/not-found.html",
+            linkExpired: "public/templates/not-found.html",
+        }
+    }
 };
