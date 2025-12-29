@@ -84,18 +84,8 @@ const StarsField = ({ isLoading, starCount, onPhaseChange }: StarsFieldProps) =>
   const speedMultiplier = useRef(1);
   const lineToCircleProgress = useRef(0);
 
-  // Debug logging
+  // Notify parent component of phase change
   useEffect(() => {
-    console.log('[StarsField] Initialized with', { isLoading, starCount, phase });
-  }, []);
-
-  useEffect(() => {
-    console.log('[StarsField] isLoading changed:', isLoading);
-  }, [isLoading]);
-
-  useEffect(() => {
-    console.log('[StarsField] Phase changed:', phase);
-    // Notify parent component of phase change
     if (onPhaseChange) {
       onPhaseChange(phase);
     }
@@ -416,17 +406,6 @@ export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfiel
     () => getOptimalStarCount() || ANIMATION_CONFIG.STAR_COUNT_FALLBACK,
     []
   );
-
-  // Debug logging
-  useEffect(() => {
-    console.log('[HeroStarfield] Component mounted', {
-      isLoading,
-      hasReducedMotion,
-      hasWebGL,
-      hasSeenAnimation,
-      starCount
-    });
-  }, [isLoading, hasReducedMotion, hasWebGL, hasSeenAnimation, starCount]);
 
   // Mark animation as seen for future visits (DISABLED for testing)
   // useEffect(() => {

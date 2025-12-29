@@ -1,0 +1,20 @@
+{
+  "name": "IEEE RITB - Advancing Technology for Humanity",
+  "short_name": "IEEE RITB",
+  "description": "IEEE RIT-B Student Branch - Leading technology innovation at RIT Bangalore with 18 technical chapters and 500+ members.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05060f",
+  "theme_color": "#4d7fff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/ieee_icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "technology"],
+  "lang": "en"
+}

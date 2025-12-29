@@ -23,11 +23,9 @@ function App() {
     if (!warpComplete) {
       // Prevent scrolling
       document.body.style.overflow = 'hidden';
-      console.log('[App] Scroll locked - warp in progress');
     } else {
       // Allow scrolling
       document.body.style.overflow = '';
-      console.log('[App] Scroll unlocked - warp complete');
     }
 
     // Cleanup on unmount
@@ -116,7 +114,6 @@ function App() {
 
         // Automatically degrade if fps drops below 30
         if (fps < 30 && !document.body.classList.contains('low-performance-mode')) {
-          console.warn('Low FPS detected, enabling performance mode');
           document.body.classList.add('low-performance-mode');
         }
       }
@@ -168,7 +165,6 @@ function App() {
           onWarpComplete={() => {
             setShowNavigation(true);
             setWarpComplete(true);
-            console.log('[App] Warp complete, navigation revealed, scroll unlocked');
           }}
         />
         <About />
