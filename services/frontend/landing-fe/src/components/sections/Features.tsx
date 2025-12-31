@@ -1,6 +1,7 @@
 import { Chapters } from '@astranova/catalogues';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './Features.css';
+import { motion, type Variants } from 'framer-motion';
 
 const features = [
   {
@@ -67,6 +68,35 @@ const features = [
   },
 ];
 
+const headerVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+  }
+};
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { 
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    } 
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+  }
+};
+
 export default function Features() {
   const handleCardMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const card = e.currentTarget;
@@ -98,7 +128,13 @@ export default function Features() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <div className="section-header animate-slideUp">
+        <motion.div 
+          className="section-header"
+          variants={headerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           <span className="section-overline">What We Offer</span>
           <h2 id="features-heading" className="section-heading">
             Empowering the Next Generation
@@ -108,25 +144,32 @@ export default function Features() {
             Join a vibrant community of innovators, researchers, and technology enthusiasts
             working together to advance technology for humanity.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid-features stagger-children">
+        <motion.div 
+          className="grid-features"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
           {features.map((feature, index) => (
-            <article
-              key={index}
-              className="feature-card holographic"
-              data-index={index}
-              onMouseMove={handleCardMouseMove}
-              onMouseLeave={handleCardMouseLeave}
-            >
-              <div className="feature-icon" aria-hidden="true">
-                {feature.icon}
-              </div>
-              <h3 className="feature-title">{feature.title}</h3>
-              <p className="feature-description">{feature.description}</p>
-            </article>
+            <motion.div key={index} variants={itemVariants}>
+              <article
+                className="feature-card holographic"
+                data-index={index}
+                onMouseMove={handleCardMouseMove}
+                onMouseLeave={handleCardMouseLeave}
+              >
+                <div className="feature-icon" aria-hidden="true">
+                  {feature.icon}
+                </div>
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-description">{feature.description}</p>
+              </article>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

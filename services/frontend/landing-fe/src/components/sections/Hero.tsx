@@ -3,6 +3,7 @@ import HeroStarfield from '../effects/HeroStarfield';
 import type { AnimationPhase } from '../effects/HeroStarfield';
 import { useEffect, useRef, useState } from 'react';
 import { Chapters } from '@astranova/catalogues';
+import { motion, type Variants } from 'framer-motion';
 
 interface Props {
   isLoading: boolean;
@@ -61,7 +62,7 @@ function AnimatedNumber({ end, duration = 2000, delay = 0, shouldStart = true }:
 
 const StatItem = ({ value, label, delay, shouldStart }: { value: number; label: string; delay: number; shouldStart: boolean }) => {
   return (
-    <div className="stat-item" style={{ animationDelay: `${delay}ms` }}>
+    <div className="stat-item">
       <div className="stat-value">
         <AnimatedNumber end={value} duration={2500} delay={delay} shouldStart={shouldStart} />
         <span className="stat-plus">+</span>
@@ -69,6 +70,28 @@ const StatItem = ({ value, label, delay, shouldStart }: { value: number; label: 
       <span className="stat-label">{label}</span>
     </div>
   );
+};
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { 
+      duration: 1.2, 
+      ease: [0.4, 0, 0.2, 1],
+      staggerChildren: 0.15,
+      delayChildren: 0.2
+    } 
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+  }
 };
 
 export default function Hero({ isLoading, onWarpComplete }: Props) {
@@ -100,16 +123,17 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
       {/* Background layer - 3D starfield with built-in nebula effects */}
       <HeroStarfield isLoading={isLoading} onPhaseChange={handlePhaseChange} />
 
-      <div
+      <motion.div
         className="hero-content"
+        variants={containerVariants}
+        initial="hidden"
+        animate={contentVisible ? "visible" : "hidden"}
         style={{
-          opacity: contentVisible ? 1 : 0,
-          transition: 'opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
           pointerEvents: contentVisible ? 'auto' : 'none'
         }}
       >
         <div className="hero-text">
-          <div className="hero-overline" data-animate="fadeIn">
+          <motion.div className="hero-overline" variants={itemVariants}>
             <svg
               className="overline-icon"
               width="16"
@@ -129,30 +153,30 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
               />
             </svg>
             IEEE RIT Branch
-          </div>
+          </motion.div>
 
-          <h1 className="hero-title" id="hero-title" data-animate="slideUp">
+          <motion.h1 className="hero-title" id="hero-title" variants={itemVariants}>
             <span className="hero-title-accent">IEEE-RITB</span>
-          </h1>
+          </motion.h1>
 
-          <p className="hero-subtitle" data-animate="slideUp">
+          <motion.p className="hero-subtitle" variants={itemVariants}>
             Welcome to the hub of innovation at Ramaiah Institute of Technology.
             We are a community of thinkers, builders, and leaders shaping the future of technology.
-          </p>
+          </motion.p>
 
-          <p className="hero-subtitle-accent" data-animate="slideUp">
+          <motion.p className="hero-subtitle-accent" variants={itemVariants}>
             Powered by students, driven by passion.
-          </p>
+          </motion.p>
 
-          <div className="hero-stats" data-animate="fadeIn">
+          <motion.div className="hero-stats" variants={itemVariants}>
             <StatItem value={Chapters.length} label="Chapters" delay={400} shouldStart={contentVisible} />
             <div className="stat-divider" aria-hidden="true"></div>
             <StatItem value={500} label="Members" delay={600} shouldStart={contentVisible} />
             <div className="stat-divider" aria-hidden="true"></div>
             <StatItem value={50} label="Events This Year" delay={800} shouldStart={contentVisible} />
-          </div>
+          </motion.div>
 
-          <div className="hero-cta" data-animate="fadeIn">
+          <motion.div className="hero-cta" variants={itemVariants}>
             <a href="#chapters" className="btn-primary em-field">
               <span>Explore Chapters</span>
               <svg
@@ -176,9 +200,9 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
             <a href="#about" className="btn-secondary">
               Learn More
             </a>
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
