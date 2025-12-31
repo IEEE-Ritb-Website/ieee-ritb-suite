@@ -341,7 +341,7 @@ const StarsField = ({ isLoading, starCount, onPhaseChange }: StarsFieldProps) =>
     let baseOpacity =
       ANIMATION_CONFIG.POINT_OPACITY_MIN +
       lineToCircleProgress.current *
-        (ANIMATION_CONFIG.POINT_OPACITY_MAX - ANIMATION_CONFIG.POINT_OPACITY_MIN);
+      (ANIMATION_CONFIG.POINT_OPACITY_MAX - ANIMATION_CONFIG.POINT_OPACITY_MIN);
 
     // Deterministic twinkling effect with time-based sine waves
     if (phase === 'stopped') {
@@ -399,7 +399,9 @@ export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfiel
 
   // Check session storage for repeat visits (TEMPORARILY DISABLED for testing)
   // const hasSeenAnimation = sessionStorage.getItem(SESSION_STORAGE_KEY) === 'true';
-  const hasSeenAnimation = false; // ALWAYS show animation for now
+
+  // commented cuz it's unused
+  // const hasSeenAnimation = false; // ALWAYS show animation for now
 
   // Get optimal star count based on device
   const starCount = useMemo(
