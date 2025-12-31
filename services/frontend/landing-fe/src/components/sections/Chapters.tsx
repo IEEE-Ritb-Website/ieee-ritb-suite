@@ -3,6 +3,7 @@ import ParallaxLayer from '../effects/ParallaxLayer';
 import ChapterIcon from '../ui/ChapterIcon';
 import './Chapters.css';
 import { Chapters as IEEEChapters, ChapterType, type IChapterAcronyms } from "@astranova/catalogues";
+import { motion, type Variants } from 'framer-motion';
 
 const chapterColors: Record<IChapterAcronyms, string> = {
   CS: '#4d7fff',
@@ -26,6 +27,35 @@ const chapterColors: Record<IChapterAcronyms, string> = {
 };
 
 type TabType = 'all' | ChapterType.TECH | ChapterType.NON_TECH;
+
+const headerVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+  }
+};
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { 
+      staggerChildren: 0.05,
+      delayChildren: 0.1
+    } 
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+  }
+};
 
 export default function Chapters() {
   const [activeChapter, setActiveChapter] = useState<number | null>(null);
@@ -71,7 +101,13 @@ export default function Chapters() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <div className="section-header animate-slideUp">
+        <motion.div 
+          className="section-header"
+          variants={headerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           <span className="section-overline">Our Ecosystem</span>
           <h2 id="chapters-heading" className="section-heading">
             Explore Our
@@ -81,7 +117,7 @@ export default function Chapters() {
             Join any of our {chapters.length} diverse technical societies and special interest groups.
             Each chapter organizes workshops, projects, and events tailored to specific domains.
           </p>
-        </div>
+        </motion.div>
 
         {/* Tabs */}
         <div className="chapters-tabs" role="tablist" aria-label="Chapter categories">
@@ -129,67 +165,73 @@ export default function Chapters() {
           </button>
         </div>
 
-        <div
-          className="grid-chapters stagger-children"
+        <motion.div
+          className="grid-chapters"
           id="chapters-panel"
           role="tabpanel"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          key={activeTab} // Re-animate on tab change
         >
           {filteredChapters.map((chapter, index) => (
-            <article
-              key={`${chapter.acronym}-${index}`}
-              className={`chapter-card ${activeChapter === index ? 'active' : ''}`}
-              onMouseEnter={() => setActiveChapter(index)}
-              onMouseLeave={() => setActiveChapter(null)}
-              onFocus={() => setActiveChapter(index)}
-              onBlur={() => setActiveChapter(null)}
-              onKeyDown={(e) => handleChapterKeyDown(e, index)}
-              tabIndex={0}
-              role="button"
-              aria-label={`${chapter.name} chapter`}
-              aria-describedby={`chapter-desc-${index}`}
-            >
-              <div className="chapter-glow" style={{ background: `radial-gradient(circle at center, ${chapter.color}40, transparent)` }} />
+            <motion.div key={`${chapter.acronym}-${index}`} variants={itemVariants}>
+              <article
+                className={`chapter-card ${activeChapter === index ? 'active' : ''}`}
+                onMouseEnter={() => setActiveChapter(index)}
+                onMouseLeave={() => setActiveChapter(null)}
+                onFocus={() => setActiveChapter(index)}
+                onBlur={() => setActiveChapter(null)}
+                onKeyDown={(e) => handleChapterKeyDown(e, index)}
+                tabIndex={0}
+                role="button"
+                aria-label={`${chapter.name} chapter`}
+                aria-describedby={`chapter-desc-${index}`}
+              >
+                <div className="chapter-glow" style={{ background: `radial-gradient(circle at center, ${chapter.color}40, transparent)` }} />
 
-              <div className="chapter-icon" aria-hidden="true" style={{ color: chapter.color }}>
-                <ChapterIcon acronym={chapter.acronym} size={40} />
-              </div>
+                <div className="chapter-icon" aria-hidden="true" style={{ color: chapter.color }}>
+                  <ChapterIcon acronym={chapter.acronym} size={40} />
+                </div>
 
-              <div className="chapter-header">
-                <h3 className="chapter-name">{chapter.name}</h3>
-                <span className="chapter-acronym" style={{ color: chapter.color }}>
-                  {chapter.acronym}
-                </span>
-              </div>
+                <div className="chapter-header">
+                  <h3 className="chapter-name">{chapter.name}</h3>
+                  <span className="chapter-acronym" style={{ color: chapter.color }}>
+                    {chapter.acronym}
+                  </span>
+                </div>
 
-              <p className="chapter-description" id={`chapter-desc-${index}`}>
-                {chapter.shortDescription.slice(0, 48) + '...'}
-              </p>
+                <p className="chapter-description" id={`chapter-desc-${index}`}>
+                  {chapter.shortDescription.slice(0, 48) + '...'}
+                </p>
 
-              <div className="chapter-footer">
-                <button className="chapter-link magnetic" aria-label={`Learn more about ${chapter.name}`}>
-                  <span>Learn More</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </button>
-              </div>
+                <div className="chapter-footer">
+                  <button className="chapter-link magnetic" aria-label={`Learn more about ${chapter.name}`}>
+                    <span>Learn More</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  </button>
+                </div>
 
-              <div className="chapter-border" style={{ borderColor: chapter.color }} />
-            </article>
+                <div className="chapter-border" style={{ borderColor: chapter.color }} />
+              </article>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         <div className="chapters-cta">
           <p className="cta-text">

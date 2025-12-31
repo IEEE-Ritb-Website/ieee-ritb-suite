@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './About.css';
 import { Chapters, ChapterType } from '@astranova/catalogues';
+import { motion, type Variants } from 'framer-motion';
 
 interface AnimatedNumberProps {
   end: number;
@@ -61,6 +62,24 @@ function AnimatedNumber({ end, duration = 2000, suffix = '' }: AnimatedNumberPro
   );
 }
 
+const slideUpVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+  }
+};
+
+const slideInRightVariants: Variants = {
+  hidden: { opacity: 0, x: 30 },
+  visible: { 
+    opacity: 1, 
+    x: 0,
+    transition: { duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }
+  }
+};
+
 export default function About() {
   return (
     <section className="section section-padding section-bg-base" id="about" aria-labelledby="about-heading">
@@ -74,7 +93,13 @@ export default function About() {
 
       <div className="section-container">
         <div className="section-two-col">
-          <div className="about-text animate-slideUp">
+          <motion.div 
+            className="about-text"
+            variants={slideUpVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
             <span className="section-overline">About IEEE RITB</span>
             <h2 id="about-heading" className="section-heading">
               Leading the Future of
@@ -141,9 +166,15 @@ export default function About() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="about-stats animate-slideInRight">
+          <motion.div 
+            className="about-stats"
+            variants={slideInRightVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
             <div className="stats-grid">
               <div className="stat-card holographic">
                 <AnimatedNumber end={500} suffix="+" />
@@ -186,7 +217,7 @@ export default function About() {
                 <div className="data-particle" style={{ animationDelay: '1.5s' }} />
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

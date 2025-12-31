@@ -1,60 +1,56 @@
-/**
- * Smooth scroll utility with custom easing
- * Foundation-compliant implementation
- */
+import Lenis from 'lenis';
 
+/**
+ * Initialize Lenis for smooth scrolling
+ * Replaces native smooth scroll behavior
+ */
 export function initSmoothScroll() {
   // Check if user prefers reduced motion
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReducedMotion) {
-    return; // Use native smooth scroll or instant scroll
+    return; // Use native scroll
   }
 
-  // Handle all anchor links
+  const lenis = new Lenis({
+    lerp: 0.1, // Smoothness (lower = smoother)
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    orientation: 'vertical',
+    gestureOrientation: 'vertical',
+    smoothWheel: true,
+    touchMultiplier: 2,
+  });
+
+  function raf(time: number) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);
+
+  // Handle anchor links with Lenis
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener('click', (e) => {
       e.preventDefault();
-
       const href = (anchor as HTMLAnchorElement).getAttribute('href');
       if (!href || href === '#') return;
-
+      
       const targetId = href.substring(1);
       const targetElement = document.getElementById(targetId);
 
-      if (!targetElement) return;
-
-      smoothScrollTo(targetElement);
+      if (targetElement) {
+        lenis.scrollTo(targetElement, {
+          offset: -80, // Offset for fixed nav
+          duration: 1.5,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        });
+      }
     });
   });
+
+  return lenis;
 }
 
-function smoothScrollTo(target: HTMLElement, duration: number = 1000) {
-  const start = window.pageYOffset;
-  const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
-  const distance = targetPosition - start - 80; // 80px offset for fixed nav
-  const startTime = performance.now();
-
-  function easeOutCubic(t: number): number {
-    return 1 - Math.pow(1 - t, 3);
-  }
-
-  function animation(currentTime: number) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const ease = easeOutCubic(progress);
-
-    window.scrollTo(0, start + distance * ease);
-
-    if (progress < 1) {
-      requestAnimationFrame(animation);
-    } else {
-      // Focus target for accessibility
-      target.focus({ preventScroll: true });
-    }
-  }
-
-  requestAnimationFrame(animation);
-}
 
 /**
  * Parallax scroll effect for background elements

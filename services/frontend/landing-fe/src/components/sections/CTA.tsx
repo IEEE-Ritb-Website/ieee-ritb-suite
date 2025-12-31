@@ -1,10 +1,27 @@
 import './CTA.css';
+import { motion, type Variants } from 'framer-motion';
+
+const ctaVariants: Variants = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+  }
+};
 
 export default function CTA() {
   return (
     <section className="section section-padding section-bg-gradient" id="join" aria-labelledby="cta-heading">
       <div className="section-container">
-        <div className="cta-content animate-slideUp">
+        <motion.div 
+          className="cta-content"
+          variants={ctaVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           <h2 id="cta-heading" className="cta-heading">
             Ready to Shape the Future?
           </h2>
@@ -43,7 +60,7 @@ export default function CTA() {
               <span>Contact Us</span>
             </a>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

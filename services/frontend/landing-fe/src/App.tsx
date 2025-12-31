@@ -12,6 +12,7 @@ import BackToTop from './components/ui/BackToTop';
 import { ToastProvider } from './contexts/ToastContext';
 import { initSmoothScroll, initParallax, initMagneticElements } from './utils/smoothScroll';
 import EnhancedLoader from './components/common/loading';
+import SEO from './components/common/SEO';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -35,8 +36,8 @@ function App() {
   }, [warpComplete]);
 
   useEffect(() => {
-    // Initialize smooth scroll behavior
-    initSmoothScroll();
+    // Initialize smooth scroll behavior (Lenis)
+    const lenis = initSmoothScroll();
 
     // Initialize parallax effects (with slight delay to ensure DOM is ready)
     const parallaxCleanup = setTimeout(() => {
@@ -51,87 +52,13 @@ function App() {
     return () => {
       clearTimeout(parallaxCleanup);
       clearTimeout(magneticCleanup);
+      lenis?.destroy();
     };
-  }, []);
-
-  useEffect(() => {
-    // Intersection Observer for scroll animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px',
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
-
-    // Observe all elements with animation classes
-    const elementsToAnimate = document.querySelectorAll(
-      '.animate-fadeIn, .animate-slideUp, .animate-slideInRight, .animate-scaleIn, .stagger-children'
-    );
-
-    elementsToAnimate.forEach((el) => observer.observe(el));
-
-    // Cleanup
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    // Device performance detection for low-end devices
-    const isLowEndDevice = () => {
-      // deviceMemory is a non-standard property from Device Memory API
-      const deviceMemory = 'deviceMemory' in navigator ? (navigator as Navigator & { deviceMemory?: number }).deviceMemory : undefined;
-      const hardwareConcurrency = navigator.hardwareConcurrency;
-
-      return (
-        (deviceMemory !== undefined && deviceMemory < 4) ||
-        (hardwareConcurrency !== undefined && hardwareConcurrency < 4)
-      );
-    };
-
-    if (isLowEndDevice()) {
-      document.body.classList.add('low-performance-mode');
-    }
-
-    // Frame rate monitoring
-    let lastFrameTime = performance.now();
-    let frameCount = 0;
-    let fps = 60;
-
-    const measurePerformance = () => {
-      const now = performance.now();
-      frameCount++;
-
-      if (now >= lastFrameTime + 1000) {
-        fps = Math.round((frameCount * 1000) / (now - lastFrameTime));
-        frameCount = 0;
-        lastFrameTime = now;
-
-        // Automatically degrade if fps drops below 30
-        if (fps < 30 && !document.body.classList.contains('low-performance-mode')) {
-          document.body.classList.add('low-performance-mode');
-        }
-      }
-
-      requestAnimationFrame(measurePerformance);
-    };
-
-    // Start monitoring after page load and starfield initialization
-    // Increased delay to allow starfield warp animation to complete
-    const timer = setTimeout(() => {
-      requestAnimationFrame(measurePerformance);
-    }, 5000); // Wait 5 seconds instead of 2
-
-    return () => clearTimeout(timer);
   }, []);
 
   return (
     <ToastProvider>
+      <SEO />
       {/* Enhanced Loader */}
       <EnhancedLoader
         isLoading={isLoading}
