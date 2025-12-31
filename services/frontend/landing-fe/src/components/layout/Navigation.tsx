@@ -135,12 +135,19 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
   if (!showNavigation) return null;
 
   return (
-    <nav
-      className={`nav ${isScrolled ? 'scrolled' : ''}`}
-      role="navigation"
-      aria-label="Main navigation"
-    >
-      <div className="nav-container">
+    <>
+      {/* Mobile backdrop overlay */}
+      <div
+        className={`nav-backdrop ${isMenuOpen ? 'open' : ''}`}
+        onClick={closeMenu}
+        aria-hidden="true"
+      />
+      <nav
+        className={`nav ${isScrolled ? 'scrolled' : ''}`}
+        role="navigation"
+        aria-label="Main navigation"
+      >
+        <div className="nav-container">
         <a href="#" className="nav-logo" aria-label="IEEE RITB Home">
           <span className="nav-logo-text">IEEE</span>
           <span className="nav-logo-accent">RITB</span>
@@ -269,5 +276,6 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
         className="sr-only"
       />
     </nav>
+    </>
   );
 }

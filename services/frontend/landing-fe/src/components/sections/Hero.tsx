@@ -25,8 +25,6 @@ function AnimatedNumber({ end, duration = 2000, delay = 0, shouldStart = true }:
     if (!shouldStart || hasStartedRef.current) return;
     hasStartedRef.current = true;
 
-    console.log(`[AnimatedNumber] Starting animation for ${end} with delay ${delay}ms`);
-
     const startTime = Date.now() + delay;
 
     const updateCount = () => {
@@ -48,7 +46,6 @@ function AnimatedNumber({ end, duration = 2000, delay = 0, shouldStart = true }:
         requestAnimationFrame(updateCount);
       } else {
         setCount(end);
-        console.log(`[AnimatedNumber] Animation complete for ${end}`);
       }
     };
 
@@ -84,7 +81,6 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
       // Start fading in during slowing phase
       const timer = setTimeout(() => {
         setContentVisible(true);
-        console.log('[Hero] Content fade-in started');
 
         // Notify parent that warp is complete (navigation can appear)
         if (onWarpComplete) {
@@ -96,7 +92,6 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
   }, [warpPhase, onWarpComplete]);
 
   const handlePhaseChange = (phase: AnimationPhase) => {
-    console.log('[Hero] Warp phase changed to:', phase);
     setWarpPhase(phase);
   };
 

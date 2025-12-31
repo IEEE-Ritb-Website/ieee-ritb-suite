@@ -84,18 +84,8 @@ const StarsField = ({ isLoading, starCount, onPhaseChange }: StarsFieldProps) =>
   const speedMultiplier = useRef(1);
   const lineToCircleProgress = useRef(0);
 
-  // Debug logging
+  // Notify parent component of phase change
   useEffect(() => {
-    console.log('[StarsField] Initialized with', { isLoading, starCount, phase });
-  }, []);
-
-  useEffect(() => {
-    console.log('[StarsField] isLoading changed:', isLoading);
-  }, [isLoading]);
-
-  useEffect(() => {
-    console.log('[StarsField] Phase changed:', phase);
-    // Notify parent component of phase change
     if (onPhaseChange) {
       onPhaseChange(phase);
     }
@@ -351,7 +341,7 @@ const StarsField = ({ isLoading, starCount, onPhaseChange }: StarsFieldProps) =>
     let baseOpacity =
       ANIMATION_CONFIG.POINT_OPACITY_MIN +
       lineToCircleProgress.current *
-        (ANIMATION_CONFIG.POINT_OPACITY_MAX - ANIMATION_CONFIG.POINT_OPACITY_MIN);
+      (ANIMATION_CONFIG.POINT_OPACITY_MAX - ANIMATION_CONFIG.POINT_OPACITY_MIN);
 
     // Deterministic twinkling effect with time-based sine waves
     if (phase === 'stopped') {
@@ -409,24 +399,15 @@ export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfiel
 
   // Check session storage for repeat visits (TEMPORARILY DISABLED for testing)
   // const hasSeenAnimation = sessionStorage.getItem(SESSION_STORAGE_KEY) === 'true';
-  const hasSeenAnimation = false; // ALWAYS show animation for now
+
+  // commented cuz it's unused
+  // const hasSeenAnimation = false; // ALWAYS show animation for now
 
   // Get optimal star count based on device
   const starCount = useMemo(
     () => getOptimalStarCount() || ANIMATION_CONFIG.STAR_COUNT_FALLBACK,
     []
   );
-
-  // Debug logging
-  useEffect(() => {
-    console.log('[HeroStarfield] Component mounted', {
-      isLoading,
-      hasReducedMotion,
-      hasWebGL,
-      hasSeenAnimation,
-      starCount
-    });
-  }, [isLoading, hasReducedMotion, hasWebGL, hasSeenAnimation, starCount]);
 
   // Mark animation as seen for future visits (DISABLED for testing)
   // useEffect(() => {
