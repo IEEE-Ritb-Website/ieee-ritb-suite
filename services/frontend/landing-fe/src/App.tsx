@@ -5,7 +5,7 @@ import Hero from './components/sections/Hero';
 import About from './components/sections/About';
 import Features from './components/sections/Features';
 import Chapters from './components/sections/Chapters';
-import CTA from './components/sections/CTA';
+import Contact from './components/sections/Contact';
 import MagneticCursor from './components/effects/MagneticCursor';
 import ScrollProgress from './components/ui/ScrollProgress';
 import BackToTop from './components/ui/BackToTop';
@@ -97,7 +97,7 @@ function App() {
         <About />
         <Features />
         <Chapters />
-        <CTA />
+        <Contact />
       </main>
 
       {/* Footer */}
