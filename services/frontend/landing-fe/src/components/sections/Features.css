@@ -70,6 +70,9 @@
   perspective: 1000px;
   --mouse-x: 50%;
   --mouse-y: 50%;
+  height: 100%; /* Ensure uniform height */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Enhanced mouse spotlight effect */
