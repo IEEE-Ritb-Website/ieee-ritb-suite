@@ -72,7 +72,7 @@ function App() {
       <ScrollProgress />
 
       {/* Magnetic Cursor Effect */}
-      <MagneticCursor />
+      <MagneticCursor visible={warpComplete} />
 
       {/* Skip Navigation for Accessibility */}
       <a href="#main-content" className="skip-nav">

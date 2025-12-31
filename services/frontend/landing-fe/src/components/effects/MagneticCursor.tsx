@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import './MagneticCursor.css';
 
-export default function MagneticCursor() {
+interface MagneticCursorProps {
+  visible?: boolean;
+}
+
+export default function MagneticCursor({ visible = true }: MagneticCursorProps) {
   const [isPointer, setIsPointer] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
   
@@ -102,7 +106,7 @@ export default function MagneticCursor() {
   }, [isHidden]);
 
   return (
-    <div className={`magnetic-cursor ${isPointer ? 'pointer' : ''} ${isHidden ? 'hidden' : ''}`}>
+    <div className={`magnetic-cursor ${isPointer ? 'pointer' : ''} ${isHidden || !visible ? 'hidden' : ''}`}>
       <div
         ref={cursorDot}
         className="cursor-dot"
