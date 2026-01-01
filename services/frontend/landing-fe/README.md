@@ -23,6 +23,7 @@ The **IEEE RIT-B Landing Page** is more than a website; it is an immersive, atmo
 
 | Feature | System Name | UX Heuristic | Description |
 | :--- | :--- | :--- | :--- |
+| **Performance** | **Adaptive Engine (1B)** | **Efficiency** | Real-time FPS monitoring that scales graphics to maintain 60FPS. |
 | **Motion Control** | [A11y Engine (2C)](#-accessibility-commitment) | **Inclusion** | OS-level reduced motion detection with automatic animation flattening. |
 | **Scroll Feedback** | **Scroll Horizon (1B)** | **System Status** | Integrated glowing progress bar in the sticky navigation link. |
 | **Entrance Flow** | **Staggered Orchestration (1A)** | **Cognitive Load** | Unified rhythmic reveal of sections to guide user focus. |
@@ -37,10 +38,16 @@ The **IEEE RIT-B Landing Page** is more than a website; it is an immersive, atmo
 - **Three.js & R3F:** Driving the starfield and particle systems with hardware-accelerated WebGL.
 - **Framer Motion:** Powering the synchronized layout animations and section staggers.
 
+### **⚡ Adaptive Performance Orchestration**
+To ensure a smooth experience across all hardware, the system includes a real-time **Performance Monitor** (`usePerformanceMonitor`):
+- **Dynamic Tiering:** Automatically switches between `ULTRA`, `BALANCED`, and `PERFORMANCE` modes based on real-time FPS.
+- **Graphic Scaling:** Dynamically adjusts WebGL particle counts, shooting star frequency, and CSS blur intensity.
+- **Diagnostic Telemetry:** A subtle FPS counter in the bottom-left provides live system health data.
+
 ### **The "Living" Background**
 The background environment isn't static. It features:
-- **Infinite Starfield:** Adaptive particle counts based on device hardware concurrency.
-- **Shooting Stars:** Randomized atmospheric events triggered by a custom spawning logic.
+- **Infinite Starfield:** Adaptive particle counts that scale based on device hardware and current FPS tier.
+- **Shooting Stars:** Randomized atmospheric events, throttled or disabled in performance-critical states.
 - **Parallax Layers:** Multi-depth background shapes that react to scroll velocity.
 
 ---
