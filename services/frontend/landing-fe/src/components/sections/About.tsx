@@ -62,21 +62,33 @@ function AnimatedNumber({ end, duration = 2000, suffix = '' }: AnimatedNumberPro
   );
 }
 
-const slideUpVariants: Variants = {
+// 1A - Unified Staggered Variants
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
   }
 };
 
-const slideInRightVariants: Variants = {
+const itemRightVariants: Variants = {
   hidden: { opacity: 0, x: 30 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     x: 0,
-    transition: { duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
   }
 };
 
@@ -92,20 +104,20 @@ export default function About() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <div className="section-two-col">
-          <motion.div 
-            className="about-text"
-            variants={slideUpVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
-            <span className="section-overline">About IEEE RITB</span>
-            <h2 id="about-heading" className="section-heading">
+        <motion.div
+          className="section-two-col"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <div className="about-text">
+            <motion.span className="section-overline" variants={itemVariants}>About IEEE RITB</motion.span>
+            <motion.h2 id="about-heading" className="section-heading" variants={itemVariants}>
               Leading the Future of
               <span className="section-heading-accent"> Technology</span>
-            </h2>
-            <div className="about-description">
+            </motion.h2>
+            <motion.div className="about-description" variants={itemVariants}>
               <p>
                 IEEE RIT-B is the premier student branch at RIT Bangalore, fostering innovation
                 and technical excellence since our inception. We are part of the world's largest
@@ -116,109 +128,67 @@ export default function About() {
                 together on cutting-edge projects, organize impactful events, and create
                 opportunities for growth in emerging technologies.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="about-highlights">
-              <div className="highlight-item">
-                <div className="highlight-icon" aria-hidden="true">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                    <polyline points="22 4 12 14.01 9 11.01" />
-                  </svg>
-                </div>
-                <div className="highlight-content">
-                  <h3 className="highlight-title">Student-Led Innovation</h3>
-                  <p className="highlight-text">
-                    Empowering students to lead technical initiatives and create real-world impact
-                  </p>
-                </div>
-              </div>
+            <motion.div className="about-highlights" variants={containerVariants}>
+              {[ 
+                { 
+                  title: 'Student-Led Innovation', 
+                  text: 'Empowering students to lead technical initiatives and create real-world impact',
+                  icon: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>
+                },
+                { 
+                  title: 'Global Recognition', 
+                  text: 'Part of IEEE\'s worldwide network with access to exclusive resources',
+                  icon: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>
+                },
+                { 
+                  title: 'Multidisciplinary Focus', 
+                  text: `${Chapters.filter(c => c.type === ChapterType.TECH).length} technical chapters covering AI, Robotics, IoT, and emerging fields`,
+                  icon: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>
+                }
+              ].map((h, i) => (
+                <motion.div key={i} className="highlight-item" variants={itemVariants}>
+                  <div className="highlight-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      {h.icon}
+                    </svg>
+                  </div>
+                  <div className="highlight-content">
+                    <h3 className="highlight-title">{h.title}</h3>
+                    <p className="highlight-text">{h.text}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
 
-              <div className="highlight-item">
-                <div className="highlight-icon" aria-hidden="true">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="2" y1="12" x2="22" y2="12" />
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                  </svg>
-                </div>
-                <div className="highlight-content">
-                  <h3 className="highlight-title">Global Recognition</h3>
-                  <p className="highlight-text">
-                    Part of IEEE's worldwide network with access to exclusive resources
-                  </p>
-                </div>
-              </div>
-
-              <div className="highlight-item">
-                <div className="highlight-icon" aria-hidden="true">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                    <polyline points="2 17 12 22 22 17" />
-                    <polyline points="2 12 12 17 22 12" />
-                  </svg>
-                </div>
-                <div className="highlight-content">
-                  <h3 className="highlight-title">Multidisciplinary Focus</h3>
-                  <p className="highlight-text">
-                    {Chapters.filter(c => c.type === ChapterType.TECH).length} technical chapters covering AI, Robotics, IoT, and emerging fields
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div 
-            className="about-stats"
-            variants={slideInRightVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
+          <motion.div className="about-stats" variants={containerVariants}>
             <div className="stats-grid">
-              <div className="stat-card holographic">
-                <AnimatedNumber end={500} suffix="+" />
-                <div className="stat-label">Active Members</div>
-                <div className="stat-description">
-                  Passionate students driving innovation
-                </div>
-              </div>
-
-              <div className="stat-card holographic">
-                <AnimatedNumber end={12} />
-                <div className="stat-label">Technical Chapters</div>
-                <div className="stat-description">
-                  Diverse societies and special interest groups
-                </div>
-              </div>
-
-              <div className="stat-card holographic">
-                <AnimatedNumber end={100} suffix="+" />
-                <div className="stat-label">Events Annually</div>
-                <div className="stat-description">
-                  Workshops, seminars, and competitions
-                </div>
-              </div>
-
-              <div className="stat-card holographic">
-                <AnimatedNumber end={50} suffix="+" />
-                <div className="stat-label">Industry Partners</div>
-                <div className="stat-description">
-                  Collaborations with leading tech companies
-                </div>
-              </div>
+              {[ 
+                { end: 500, suffix: '+', label: 'Active Members', desc: 'Passionate students driving innovation' },
+                { end: 12, suffix: '', label: 'Technical Chapters', desc: 'Diverse societies and special interest groups' },
+                { end: 100, suffix: '+', label: 'Events Annually', desc: 'Workshops, seminars, and competitions' },
+                { end: 50, suffix: '+', label: 'Industry Partners', desc: 'Collaborations with leading tech companies' }
+              ].map((s, i) => (
+                <motion.div key={i} className="stat-card holographic" variants={itemRightVariants}>
+                  <AnimatedNumber end={s.end} suffix={s.suffix} />
+                  <div className="stat-label">{s.label}</div>
+                  <div className="stat-description">{s.desc}</div>
+                </motion.div>
+              ))}
             </div>
 
-            <div className="stats-visual" aria-hidden="true">
+            <motion.div className="stats-visual" aria-hidden="true" variants={itemRightVariants}>
               <div className="data-flow-container">
                 <div className="data-particle" style={{ animationDelay: '0s' }} />
                 <div className="data-particle" style={{ animationDelay: '0.5s' }} />
                 <div className="data-particle" style={{ animationDelay: '1s' }} />
                 <div className="data-particle" style={{ animationDelay: '1.5s' }} />
               </div>
-            </div>
+            </motion.div>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

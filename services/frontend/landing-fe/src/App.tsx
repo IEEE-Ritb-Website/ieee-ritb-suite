@@ -7,7 +7,6 @@ import Features from './components/sections/Features';
 import Chapters from './components/sections/Chapters';
 import Contact from './components/sections/Contact';
 import MagneticCursor from './components/effects/MagneticCursor';
-import ScrollProgress from './components/ui/ScrollProgress';
 import BackToTop from './components/ui/BackToTop';
 import { ToastProvider } from './contexts/ToastContext';
 import { initSmoothScroll, initParallax, initMagneticElements } from './utils/smoothScroll';
@@ -22,29 +21,20 @@ function App() {
   // Lock scroll during loader and warp animation
   useEffect(() => {
     if (!warpComplete) {
-      // Prevent scrolling
       document.body.style.overflow = 'hidden';
     } else {
-      // Allow scrolling
       document.body.style.overflow = '';
     }
-
-    // Cleanup on unmount
     return () => {
       document.body.style.overflow = '';
     };
   }, [warpComplete]);
 
   useEffect(() => {
-    // Initialize smooth scroll behavior (Lenis)
     const lenis = initSmoothScroll();
-
-    // Initialize parallax effects (with slight delay to ensure DOM is ready)
     const parallaxCleanup = setTimeout(() => {
       initParallax();
     }, 100);
-
-    // Initialize magnetic elements
     const magneticCleanup = setTimeout(() => {
       initMagneticElements();
     }, 500);
@@ -59,33 +49,20 @@ function App() {
   return (
     <ToastProvider>
       <SEO />
-      {/* Enhanced Loader */}
       <EnhancedLoader
         isLoading={isLoading}
         onLoaded={() => {
           setIsLoading(false);
-          // Navigation will be shown after warp completes, not here
         }}
       />
 
-      {/* Scroll Progress Indicator */}
-      <ScrollProgress />
-
-      {/* Magnetic Cursor Effect */}
       <MagneticCursor visible={warpComplete} />
 
-      {/* Skip Navigation for Accessibility */}
-      <a href="#main-content" className="skip-nav">
-        Skip to main content
-      </a>
-      <a href="#nav" className="skip-nav">
-        Skip to navigation
-      </a>
+      <a href="#main-content" className="skip-nav">Skip to main content</a>
+      <a href="#nav" className="skip-nav">Skip to navigation</a>
 
-      {/* Navigation */}
       <Navigation showNavigation={showNavigation} />
 
-      {/* Main Content */}
       <main id="main-content" role="main">
         <Hero
           isLoading={isLoading}
@@ -100,10 +77,7 @@ function App() {
         <Contact />
       </main>
 
-      {/* Footer */}
       <Footer />
-
-      {/* Back to Top Button */}
       <BackToTop />
     </ToastProvider>
   );

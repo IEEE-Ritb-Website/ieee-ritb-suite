@@ -44,9 +44,6 @@
 }
 
 /* Performance optimization for low-end devices */
-/* Note: Starfield has built-in device detection and star count optimization,
-   so we don't need to hide it entirely in low-performance mode.
-   The component will automatically use fewer stars (500 on mobile, 1200 on low-end desktop) */
 .low-performance-mode .hero-starfield {
   /* Don't hide - let the component's internal optimization handle it */
 }
@@ -54,7 +51,6 @@
 /* Mobile optimization - reduce complexity on small screens */
 @media (max-width: 640px) {
   .hero-starfield {
-    /* Starfield remains visible on mobile, but with reduced star count
-       (handled by device detection in component logic) */
+    /* Starfield remains visible on mobile, but with reduced star count */
   }
 }

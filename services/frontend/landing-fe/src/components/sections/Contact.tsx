@@ -1,11 +1,21 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './Contact.css';
 
-// --- Variants ---
+// 1A - Unified Staggered Variants
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { 
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    } 
+  }
+};
 
-const slideUpVariants: Variants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { 
     opacity: 1, 
@@ -19,28 +29,18 @@ const slideInRightVariants: Variants = {
   visible: { 
     opacity: 1, 
     x: 0,
-    transition: { duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
   }
 };
 
 // --- Components ---
 
-function CornerBrackets() {
-  return (
-    <>
-      <div className="bracket bracket-tl" />
-      <div className="bracket bracket-tr" />
-      <div className="bracket bracket-bl" />
-      <div className="bracket bracket-br" />
-    </>
-  );
-}
-
 interface SingularityButtonProps {
   state: 'idle' | 'submitting' | 'success';
+  isValid: boolean;
 }
 
-function SingularityButton({ state }: SingularityButtonProps) {
+function SingularityButton({ state, isValid }: SingularityButtonProps) {
   return (
     <div className="singularity-btn-container">
       <AnimatePresence mode="wait">
@@ -48,18 +48,35 @@ function SingularityButton({ state }: SingularityButtonProps) {
           <motion.button
             key="idle"
             type="submit"
-            className="btn-primary magnetic"
+            className={`btn-primary magnetic ${isValid ? 'ignited' : 'dormant'}`}
             initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1,
+              boxShadow: isValid ? '0 0 25px var(--color-accent-glow)' : '0 0 0px transparent'
+            }}
             exit={{ opacity: 0, scale: 0.5 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={isValid ? { scale: 1.05 } : {}}
+            whileTap={isValid ? { scale: 0.95 } : {}}
           >
-            Send Message
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 8 }}>
+            <span className="btn-text">Send Message</span>
+            <motion.svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              style={{ marginLeft: 8 }}
+              animate={isValid ? { x: [0, 5, 0] } : {}}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+            >
               <line x1="22" y1="2" x2="11" y2="13" />
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
+            </motion.svg>
           </motion.button>
         )}
 
@@ -102,6 +119,7 @@ function SingularityButton({ state }: SingularityButtonProps) {
 
 export default function Contact() {
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');
+  const [isFormValid, setIsFormValid] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -113,20 +131,32 @@ export default function Contact() {
     card.style.setProperty('--mouse-y', `${y}%`);
   };
 
+  const checkValidity = () => {
+    if (formRef.current) {
+      setIsFormValid(formRef.current.checkValidity());
+    }
+  };
+
+  useEffect(() => {
+    checkValidity();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isFormValid) return;
+
     setFormState('submitting');
     await new Promise(resolve => setTimeout(resolve, 2000));
     setFormState('success');
     setTimeout(() => {
       setFormState('idle');
       formRef.current?.reset();
+      setIsFormValid(false);
     }, 6000);
   };
 
   return (
     <section className="section section-padding section-bg-surface" id="contact" aria-labelledby="contact-heading">
-      {/* Structural Grid Background */}
       <div className="contact-interface-grid" />
       
       <ParallaxLayer speed={0.2} zIndex={-1}>
@@ -136,48 +166,52 @@ export default function Contact() {
       <div className="section-container">
         <motion.div 
           className="section-header"
-          variants={slideUpVariants}
+          variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          <span className="section-overline">Contact Us</span>
-          <h2 id="contact-heading" className="section-heading">
+          <motion.span className="section-overline" variants={itemVariants}>Contact Us</motion.span>
+          <motion.h2 id="contact-heading" className="section-heading" variants={itemVariants}>
             Get in
             <span className="section-heading-accent"> Touch</span>
-          </h2>
-          <p className="section-description">
+          </motion.h2>
+          <motion.p className="section-description" variants={itemVariants}>
             Whether you're a student looking to join, a company interested in partnership,
             or just curious about our work, we're ready to connect.
-          </p>
+          </motion.p>
         </motion.div>
 
-        <div className="contact-grid">
+        <motion.div 
+          className="contact-grid"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           {/* Left Column: Contact Channels */}
-          <motion.div 
-            className="contact-channels"
-            variants={slideUpVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
+          <motion.div className="contact-channels" variants={containerVariants}>
             {[
               { label: 'Email Us', value: 'ieeeritb@gmail.com', href: 'mailto:ieeeritb@gmail.com', icon: 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22,6 12,13 2,6' },
               { label: 'Visit HQ', value: 'RIT Campus, Bangalore', href: 'https://goo.gl/maps/RITBangalore', icon: 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 7 a3 3 0 1 0 0 6 a3 3 0 1 0 0 -6' },
               { label: 'Community', value: '500+ Active Members', href: null, icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 7 a4 4 0 1 0 0 8 a4 4 0 1 0 0 -8 M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75' }
             ].map((item, i) => {
-              const Tag = item.href ? 'a' : 'div';
+              const MotionTag = item.href ? motion.a : motion.div;
               return (
-                <Tag 
+                <MotionTag 
                   key={i} 
                   href={item.href as any} 
                   target={item.href ? "_blank" : undefined}
                   rel={item.href ? "noopener noreferrer" : undefined}
                   className="channel-card glass-panel"
                   onMouseMove={handleMouseMove}
+                  variants={itemVariants}
                 >
                   <div className="accent-strip" />
-                  <CornerBrackets />
+                  <div className="bracket bracket-tl" />
+                  <div className="bracket bracket-tr" />
+                  <div className="bracket bracket-bl" />
+                  <div className="bracket bracket-br" />
                   <div className="channel-icon">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d={item.icon} />
@@ -187,7 +221,7 @@ export default function Contact() {
                     <span className="channel-label">{item.label}</span>
                     <span className="channel-value">{item.value}</span>
                   </div>
-                </Tag>
+                </MotionTag>
               );
             })}
           </motion.div>
@@ -196,12 +230,13 @@ export default function Contact() {
           <motion.div 
             className="contact-form-container glass-panel"
             variants={slideInRightVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
             onMouseMove={handleMouseMove}
           >
-            <CornerBrackets />
+            <div className="bracket bracket-tl" />
+            <div className="bracket bracket-tr" />
+            <div className="bracket bracket-bl" />
+            <div className="bracket bracket-br" />
+            
             <AnimatePresence mode="wait">
               {formState === 'success' ? (
                 <motion.div 
@@ -231,37 +266,40 @@ export default function Contact() {
                   key="form"
                   className="contact-form" 
                   onSubmit={handleSubmit}
+                  onChange={checkValidity}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0, y: -20 }}
                 >
-                  <div className="form-group">
+                  <motion.div className="form-group" variants={itemVariants}>
                     <label htmlFor="name" className="form-label">Full Name</label>
                     <div className="input-wrapper">
                       <input type="text" id="name" className="form-input" placeholder="Enter your name" required />
                     </div>
-                  </div>
+                  </motion.div>
                   
-                  <div className="form-group">
+                  <motion.div className="form-group" variants={itemVariants}>
                     <label htmlFor="email" className="form-label">Email Address</label>
                     <div className="input-wrapper">
                       <input type="email" id="email" className="form-input" placeholder="name@example.com" required />
                     </div>
-                  </div>
+                  </motion.div>
                   
-                  <div className="form-group">
+                  <motion.div className="form-group" variants={itemVariants}>
                     <label htmlFor="message" className="form-label">Message</label>
                     <div className="input-wrapper">
                       <textarea id="message" className="form-textarea" placeholder="How can we help you?" required />
                     </div>
-                  </div>
+                  </motion.div>
                   
-                  <SingularityButton state={formState} />
+                  <motion.div variants={itemVariants}>
+                    <SingularityButton state={formState} isValid={isFormValid} />
+                  </motion.div>
                 </motion.form>
               )}
             </AnimatePresence>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
