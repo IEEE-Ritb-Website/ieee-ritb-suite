@@ -12,11 +12,16 @@ export interface WebGLCapabilities {
   vendor: string | null;
 }
 
+let cachedHasWebGL: boolean | null = null;
+let cachedHasWebGL2: boolean | null = null;
+let cachedCapabilities: WebGLCapabilities | null = null;
+
 /**
  * Check if WebGL is supported
  */
 export const hasWebGLSupport = (): boolean => {
   if (typeof window === 'undefined') return false;
+  if (cachedHasWebGL !== null) return cachedHasWebGL;
 
   try {
     const canvas = document.createElement('canvas');
@@ -24,8 +29,10 @@ export const hasWebGLSupport = (): boolean => {
       canvas.getContext('webgl') ||
       canvas.getContext('experimental-webgl');
 
-    return !!gl;
+    cachedHasWebGL = !!gl;
+    return cachedHasWebGL;
   } catch {
+    cachedHasWebGL = false;
     return false;
   }
 };
@@ -35,13 +42,16 @@ export const hasWebGLSupport = (): boolean => {
  */
 export const hasWebGL2Support = (): boolean => {
   if (typeof window === 'undefined') return false;
+  if (cachedHasWebGL2 !== null) return cachedHasWebGL2;
 
   try {
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl2');
 
-    return !!gl;
+    cachedHasWebGL2 = !!gl;
+    return cachedHasWebGL2;
   } catch {
+    cachedHasWebGL2 = false;
     return false;
   }
 };
@@ -60,6 +70,7 @@ export const getWebGLCapabilities = (): WebGLCapabilities => {
   };
 
   if (typeof window === 'undefined') return defaultCapabilities;
+  if (cachedCapabilities !== null) return cachedCapabilities;
 
   try {
     const canvas = document.createElement('canvas');
@@ -68,11 +79,14 @@ export const getWebGLCapabilities = (): WebGLCapabilities => {
       (canvas.getContext('webgl') as WebGLRenderingContext) ||
       (canvas.getContext('experimental-webgl') as WebGLRenderingContext);
 
-    if (!gl) return defaultCapabilities;
+    if (!gl) {
+      cachedCapabilities = defaultCapabilities;
+      return defaultCapabilities;
+    }
 
     const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
 
-    return {
+    cachedCapabilities = {
       hasWebGL: true,
       hasWebGL2: hasWebGL2Support(),
       maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE) as number,
@@ -84,7 +98,9 @@ export const getWebGLCapabilities = (): WebGLCapabilities => {
         ? (gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) as string)
         : null,
     };
+    return cachedCapabilities;
   } catch {
+    cachedCapabilities = defaultCapabilities;
     return defaultCapabilities;
   }
 };

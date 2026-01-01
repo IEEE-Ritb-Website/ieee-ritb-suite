@@ -1,3 +1,5 @@
+import { hasWebGL2Support } from './webglSupport';
+
 /**
  * Device detection utility for adaptive performance optimization
  * Detects device capabilities to adjust star count and quality settings
@@ -76,22 +78,16 @@ export const getDeviceCapabilities = (): DeviceCapabilities => {
     isLowEndDevice: isLowEndDevice(),
     hardwareConcurrency: navigator.hardwareConcurrency || 4,
     devicePixelRatio: window.devicePixelRatio || 1,
-    supportsWebGL2: supportsWebGL2(),
+    supportsWebGL2: hasWebGL2Support(),
   };
 };
 
 /**
  * Check if WebGL2 is supported
+ * @deprecated Use hasWebGL2Support from webglSupport.ts instead
  */
 export const supportsWebGL2 = (): boolean => {
-  if (typeof window === 'undefined') return false;
-
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(canvas.getContext('webgl2'));
-  } catch {
-    return false;
-  }
+  return hasWebGL2Support();
 };
 
 /**
