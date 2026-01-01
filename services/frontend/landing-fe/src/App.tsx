@@ -8,6 +8,8 @@ import { ToastProvider } from './contexts/ToastContext';
 import { initSmoothScroll, initParallax, initMagneticElements } from './utils/smoothScroll';
 import EnhancedLoader from './components/common/loading';
 import SEO from './components/common/SEO';
+import { usePerformanceMonitor } from './hooks/usePerformanceMonitor';
+import PerformanceMonitor from './components/debug/PerformanceMonitor';
 
 // Lazy load sections
 const About = lazy(() => import('./components/sections/About'));
@@ -29,6 +31,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showNavigation, setShowNavigation] = useState(false);
   const [warpComplete, setWarpComplete] = useState(false);
+  const { tier } = usePerformanceMonitor();
 
   // 🚀 Scroll Reset Logic: Land on Hero every refresh
   useEffect(() => {
@@ -83,7 +86,7 @@ function App() {
 
       <Navigation showNavigation={showNavigation} />
 
-      <main id="main-content" role="main">
+      <main id="main-content" role="main" data-perf-tier={tier}>
         <Hero
           isLoading={isLoading}
           onWarpComplete={() => {
@@ -107,6 +110,7 @@ function App() {
 
       <Footer />
       <BackToTop />
+      <PerformanceMonitor />
     </ToastProvider>
   );
 }

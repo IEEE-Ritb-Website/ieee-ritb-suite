@@ -450,3 +450,25 @@ button:focus-visible,
   outline: 2px solid white;
   outline-offset: -2px;
 }
+
+/* ========================================
+   Adaptive Performance Scaling (1B-Adaptive)
+   ======================================== */
+[data-perf-tier="BALANCED"] .holographic::after {
+  animation: none !important; /* Disable heavy conic gradients */
+}
+
+[data-perf-tier="PERFORMANCE"] .glass-panel,
+[data-perf-tier="PERFORMANCE"] .holographic,
+[data-perf-tier="PERFORMANCE"] .nav {
+  backdrop-filter: blur(4px) !important; /* Reduce blur intensity */
+  -webkit-backdrop-filter: blur(4px) !important;
+}
+
+[data-perf-tier="PERFORMANCE"] .holographic::after {
+  display: none !important; /* Completely disable holographic shine */
+}
+
+[data-perf-tier="PERFORMANCE"] * {
+  text-shadow: none !important; /* Disable glow text shadows */
+}
