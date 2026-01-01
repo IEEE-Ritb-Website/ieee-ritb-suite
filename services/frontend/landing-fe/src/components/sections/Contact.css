@@ -27,7 +27,7 @@
   .contact-grid {
     grid-template-columns: 1fr 1.2fr;
     gap: var(--space-12);
-    align-items: start;
+    align-items: center;
   }
 }
 
@@ -126,14 +126,14 @@
   padding: var(--space-6);
   border-radius: 16px;
   text-decoration: none;
-  transition: all var(--duration-moderate) var(--ease-default);
+  transition: background-color var(--duration-moderate) var(--ease-default),
+              border-color var(--duration-moderate) var(--ease-default);
 }
 
 .channel-card:hover,
 .channel-card.intent-active {
   background: rgba(255, 255, 255, 0.02);
   border-color: rgba(77, 127, 255, 0.2);
-  transform: translateX(6px);
 }
 
 .channel-icon {

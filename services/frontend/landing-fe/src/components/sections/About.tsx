@@ -51,6 +51,7 @@ function StatCard({ s, safeItemRightVariants }: { s: StatItemData, safeItemRight
       className={`stat-card holographic ${isIntentHover ? 'intent-active' : ''}`} 
       variants={safeItemRightVariants}
       onMouseMove={handleMouseMove}
+      whileHover={shouldReduceMotion ? {} : { y: -8, scale: 1.02 }}
     >
       <AnimatedNumber end={s.end} suffix={s.suffix} />
       <div className="stat-label">{s.label}</div>

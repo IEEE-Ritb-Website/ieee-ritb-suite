@@ -16,7 +16,7 @@ export default function PerformanceMonitor() {
       aria-hidden="true"
     >
       <div className="flex flex-col items-start gap-1">
-        <div className="bg-black/20 backdrop-blur-md border border-white/5 rounded-full px-3 py-1 flex items-center gap-2">
+        <div className="bg-[#05060f]/80 backdrop-blur-xl border border-[#4d7fff]/30 rounded-full px-4 py-1.5 flex items-center justify-center gap-3 min-w-[100px] shadow-[0_0_15px_rgba(77,127,255,0.1)] transition-colors duration-300 hover:border-[#4d7fff]/50 hover:shadow-[0_0_20px_rgba(77,127,255,0.2)]">
           <div 
             className="w-1.5 h-1.5 rounded-full" 
             style={{ 
@@ -24,7 +24,7 @@ export default function PerformanceMonitor() {
               boxShadow: `0 0 8px ${getStatusColor()}` 
             }} 
           />
-          <span className="font-mono text-[10px] tracking-widest text-white/40 uppercase">
+          <span className="font-mono text-xs tracking-widest text-[#4d7fff] uppercase font-bold">
             {fps} FPS
           </span>
         </div>
