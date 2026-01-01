@@ -4,6 +4,7 @@ import type { AnimationPhase } from '../effects/HeroStarfield';
 import { useEffect, useRef, useState } from 'react';
 import { Chapters } from '@astranova/catalogues';
 import { motion, type Variants } from 'framer-motion';
+import { useMotion } from '@/hooks/useMotion';
 
 interface Props {
   isLoading: boolean;
@@ -20,42 +21,36 @@ interface AnimatedNumberProps {
 function AnimatedNumber({ end, duration = 2000, delay = 0, shouldStart = true }: AnimatedNumberProps) {
   const [count, setCount] = useState(0);
   const hasStartedRef = useRef(false);
+  const { shouldReduceMotion } = useMotion();
 
   useEffect(() => {
     if (!shouldStart || hasStartedRef.current) return;
     hasStartedRef.current = true;
 
-    const startTime = Date.now() + delay;
+    if (shouldReduceMotion) {
+      setCount(end);
+      return;
+    }
 
+    const startTime = Date.now() + delay;
     const updateCount = () => {
       const now = Date.now();
       if (now < startTime) {
         requestAnimationFrame(updateCount);
         return;
       }
-
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
       const currentCount = Math.floor(easeOutQuart * end);
-
       setCount(currentCount);
-
-      if (progress < 1) {
-        requestAnimationFrame(updateCount);
-      } else {
-        setCount(end);
-      }
+      if (progress < 1) requestAnimationFrame(updateCount);
+      else setCount(end);
     };
-
     requestAnimationFrame(updateCount);
-  }, [end, duration, delay, shouldStart]);
+  }, [end, duration, delay, shouldStart, shouldReduceMotion]);
 
-  return (
-    <span className="stat-number">
-      {count}
-    </span>
-  );
+  return <span className="stat-number">{count}</span>;
 }
 
 const StatItem = ({ value, label, delay, shouldStart }: { value: number; label: string; delay: number; shouldStart: boolean }) => {
@@ -95,18 +90,28 @@ const itemVariants: Variants = {
 export default function Hero({ isLoading, onWarpComplete }: Props) {
   const [warpPhase, setWarpPhase] = useState<AnimationPhase>('warp');
   const [contentVisible, setContentVisible] = useState(false);
+  const { orchestrate, shouldReduceMotion } = useMotion();
 
+  const safeContainerVariants = orchestrate(containerVariants);
+  const safeItemVariants = orchestrate(itemVariants);
+
+  // Control content visibility based on warp phase
   useEffect(() => {
+    if (shouldReduceMotion) {
+      // Bypassing warp wait for reduced motion
+      setContentVisible(true);
+      if (onWarpComplete) onWarpComplete();
+      return;
+    }
+
     if (warpPhase === 'slowing') {
       const timer = setTimeout(() => {
         setContentVisible(true);
-        if (onWarpComplete) {
-          onWarpComplete();
-        }
+        if (onWarpComplete) onWarpComplete();
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [warpPhase, onWarpComplete]);
+  }, [warpPhase, onWarpComplete, shouldReduceMotion]);
 
   const handlePhaseChange = (phase: AnimationPhase) => {
     setWarpPhase(phase);
@@ -115,53 +120,36 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
   return (
     <section className="hero" id="home" aria-labelledby="hero-title">
       <HeroStarfield isLoading={isLoading} onPhaseChange={handlePhaseChange} />
-      
+
       <motion.div
         className="hero-content"
-        variants={containerVariants}
-        initial="hidden"
+        variants={safeContainerVariants}
+        initial={shouldReduceMotion ? "visible" : "hidden"}
         animate={contentVisible ? "visible" : "hidden"}
-        style={{
-          pointerEvents: contentVisible ? 'auto' : 'none'
-        }}
+        style={{ pointerEvents: contentVisible ? 'auto' : 'none' }}
       >
         <div className="hero-text">
-          <motion.div className="hero-overline" variants={itemVariants}>
-            <svg
-              className="overline-icon"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path
-                d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"
-                fill="currentColor"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+          <motion.div className="hero-overline" variants={safeItemVariants}>
+            <svg className="overline-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             IEEE RIT Branch
           </motion.div>
 
-          <motion.h1 className="hero-title" id="hero-title" variants={itemVariants}>
+          <motion.h1 className="hero-title" id="hero-title" variants={safeItemVariants}>
             <span className="hero-title-accent">IEEE-RITB</span>
           </motion.h1>
 
-          <motion.p className="hero-subtitle" variants={itemVariants}>
+          <motion.p className="hero-subtitle" variants={safeItemVariants}>
             Welcome to the hub of innovation at Ramaiah Institute of Technology.
             We are a community of thinkers, builders, and leaders shaping the future of technology.
           </motion.p>
 
-          <motion.p className="hero-subtitle-accent" variants={itemVariants}>
+          <motion.p className="hero-subtitle-accent" variants={safeItemVariants}>
             Powered by students, driven by passion.
           </motion.p>
 
-          <motion.div className="hero-stats" variants={itemVariants}>
+          <motion.div className="hero-stats" variants={safeItemVariants}>
             <StatItem value={Chapters.length} label="Chapters" delay={400} shouldStart={contentVisible} />
             <div className="stat-divider" aria-hidden="true"></div>
             <StatItem value={500} label="Members" delay={600} shouldStart={contentVisible} />
@@ -169,30 +157,14 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
             <StatItem value={50} label="Events This Year" delay={800} shouldStart={contentVisible} />
           </motion.div>
 
-          <motion.div className="hero-cta" variants={itemVariants}>
+          <motion.div className="hero-cta" variants={safeItemVariants}>
             <a href="#chapters" className="btn-primary em-field">
               <span>Explore Chapters</span>
-              <svg
-                className="btn-icon"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-              >
-                <path
-                  d="M4 10h12m-6-6l6 6-6 6"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
+              <svg className="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M4 10h12m-6-6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </a>
-            <a href="#about" className="btn-secondary">
-              Learn More
-            </a>
+            <a href="#about" className="btn-secondary">Learn More</a>
           </motion.div>
         </div>
       </motion.div>

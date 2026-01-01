@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import GlitchText from '../effects/GlitchText';
 import TerminalText from '../effects/TerminalText';
 import OrbitalParticles from '../effects/OrbitalParticles';
+import { useMotion } from '@/hooks/useMotion';
 
 /**
  * EnhancedLoader Component
@@ -89,8 +90,15 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
   const [currentStage, setCurrentStage] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [allMessages, setAllMessages] = useState<LoadingMessage[]>([]);
+  const { shouldReduceMotion } = useMotion();
 
   useEffect(() => {
+    if (shouldReduceMotion) {
+      setProgress(100);
+      setIsComplete(true);
+      return;
+    }
+
     let totalElapsed = 0;
     let stageIndex = 0;
 

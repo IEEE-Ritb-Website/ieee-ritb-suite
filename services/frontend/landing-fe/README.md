@@ -1,73 +1,90 @@
-# React + TypeScript + Vite
+# 🌌 IEEE RIT-B | The Digital Universe
+**A High-Performance "System Interface" for the Next Generation of Engineers.**
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![React](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-7.0-purple?style=flat-square&logo=vite)](https://vitejs.dev/)
+[![Three.js](https://img.shields.io/badge/Three.js-r174-black?style=flat-square&logo=three.js)](https://threejs.org/)
+[![Motion](https://img.shields.io/badge/Framer_Motion-12.0-ff69b4?style=flat-square&logo=framer)](https://www.framer.com/motion/)
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🧭 The Vision
+The **IEEE RIT-B Landing Page** is more than a website; it is an immersive, atmospheric dashboard designed to bridge the gap between technical complexity and iconic minimalism. This interface utilizes high-end physics, custom shaders, and meticulous UX orchestration to provide a premium experience for the IEEE Ramaiah Institute of Technology community.
 
-## React Compiler
+### 🎨 Design Philosophy: *Iconic Minimalism*
+- **Tactile Reality:** Utilizing digital "grit" and geometric structures to make the web feel physical.
+- **Micro-Interactions:** Every scroll and hover rewards the user with kinetic feedback.
+- **Quantum Glass:** A signature material language combining blur, saturation, and subtle technical grids.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🚀 Architectural UX Orchestration
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Feature | System Name | UX Heuristic | Description |
+| :--- | :--- | :--- | :--- |
+| **Motion Control** | [A11y Engine (2C)](#-accessibility-commitment) | **Inclusion** | OS-level reduced motion detection with automatic animation flattening. |
+| **Scroll Feedback** | **Scroll Horizon (1B)** | **System Status** | Integrated glowing progress bar in the sticky navigation link. |
+| **Entrance Flow** | **Staggered Orchestration (1A)** | **Cognitive Load** | Unified rhythmic reveal of sections to guide user focus. |
+| **Form Logic** | **Reactive Ignition (1C)** | **User Control** | Kinetic button feedback that "ignites" only when inputs are valid. |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🛠 Tech Stack & Engineering
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### **Core Frameworks**
+- **React 19:** Utilizing the latest concurrent rendering features for ultra-stable performance.
+- **Three.js & R3F:** Driving the starfield and particle systems with hardware-accelerated WebGL.
+- **Framer Motion:** Powering the synchronized layout animations and section staggers.
+
+### **The "Living" Background**
+The background environment isn't static. It features:
+- **Infinite Starfield:** Adaptive particle counts based on device hardware concurrency.
+- **Shooting Stars:** Randomized atmospheric events triggered by a custom spawning logic.
+- **Parallax Layers:** Multi-depth background shapes that react to scroll velocity.
+
+---
+
+## ♿ Accessibility Commitment
+We believe premium design must be inclusive. Our **Accessibility Engine** ensures that 100% of users can browse comfortably:
+
+- **Automatic Sanitization:** Our `useMotion` hook detects `prefers-reduced-motion` and strips away high-frequency translations (x, y, scale) in real-time.
+- **Theatrical Bypass:** The 1.5s Hyperspace Warp and theatrical loaders are automatically skipped for users with vestibular sensitivities.
+- **High-Contrast Readiness:** All glass panels maintain WCAG 2.1 AA contrast ratios for legibility.
+
+---
+
+## 🏗 Setup & Development
+
+### **Prerequisites**
+- [pnpm](https://pnpm.io/) (v10+)
+- [Node.js](https://nodejs.org/) (v20+)
+
+### **Local Ignition**
+```bash
+# Install dependencies (root level)
+pnpm install
+
+# Navigate to service
+cd services/frontend/landing-fe
+
+# Start Development Server
+pnpm dev
+
+# Production Build
+pnpm build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🗺 Monorepo Context
+This application is a specialized service within the **IEEE RIT-B Suite**. It consumes shared logic and data from:
+- `@astranova/catalogues`: For dynamic IEEE Chapter registry data.
+- `astralogger`: For high-fidelity telemetry and logging.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+<div align="center">
+  <p>Built with 💙 by the <b>IEEE RIT-B Technical Team</b></p>
+  <p><i>Shaping the future of technology, one pixel at a time.</i></p>
+</div>

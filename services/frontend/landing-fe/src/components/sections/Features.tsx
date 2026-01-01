@@ -2,6 +2,7 @@ import { Chapters } from '@astranova/catalogues';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './Features.css';
 import { motion, type Variants } from 'framer-motion';
+import { useMotion } from '@/hooks/useMotion';
 
 const features = [
   {
@@ -98,7 +99,14 @@ const itemVariants: Variants = {
 };
 
 export default function Features() {
+  const { orchestrate, shouldReduceMotion } = useMotion();
+  const safeHeaderVariants = orchestrate(headerVariants);
+  const safeContainerVariants = orchestrate(containerVariants);
+  const safeItemVariants = orchestrate(itemVariants);
+
   const handleCardMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (shouldReduceMotion) return; // Disable interactive tilt if reduced motion is on
+    
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -130,7 +138,7 @@ export default function Features() {
       <div className="section-container">
         <motion.div 
           className="section-header"
-          variants={headerVariants}
+          variants={safeHeaderVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
@@ -148,13 +156,13 @@ export default function Features() {
 
         <motion.div 
           className="grid-features"
-          variants={containerVariants}
+          variants={safeContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
           {features.map((feature, index) => (
-            <motion.div key={index} variants={itemVariants}>
+            <motion.div key={index} variants={safeItemVariants}>
               <article
                 className="feature-card holographic"
                 data-index={index}

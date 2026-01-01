@@ -3,6 +3,7 @@ import ParallaxLayer from '../effects/ParallaxLayer';
 import './About.css';
 import { Chapters, ChapterType } from '@astranova/catalogues';
 import { motion, type Variants } from 'framer-motion';
+import { useMotion } from '@/hooks/useMotion';
 
 interface AnimatedNumberProps {
   end: number;
@@ -93,6 +94,11 @@ const itemRightVariants: Variants = {
 };
 
 export default function About() {
+  const { orchestrate } = useMotion();
+  const safeContainerVariants = orchestrate(containerVariants);
+  const safeItemVariants = orchestrate(itemVariants);
+  const safeItemRightVariants = orchestrate(itemRightVariants);
+
   return (
     <section className="section section-padding section-bg-base" id="about" aria-labelledby="about-heading">
       {/* Parallax Background Elements */}
@@ -104,20 +110,20 @@ export default function About() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div
+        <motion.div 
           className="section-two-col"
-          variants={containerVariants}
+          variants={safeContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
           <div className="about-text">
-            <motion.span className="section-overline" variants={itemVariants}>About IEEE RITB</motion.span>
-            <motion.h2 id="about-heading" className="section-heading" variants={itemVariants}>
+            <motion.span className="section-overline" variants={safeItemVariants}>About IEEE RITB</motion.span>
+            <motion.h2 id="about-heading" className="section-heading" variants={safeItemVariants}>
               Leading the Future of
               <span className="section-heading-accent"> Technology</span>
             </motion.h2>
-            <motion.div className="about-description" variants={itemVariants}>
+            <motion.div className="about-description" variants={safeItemVariants}>
               <p>
                 IEEE RIT-B is the premier student branch at RIT Bangalore, fostering innovation
                 and technical excellence since our inception. We are part of the world's largest
@@ -130,25 +136,25 @@ export default function About() {
               </p>
             </motion.div>
 
-            <motion.div className="about-highlights" variants={containerVariants}>
+            <motion.div className="about-highlights" variants={safeContainerVariants}>
               {[ 
                 { 
                   title: 'Student-Led Innovation', 
                   text: 'Empowering students to lead technical initiatives and create real-world impact',
                   icon: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>
                 },
-                { 
+                {
                   title: 'Global Recognition', 
                   text: 'Part of IEEE\'s worldwide network with access to exclusive resources',
                   icon: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>
                 },
-                { 
+                {
                   title: 'Multidisciplinary Focus', 
                   text: `${Chapters.filter(c => c.type === ChapterType.TECH).length} technical chapters covering AI, Robotics, IoT, and emerging fields`,
                   icon: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>
                 }
               ].map((h, i) => (
-                <motion.div key={i} className="highlight-item" variants={itemVariants}>
+                <motion.div key={i} className="highlight-item" variants={safeItemVariants}>
                   <div className="highlight-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       {h.icon}
@@ -163,7 +169,7 @@ export default function About() {
             </motion.div>
           </div>
 
-          <motion.div className="about-stats" variants={containerVariants}>
+          <motion.div className="about-stats" variants={safeContainerVariants}>
             <div className="stats-grid">
               {[ 
                 { end: 500, suffix: '+', label: 'Active Members', desc: 'Passionate students driving innovation' },
@@ -171,7 +177,7 @@ export default function About() {
                 { end: 100, suffix: '+', label: 'Events Annually', desc: 'Workshops, seminars, and competitions' },
                 { end: 50, suffix: '+', label: 'Industry Partners', desc: 'Collaborations with leading tech companies' }
               ].map((s, i) => (
-                <motion.div key={i} className="stat-card holographic" variants={itemRightVariants}>
+                <motion.div key={i} className="stat-card holographic" variants={safeItemRightVariants}>
                   <AnimatedNumber end={s.end} suffix={s.suffix} />
                   <div className="stat-label">{s.label}</div>
                   <div className="stat-description">{s.desc}</div>
@@ -179,7 +185,7 @@ export default function About() {
               ))}
             </div>
 
-            <motion.div className="stats-visual" aria-hidden="true" variants={itemRightVariants}>
+            <motion.div className="stats-visual" aria-hidden="true" variants={safeItemRightVariants}>
               <div className="data-flow-container">
                 <div className="data-particle" style={{ animationDelay: '0s' }} />
                 <div className="data-particle" style={{ animationDelay: '0.5s' }} />
