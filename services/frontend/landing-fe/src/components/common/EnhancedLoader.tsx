@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import GlitchText from '../effects/GlitchText';
 import TerminalText from '../effects/TerminalText';
-import OrbitalParticles from '../effects/OrbitalParticles';
 import { useMotion } from '@/hooks/useMotion';
 
 /**
@@ -36,46 +35,46 @@ const LOADING_STAGES: LoadingStage[] = [
   {
     name: 'Initializing quantum field...',
     progress: [0, 20],
-    duration: 800,
+    duration: 400,
     messages: [
       { text: 'SYSTEM: Booting IEEE Portal...', delay: 0, type: 'system' },
-      { text: 'GPU: WebGL 2.0 detected ✓', delay: 200, type: 'gpu' },
+      { text: 'GPU: WebGL 2.0 detected ✓', delay: 100, type: 'gpu' },
     ],
   },
   {
     name: 'Loading star catalog...',
     progress: [20, 45],
-    duration: 1000,
+    duration: 500,
     messages: [
       { text: 'STARS: Generating entities...', delay: 0, type: 'system' },
-      { text: 'Adaptive quality: Optimizing for device...', delay: 300, type: 'info' },
+      { text: 'Adaptive quality: Optimizing for device...', delay: 150, type: 'info' },
     ],
   },
   {
     name: 'Rendering nebula clouds...',
     progress: [45, 65],
-    duration: 800,
+    duration: 400,
     messages: [
       { text: 'SHADER: Compiling programs...', delay: 0, type: 'system' },
-      { text: 'SHADER: Compilation complete ✓', delay: 400, type: 'success' },
+      { text: 'SHADER: Compilation complete ✓', delay: 200, type: 'success' },
     ],
   },
   {
     name: 'Calculating trajectories...',
     progress: [65, 85],
-    duration: 700,
+    duration: 350,
     messages: [
       { text: 'PHYSICS: Initializing particle systems...', delay: 0, type: 'system' },
-      { text: 'COLLISION: Detection enabled ✓', delay: 300, type: 'success' },
+      { text: 'COLLISION: Detection enabled ✓', delay: 150, type: 'success' },
     ],
   },
   {
     name: 'Finalizing scene...',
     progress: [85, 100],
-    duration: 600,
+    duration: 300,
     messages: [
       { text: 'RENDER: Final optimizations...', delay: 0, type: 'system' },
-      { text: 'STATUS: Ready ✓', delay: 300, type: 'success' },
+      { text: 'STATUS: Ready ✓', delay: 150, type: 'success' },
     ],
   },
 ];
@@ -149,7 +148,7 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
       // Delay hiding the loader to allow for outro animations
       const timer = setTimeout(() => {
         onLoaded();
-      }, 800); // Match this with outro animation duration
+      }, 400); // Match this with outro animation duration
 
       return () => clearTimeout(timer);
     }
@@ -182,16 +181,6 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
       <div className="relative z-10 flex flex-col items-center gap-8 p-8 max-w-2xl w-full">
         {/* IEEE Logo Wireframe (CSS-based) */}
         <div className="relative">
-          {/* Orbital Particles */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <OrbitalParticles
-              ringCount={2}
-              particlesPerRing={6}
-              radius={60}
-              isComplete={isComplete}
-            />
-          </div>
-
           {/* Logo */}
           <div className="relative w-24 h-24 flex items-center justify-center">
             <div className="ieee-logo-wireframe">
@@ -203,12 +192,23 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
                 }}
               >
                 {/* IEEELetterS as geometric shapes */}
+                {/* I */}
                 <rect x="10" y="30" width="8" height="40" className="logo-part" style={{ animationDelay: '0s' }} />
-                <rect x="25" y="30" width="8" height="40" className="logo-part" style={{ animationDelay: '0.1s' }} />
-                <rect x="40" y="30" width="8" height="40" className="logo-part" style={{ animationDelay: '0.2s' }} />
-                <rect x="55" y="30" width="25" height="8" className="logo-part" style={{ animationDelay: '0.3s' }} />
-                <rect x="55" y="46" width="25" height="8" className="logo-part" style={{ animationDelay: '0.4s' }} />
-                <rect x="55" y="62" width="25" height="8" className="logo-part" style={{ animationDelay: '0.5s' }} />
+                
+                {/* E1 */}
+                <rect x="26" y="30" width="16" height="8" className="logo-part" style={{ animationDelay: '0.1s' }} />
+                <rect x="26" y="46" width="16" height="8" className="logo-part" style={{ animationDelay: '0.15s' }} />
+                <rect x="26" y="62" width="16" height="8" className="logo-part" style={{ animationDelay: '0.2s' }} />
+
+                {/* E2 */}
+                <rect x="50" y="30" width="16" height="8" className="logo-part" style={{ animationDelay: '0.25s' }} />
+                <rect x="50" y="46" width="16" height="8" className="logo-part" style={{ animationDelay: '0.3s' }} />
+                <rect x="50" y="62" width="16" height="8" className="logo-part" style={{ animationDelay: '0.35s' }} />
+
+                {/* E3 */}
+                <rect x="74" y="30" width="16" height="8" className="logo-part" style={{ animationDelay: '0.4s' }} />
+                <rect x="74" y="46" width="16" height="8" className="logo-part" style={{ animationDelay: '0.45s' }} />
+                <rect x="74" y="62" width="16" height="8" className="logo-part" style={{ animationDelay: '0.5s' }} />
 
                 {/* Border outline */}
                 <rect
@@ -324,7 +324,7 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
           position: absolute;
           width: 200px;
           height: 200px;
-          border: 2px solid rgba(77, 127, 255, 0.5);
+          border: 1px dashed rgba(77, 127, 255, 0.4);
           border-radius: 50%;
           animation: em-pulse 3s ease-out infinite;
         }
