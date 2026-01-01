@@ -4,11 +4,45 @@ import tailwindcss from '@tailwindcss/vite'
 import path from "path"
 
 // https://vite.dev/config/
+
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
+
+  plugins: [react(), tailwindcss()],
+
   resolve: {
+
     alias: {
+
       "@": path.resolve(__dirname, "./src"),
+
     },
+
   },
+
+  build: {
+
+    rollupOptions: {
+
+      output: {
+
+        manualChunks: {
+
+          'vendor-three': ['three', '@react-three/fiber'],
+
+          'vendor-motion': ['framer-motion'],
+
+          'vendor-utils': ['lenis', 'react-helmet-async'],
+
+        },
+
+      },
+
+    },
+
+    chunkSizeWarningLimit: 1000,
+
+  },
+
 })
+
+
