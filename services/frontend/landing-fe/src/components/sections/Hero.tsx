@@ -22,7 +22,6 @@ function AnimatedNumber({ end, duration = 2000, delay = 0, shouldStart = true }:
   const hasStartedRef = useRef(false);
 
   useEffect(() => {
-    // Only start animation when shouldStart is true
     if (!shouldStart || hasStartedRef.current) return;
     hasStartedRef.current = true;
 
@@ -30,7 +29,6 @@ function AnimatedNumber({ end, duration = 2000, delay = 0, shouldStart = true }:
 
     const updateCount = () => {
       const now = Date.now();
-
       if (now < startTime) {
         requestAnimationFrame(updateCount);
         return;
@@ -98,18 +96,14 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
   const [warpPhase, setWarpPhase] = useState<AnimationPhase>('warp');
   const [contentVisible, setContentVisible] = useState(false);
 
-  // Control content visibility based on warp phase
   useEffect(() => {
     if (warpPhase === 'slowing') {
-      // Start fading in during slowing phase
       const timer = setTimeout(() => {
         setContentVisible(true);
-
-        // Notify parent that warp is complete (navigation can appear)
         if (onWarpComplete) {
           onWarpComplete();
         }
-      }, 300); // Small delay for better feel
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [warpPhase, onWarpComplete]);
@@ -120,9 +114,8 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
 
   return (
     <section className="hero" id="home" aria-labelledby="hero-title">
-      {/* Background layer - 3D starfield with built-in nebula effects */}
       <HeroStarfield isLoading={isLoading} onPhaseChange={handlePhaseChange} />
-
+      
       <motion.div
         className="hero-content"
         variants={containerVariants}
