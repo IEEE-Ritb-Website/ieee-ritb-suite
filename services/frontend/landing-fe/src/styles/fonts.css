@@ -18,62 +18,9 @@
   --font-fallback-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
 }
 
-/* ===== Inter (Primary Body Font) ===== */
-/*
- * Weights: 400 (regular), 500 (medium), 600 (semibold), 700 (bold)
- * Optimized for readability at all sizes
- * Latin subset only: ~40KB vs ~120KB full
- */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: local('Inter'), local('Inter-Regular'),
-       url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-/* ===== Space Grotesk (Display/Headings Font) ===== */
-/*
- * Weights: 600 (semibold), 700 (bold)
- * Used for hero titles and section headings
- * Geometric, modern feel
- */
-@font-face {
-  font-family: 'Space Grotesk';
-  font-style: normal;
-  font-weight: 600 700;
-  font-display: swap;
-  src: local('Space Grotesk Bold'), local('SpaceGrotesk-Bold'),
-       url('https://fonts.gstatic.com/s/spacegrotesk/v16/V8mQoQDjQSkFtoMM3T6r8E7mF71Q-gOoraIAEj7oUXsjNsFjTDJK.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-/* ===== JetBrains Mono (Code/Monospace Font) ===== */
-/*
- * Weights: 400 (regular), 500 (medium)
- * Used for code snippets, technical content
- * Excellent ligature support
- */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: local('JetBrains Mono'), local('JetBrainsMono-Regular'),
-       url('https://fonts.gstatic.com/s/jetbrainsmono/v18/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKxTOlOVkA.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
 /* ===== Font Loading Performance Hints ===== */
 
-/* Prevent invisible text during font loading */
-html {
-  font-family: var(--font-fallback-primary);
-}
-
-/* Apply web fonts once loaded */
+/* Apply web fonts */
 body {
   font-family: 'Inter', var(--font-fallback-primary);
   font-optical-sizing: auto;
@@ -95,51 +42,10 @@ code, pre, kbd, samp,
   font-family: 'JetBrains Mono', var(--font-fallback-mono);
 }
 
-/* ===== Font Loading States ===== */
-
-/* While fonts are loading, use system fonts */
-.fonts-loading body {
-  font-family: var(--font-fallback-primary);
-}
-
-.fonts-loading h1,
-.fonts-loading h2,
-.fonts-loading h3,
-.fonts-loading h4,
-.fonts-loading h5,
-.fonts-loading h6 {
-  font-family: var(--font-fallback-display);
-}
-
-/* Once fonts are loaded, apply web fonts */
-.fonts-loaded body {
-  font-family: 'Inter', var(--font-fallback-primary);
-}
-
-.fonts-loaded h1,
-.fonts-loaded h2,
-.fonts-loaded h3,
-.fonts-loaded h4,
-.fonts-loaded h5,
-.fonts-loaded h6 {
-  font-family: 'Space Grotesk', var(--font-fallback-display);
-}
-
 /* ===== Performance Notes ===== */
 /*
- * Total font weight budget: ~120-180KB (vs ~600KB unoptimized)
- * - Inter variable: ~40-50KB (Latin subset)
- * - Space Grotesk: ~35-45KB (Latin subset, 2 weights)
- * - JetBrains Mono: ~40-50KB (Latin subset, 2 weights)
- *
- * font-display: swap ensures:
- * - Text visible immediately with fallback
- * - Swaps to web font when loaded
- * - No FOIT (Flash of Invisible Text)
- * - Better CLS (Cumulative Layout Shift) scores
- *
- * Unicode range optimization:
- * - Latin only: U+0000-00FF (basic Latin)
- * - Common punctuation and symbols included
- * - Excludes Cyrillic, Greek, Asian scripts (70% size reduction)
+ * Transitioned to @fontsource for optimized font delivery.
+ * - Managed via pnpm dependencies
+ * - Automated caching and hashing by Vite
+ * - font-display: swap enabled by default
  */
