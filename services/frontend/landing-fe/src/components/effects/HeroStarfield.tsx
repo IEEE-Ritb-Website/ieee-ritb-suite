@@ -5,6 +5,7 @@ import ShootingStars from './ShootingStars';
 import { getOptimalStarCount, prefersReducedMotion } from '@/utils/deviceDetection';
 import { hasWebGLSupport } from '@/utils/webglSupport';
 import { throttle } from '@/utils/throttle';
+import { usePerformanceMonitor, type PerformanceTier } from '@/hooks/usePerformanceMonitor';
 import './HeroStarfield.css';
 
 // ==================== CONSTANTS ====================
@@ -50,10 +51,11 @@ export type AnimationPhase = 'warp' | 'slowing' | 'stopped';
 interface StarsFieldProps {
   isLoading: boolean;
   starCount: number;
+  tier: PerformanceTier;
   onPhaseChange?: (phase: AnimationPhase) => void;
 }
 
-const StarsField = ({ isLoading, starCount, onPhaseChange }: StarsFieldProps) => {
+const StarsField = ({ isLoading, starCount, tier, onPhaseChange }: StarsFieldProps) => {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
   const [phase, setPhase] = useState<AnimationPhase>('warp');
@@ -62,6 +64,13 @@ const StarsField = ({ isLoading, starCount, onPhaseChange }: StarsFieldProps) =>
   const timeRef = useRef(0);
   const speedMultiplier = useRef(1);
   const lineToCircleProgress = useRef(0);
+
+  // Dynamic values based on tier
+  const shootingStarConfig = useMemo(() => {
+    if (tier === 'PERFORMANCE') return { count: 0, interval: 99999 };
+    if (tier === 'BALANCED') return { count: 1, interval: 15 };
+    return { count: 2, interval: 8 };
+  }, [tier]);
 
   useEffect(() => {
     if (onPhaseChange) {
@@ -230,7 +239,9 @@ const StarsField = ({ isLoading, starCount, onPhaseChange }: StarsFieldProps) =>
         <bufferGeometry />
         <lineBasicMaterial color={0xaaccff} transparent opacity={ANIMATION_CONFIG.LINE_OPACITY} blending={THREE.AdditiveBlending} />
       </lineSegments>
-      <ShootingStars count={2} spawnInterval={8} />
+      {shootingStarConfig.count > 0 && (
+        <ShootingStars count={shootingStarConfig.count} spawnInterval={shootingStarConfig.interval} />
+      )}
     </>
   );
 };
@@ -245,7 +256,15 @@ interface HeroStarfieldProps {
 export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfieldProps) {
   const hasReducedMotion = prefersReducedMotion();
   const hasWebGL = hasWebGLSupport();
-  const starCount = useMemo(() => getOptimalStarCount() || ANIMATION_CONFIG.STAR_COUNT_FALLBACK, []);
+  const { tier } = usePerformanceMonitor();
+  
+  const starCount = useMemo(() => {
+    const baseCount = getOptimalStarCount() || ANIMATION_CONFIG.STAR_COUNT_FALLBACK;
+    // Scale initial star count based on current tier if detected early
+    if (tier === 'PERFORMANCE') return Math.floor(baseCount * 0.4);
+    if (tier === 'BALANCED') return Math.floor(baseCount * 0.7);
+    return baseCount;
+  }, [tier]);
 
   if (hasReducedMotion || !hasWebGL) {
     return (
@@ -259,7 +278,7 @@ export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfiel
     <div className="hero-starfield">
       <Canvas camera={{ position: [0, 0, 30], fov: 75 }} gl={{ alpha: true, antialias: true }}>
         <Suspense fallback={null}>
-          <StarsField isLoading={isLoading} starCount={starCount} onPhaseChange={onPhaseChange} />
+          <StarsField isLoading={isLoading} starCount={starCount} tier={tier} onPhaseChange={onPhaseChange} />
         </Suspense>
       </Canvas>
     </div>
