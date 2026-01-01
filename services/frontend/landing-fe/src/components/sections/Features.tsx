@@ -1,8 +1,77 @@
+import { useRef, useState, useEffect } from 'react';
 import { Chapters } from '@astranova/catalogues';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './Features.css';
 import { motion, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
+import { useIntent } from '@/hooks/useIntent';
+
+// --- Sub-components ---
+
+function FeatureCard({ feature, safeItemVariants }: { feature: any, safeItemVariants: Variants }) {
+  const { shouldReduceMotion } = useMotion();
+  const { isMovingToward } = useIntent();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isIntentHover, setIsIntentHover] = useState(false);
+
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+
+    const checkIntent = () => {
+      if (cardRef.current) {
+        const rect = cardRef.current.getBoundingClientRect();
+        const toward = isMovingToward(rect, 0.4);
+        setIsIntentHover(toward);
+      }
+    };
+
+    const interval = setInterval(checkIntent, 100);
+    return () => clearInterval(interval);
+  }, [isMovingToward, shouldReduceMotion]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (shouldReduceMotion) return;
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * -10;
+    const rotateY = ((x - centerX) / centerX) * 10;
+
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+    const card = e.currentTarget;
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+  };
+
+  return (
+    <motion.div variants={safeItemVariants}>
+      <article
+        ref={cardRef}
+        className={`feature-card holographic ${isIntentHover ? 'intent-active' : ''}`}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="feature-icon" aria-hidden="true">
+          {feature.icon}
+        </div>
+        <h3 className="feature-title">{feature.title}</h3>
+        <p className="feature-description">{feature.description}</p>
+      </article>
+    </motion.div>
+  );
+}
+
+// --- Main Component ---
+
 
 const features = [
   {
@@ -99,34 +168,10 @@ const itemVariants: Variants = {
 };
 
 export default function Features() {
-  const { orchestrate, shouldReduceMotion } = useMotion();
+  const { orchestrate } = useMotion();
   const safeHeaderVariants = orchestrate(headerVariants);
   const safeContainerVariants = orchestrate(containerVariants);
   const safeItemVariants = orchestrate(itemVariants);
-
-  const handleCardMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    if (shouldReduceMotion) return; // Disable interactive tilt if reduced motion is on
-    
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = ((y - centerY) / centerY) * -10; // Max 10 degrees
-    const rotateY = ((x - centerX) / centerX) * 10;
-
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
-    card.style.setProperty('--mouse-x', `${x}px`);
-    card.style.setProperty('--mouse-y', `${y}px`);
-  };
-
-  const handleCardMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
-    const card = e.currentTarget;
-    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
-  };
 
   return (
     <section className="section section-padding section-bg-gradient" id="features" aria-labelledby="features-heading">
@@ -162,20 +207,11 @@ export default function Features() {
           viewport={{ once: true, margin: "-50px" }}
         >
           {features.map((feature, index) => (
-            <motion.div key={index} variants={safeItemVariants}>
-              <article
-                className="feature-card holographic"
-                data-index={index}
-                onMouseMove={handleCardMouseMove}
-                onMouseLeave={handleCardMouseLeave}
-              >
-                <div className="feature-icon" aria-hidden="true">
-                  {feature.icon}
-                </div>
-                <h3 className="feature-title">{feature.title}</h3>
-                <p className="feature-description">{feature.description}</p>
-              </article>
-            </motion.div>
+            <FeatureCard 
+              key={index} 
+              feature={feature} 
+              safeItemVariants={safeItemVariants} 
+            />
           ))}
         </motion.div>
       </div>

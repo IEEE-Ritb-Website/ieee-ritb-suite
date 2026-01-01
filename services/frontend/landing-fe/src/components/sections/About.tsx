@@ -4,6 +4,51 @@ import './About.css';
 import { Chapters, ChapterType } from '@astranova/catalogues';
 import { motion, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
+import { useIntent } from '@/hooks/useIntent';
+
+// --- Sub-components ---
+
+function StatCard({ s, safeItemRightVariants }: { s: any, safeItemRightVariants: Variants }) {
+  const { shouldReduceMotion } = useMotion();
+  const { isMovingToward } = useIntent();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isIntentHover, setIsIntentHover] = useState(false);
+
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+    const checkIntent = () => {
+      if (cardRef.current) {
+        const rect = cardRef.current.getBoundingClientRect();
+        setIsIntentHover(isMovingToward(rect, 0.4));
+      }
+    };
+    const interval = setInterval(checkIntent, 100);
+    return () => clearInterval(interval);
+  }, [isMovingToward, shouldReduceMotion]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (shouldReduceMotion) return;
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+  };
+
+  return (
+    <motion.div 
+      ref={cardRef}
+      className={`stat-card holographic ${isIntentHover ? 'intent-active' : ''}`} 
+      variants={safeItemRightVariants}
+      onMouseMove={handleMouseMove}
+    >
+      <AnimatedNumber end={s.end} suffix={s.suffix} />
+      <div className="stat-label">{s.label}</div>
+      <div className="stat-description">{s.desc}</div>
+    </motion.div>
+  );
+}
 
 interface AnimatedNumberProps {
   end: number;
@@ -94,20 +139,10 @@ const itemRightVariants: Variants = {
 };
 
 export default function About() {
-  const { orchestrate, shouldReduceMotion } = useMotion();
+  const { orchestrate } = useMotion();
   const safeContainerVariants = orchestrate(containerVariants);
   const safeItemVariants = orchestrate(itemVariants);
   const safeItemRightVariants = orchestrate(itemRightVariants);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    if (shouldReduceMotion) return;
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    card.style.setProperty('--mouse-x', `${x}px`);
-    card.style.setProperty('--mouse-y', `${y}px`);
-  };
 
   return (
     <section className="section section-padding section-bg-base" id="about" aria-labelledby="about-heading">
@@ -187,16 +222,7 @@ export default function About() {
                 { end: 100, suffix: '+', label: 'Events Annually', desc: 'Workshops, seminars, and competitions' },
                 { end: 50, suffix: '+', label: 'Industry Partners', desc: 'Collaborations with leading tech companies' }
               ].map((s, i) => (
-                <motion.div 
-                  key={i} 
-                  className="stat-card holographic" 
-                  variants={safeItemRightVariants}
-                  onMouseMove={handleMouseMove}
-                >
-                  <AnimatedNumber end={s.end} suffix={s.suffix} />
-                  <div className="stat-label">{s.label}</div>
-                  <div className="stat-description">{s.desc}</div>
-                </motion.div>
+                <StatCard key={i} s={s} safeItemRightVariants={safeItemRightVariants} />
               ))}
             </div>
 
