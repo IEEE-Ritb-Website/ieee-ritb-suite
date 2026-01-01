@@ -126,6 +126,32 @@
     0 0 40px var(--color-accent-glow);
 }
 
+/* 2E - Holographic Refinement: The Dynamic Glint */
+.stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    conic-gradient(
+      from 230.29deg at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(255, 255, 255, 0) 0deg,
+      rgba(255, 255, 255, 0.1) 67.5deg,
+      rgba(255, 255, 255, 0.2) 120deg,
+      rgba(255, 255, 255, 0.1) 172.5deg,
+      rgba(255, 255, 255, 0) 360deg
+    );
+  opacity: 0;
+  transition: opacity var(--duration-slow) ease;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  filter: blur(15px);
+  z-index: 1;
+}
+
+.stat-card:hover::after {
+  opacity: 1;
+}
+
 /* Holographic effect on stats */
 .stat-card.holographic::before {
   content: '';

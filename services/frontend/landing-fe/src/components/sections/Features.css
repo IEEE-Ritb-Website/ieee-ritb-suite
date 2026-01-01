@@ -75,21 +75,26 @@
   flex-direction: column;
 }
 
-/* Enhanced mouse spotlight effect */
+/* 2E - Holographic Refinement: The Dynamic Glint */
 .feature-card::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(77, 127, 255, 0.15) 0%,
-    rgba(0, 180, 255, 0.1) 30%,
-    transparent 60%
-  );
+  background: 
+    conic-gradient(
+      from 230.29deg at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(77, 127, 255, 0) 0deg,
+      rgba(77, 127, 255, 0.12) 67.5deg,
+      rgba(0, 180, 255, 0.2) 120deg,
+      rgba(77, 127, 255, 0.12) 172.5deg,
+      rgba(77, 127, 255, 0) 360deg
+    );
   opacity: 0;
-  transition: opacity var(--duration-moderate) var(--ease-out);
+  transition: opacity var(--duration-slow) ease;
   pointer-events: none;
-  mix-blend-mode: screen;
+  mix-blend-mode: color-dodge;
+  filter: blur(22px);
+  z-index: 1;
 }
 
 .feature-card:hover::after {
@@ -98,12 +103,11 @@
 
 /* Enhanced depth and glow on hover */
 .feature-card:hover {
-  border-color: var(--color-ieee-primary);
+  border-color: rgba(77, 127, 255, 0.4);
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.4),
-    0 30px 80px rgba(0, 0, 0, 0.2),
-    0 0 0 1px var(--color-ieee-primary) inset,
-    0 0 40px var(--color-accent-glow);
+    0 15px 45px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(77, 127, 255, 0.2) inset,
+    0 0 35px rgba(77, 127, 255, 0.25);
 }
 
 .feature-card:focus-within {
@@ -120,7 +124,7 @@
   transform: translateZ(40px);
 }
 
-/* Holographic Effect */
+/* Holographic Base Layer */
 .holographic::before {
   content: '';
   position: absolute;
@@ -128,18 +132,13 @@
   background: linear-gradient(
     135deg,
     transparent 0%,
-    var(--color-ieee-primary) 10%,
-    var(--color-ieee-electric) 20%,
-    var(--color-quantum) 30%,
-    transparent 40%,
-    transparent 60%,
-    var(--color-quantum) 70%,
-    var(--color-ieee-electric) 80%,
-    var(--color-ieee-primary) 90%,
+    rgba(77, 127, 255, 0.05) 25%,
+    rgba(0, 180, 255, 0.08) 50%,
+    rgba(77, 127, 255, 0.05) 75%,
     transparent 100%
   );
-  background-size: 300% 300%;
-  opacity: 0;
+  background-size: 200% 200%;
+  opacity: 0.25;
   transition: opacity var(--duration-moderate) var(--ease-out);
   mix-blend-mode: overlay;
   pointer-events: none;
@@ -147,15 +146,8 @@
 }
 
 .holographic:hover::before {
-  opacity: 0.4;
-  animation: holographicShine 3s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .holographic::before {
-    animation: none;
-    opacity: 0;
-  }
+  opacity: 0.5;
+  animation: holographicShine 6s linear infinite;
 }
 
 /* Feature Icon */
@@ -201,6 +193,7 @@
 
 /* Performance: Reduce effects on mobile */
 @media (max-width: 768px) {
+  .feature-card::after,
   .holographic::before {
     display: none;
   }
@@ -219,31 +212,12 @@
   .feature-icon {
     transform: none !important;
   }
-
-  .feature-card:hover .feature-icon {
-    transform: scale(1.05) !important;
-  }
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .feature-card {
-    transform-style: flat;
-    perspective: none;
-    transition: box-shadow var(--duration-base) var(--ease-default);
-  }
-
-  .feature-card:hover {
-    transform: none !important;
-  }
-
-  .feature-card > *,
-  .feature-icon {
-    transform: none;
-  }
-
+  .feature-card::after,
   .holographic::before {
-    animation: none;
-    opacity: 0;
+    display: none !important;
   }
 }

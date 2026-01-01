@@ -59,6 +59,16 @@ export default function Chapters() {
   const techCount = chapters.filter(ch => ch.type === ChapterType.TECH).length;
   const nonTechCount = chapters.filter(ch => ch.type === ChapterType.NON_TECH).length;
 
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (shouldReduceMotion) return;
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+  };
+
   const handleChapterKeyDown = (event: React.KeyboardEvent, index: number) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -135,6 +145,7 @@ export default function Chapters() {
               <article
                 className={`chapter-card ${activeChapter === index ? 'active' : ''}`}
                 onMouseEnter={() => !shouldReduceMotion && setActiveChapter(index)}
+                onMouseMove={handleCardMouseMove}
                 onMouseLeave={() => setActiveChapter(null)}
                 onFocus={() => setActiveChapter(index)}
                 onBlur={() => setActiveChapter(null)}

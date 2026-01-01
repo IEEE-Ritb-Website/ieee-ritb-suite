@@ -94,10 +94,20 @@ const itemRightVariants: Variants = {
 };
 
 export default function About() {
-  const { orchestrate } = useMotion();
+  const { orchestrate, shouldReduceMotion } = useMotion();
   const safeContainerVariants = orchestrate(containerVariants);
   const safeItemVariants = orchestrate(itemVariants);
   const safeItemRightVariants = orchestrate(itemRightVariants);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (shouldReduceMotion) return;
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+  };
 
   return (
     <section className="section section-padding section-bg-base" id="about" aria-labelledby="about-heading">
@@ -177,7 +187,12 @@ export default function About() {
                 { end: 100, suffix: '+', label: 'Events Annually', desc: 'Workshops, seminars, and competitions' },
                 { end: 50, suffix: '+', label: 'Industry Partners', desc: 'Collaborations with leading tech companies' }
               ].map((s, i) => (
-                <motion.div key={i} className="stat-card holographic" variants={safeItemRightVariants}>
+                <motion.div 
+                  key={i} 
+                  className="stat-card holographic" 
+                  variants={safeItemRightVariants}
+                  onMouseMove={handleMouseMove}
+                >
                   <AnimatedNumber end={s.end} suffix={s.suffix} />
                   <div className="stat-label">{s.label}</div>
                   <div className="stat-description">{s.desc}</div>
