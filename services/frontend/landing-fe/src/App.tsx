@@ -1,11 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import Navigation from './components/layout/Navigation';
 import Footer from './components/layout/Footer';
 import Hero from './components/sections/Hero';
-import About from './components/sections/About';
-import Features from './components/sections/Features';
-import Chapters from './components/sections/Chapters';
-import Contact from './components/sections/Contact';
 import MagneticCursor from './components/effects/MagneticCursor';
 import BackToTop from './components/ui/BackToTop';
 import { ToastProvider } from './contexts/ToastContext';
@@ -13,10 +9,34 @@ import { initSmoothScroll, initParallax, initMagneticElements } from './utils/sm
 import EnhancedLoader from './components/common/loading';
 import SEO from './components/common/SEO';
 
+// Lazy load sections
+const About = lazy(() => import('./components/sections/About'));
+const Features = lazy(() => import('./components/sections/Features'));
+const Chapters = lazy(() => import('./components/sections/Chapters'));
+const Contact = lazy(() => import('./components/sections/Contact'));
+
+// Branded loading fallback for sections
+const SectionLoader = () => (
+  <div className="w-full h-[400px] flex items-center justify-center opacity-30">
+    <div className="relative w-12 h-12">
+      <div className="absolute inset-0 border-2 border-blue-500/20 rounded-full"></div>
+      <div className="absolute inset-0 border-2 border-t-blue-500 rounded-full animate-spin"></div>
+    </div>
+  </div>
+);
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showNavigation, setShowNavigation] = useState(false);
   const [warpComplete, setWarpComplete] = useState(false);
+
+  // 🚀 Scroll Reset Logic: Land on Hero every refresh
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+  }, []);
 
   // Lock scroll during loader and warp animation
   useEffect(() => {
@@ -71,10 +91,18 @@ function App() {
             setWarpComplete(true);
           }}
         />
-        <About />
-        <Features />
-        <Chapters />
-        <Contact />
+        <Suspense fallback={<SectionLoader />}>
+          <About />
+        </Suspense>
+        <Suspense fallback={<SectionLoader />}>
+          <Features />
+        </Suspense>
+        <Suspense fallback={<SectionLoader />}>
+          <Chapters />
+        </Suspense>
+        <Suspense fallback={<SectionLoader />}>
+          <Contact />
+        </Suspense>
       </main>
 
       <Footer />
