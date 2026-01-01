@@ -179,7 +179,7 @@
 }
 
 .animated-number {
-  font-family: var(--font-display);
+  font-family: 'JetBrains Mono', var(--font-fallback-mono);
   font-size: var(--text-5xl);
   font-weight: var(--font-black);
   background: var(--gradient-ieee);
@@ -189,6 +189,7 @@
   line-height: 1;
   margin-bottom: var(--space-3);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.05em;
 }
 
 .stat-label {
