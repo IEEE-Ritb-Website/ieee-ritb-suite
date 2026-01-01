@@ -222,7 +222,7 @@
 
 .stat-value {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-1);
 }
 

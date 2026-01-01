@@ -113,14 +113,15 @@
   border-radius: 16px;
   padding: var(--space-6);
   text-align: center;
-  transition: all var(--duration-moderate) var(--ease-default);
+  transition: border-color var(--duration-moderate) var(--ease-default),
+              background-color var(--duration-moderate) var(--ease-default),
+              box-shadow var(--duration-moderate) var(--ease-default);
   position: relative;
   overflow: hidden;
 }
 
 .stat-card:hover,
 .stat-card.intent-active {
-  transform: translateY(-8px) scale(1.02);
   border-color: var(--color-ieee-primary);
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.3),
