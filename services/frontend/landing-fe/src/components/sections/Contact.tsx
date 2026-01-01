@@ -5,9 +5,18 @@ import { useMotion } from '@/hooks/useMotion';
 import { useIntent } from '@/hooks/useIntent';
 import './Contact.css';
 
+// --- Types ---
+
+interface ChannelItem {
+  label: string;
+  value: string;
+  href: string | null;
+  icon: string;
+}
+
 // --- Logic Components ---
 
-function ChannelCard({ item, safeItemVariants }: { item: any, safeItemVariants: Variants }) {
+function ChannelCard({ item, safeItemVariants }: { item: ChannelItem, safeItemVariants: Variants }) {
   const { shouldReduceMotion } = useMotion();
   const { isMovingToward } = useIntent();
   const cardRef = useRef<HTMLElement>(null);
@@ -39,8 +48,8 @@ function ChannelCard({ item, safeItemVariants }: { item: any, safeItemVariants: 
 
   return (
     <MotionTag 
-      ref={cardRef as any}
-      href={item.href as any} 
+      ref={cardRef as React.Ref<HTMLAnchorElement & HTMLDivElement>}
+      href={item.href || undefined} 
       target={item.href ? "_blank" : undefined}
       rel={item.href ? "noopener noreferrer" : undefined}
       className={`channel-card glass-panel ${isIntentHover ? 'intent-active' : ''}`}

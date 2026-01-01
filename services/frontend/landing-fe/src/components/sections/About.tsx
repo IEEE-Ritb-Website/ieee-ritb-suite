@@ -6,9 +6,18 @@ import { motion, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
 import { useIntent } from '@/hooks/useIntent';
 
+// --- Types ---
+
+interface StatItemData {
+  end: number;
+  suffix: string;
+  label: string;
+  desc: string;
+}
+
 // --- Sub-components ---
 
-function StatCard({ s, safeItemRightVariants }: { s: any, safeItemRightVariants: Variants }) {
+function StatCard({ s, safeItemRightVariants }: { s: StatItemData, safeItemRightVariants: Variants }) {
   const { shouldReduceMotion } = useMotion();
   const { isMovingToward } = useIntent();
   const cardRef = useRef<HTMLDivElement>(null);
@@ -68,7 +77,7 @@ function AnimatedNumber({ end, duration = 2000, suffix = '' }: AnimatedNumberPro
           setIsVisible(true);
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.2 }
     );
 
     if (ref.current) {
