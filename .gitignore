@@ -12,3 +12,5 @@ CLAUDE.md
 .claude/
 
 GEMINI.md
+
+.playwright-mcp/
