@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@astranova/catalogues": "workspace:^",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fontsource/space-grotesk": "^5.2.10",
     "@react-three/fiber": "^9.4.0",
     "framer-motion": "^12.23.23",
     "lenis": "^1.3.17",
