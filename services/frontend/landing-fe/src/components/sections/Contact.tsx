@@ -266,7 +266,7 @@ export default function Contact() {
     setTimeout(() => {
       if (formRef.current) formRef.current.reset();
       setIsFormValid(false);
-    }, 100);
+    }, 700);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -357,89 +357,91 @@ export default function Contact() {
           </motion.div>
 
           {/* Contact Form Terminal */}
-          <motion.div 
-            ref={containerRef}
-            className={`contact-form-container glass-panel ${isIntentHover ? 'intent-active' : ''}`}
-            onMouseMove={handleMouseMove}
-            layout
-          >
-            <div className="bracket bracket-tl" />
-            <div className="bracket bracket-tr" />
-            <div className="bracket bracket-bl" />
-            <div className="bracket bracket-br" />
-            
-            <AnimatePresence mode="wait">
-              {formState === 'idle' && (
-                <motion.form 
-                  ref={formRef}
-                  key="form-idle"
-                  className="contact-form" 
-                  onSubmit={handleSubmit}
-                  onChange={checkValidity}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <div className="form-group">
-                    <label htmlFor="name" className="form-label">Full Name</label>
-                    <div className="input-wrapper">
-                      <input type="text" id="name" className="form-input" placeholder="Enter your name" required />
-                    </div>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="email" className="form-label">Email Address</label>
-                    <div className="input-wrapper">
-                      <input type="email" id="email" className="form-input" placeholder="name@example.com" required />
-                    </div>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="message" className="form-label">Message</label>
-                    <div className="input-wrapper">
-                      <textarea id="message" className="form-textarea" placeholder="How can we help you?" required />
-                    </div>
-                  </div>
-                  
-                  <SingularityButton state={formState} isValid={isFormValid} />
-                </motion.form>
-              )}
-
-              {formState === 'submitting' && (
-                <motion.div
-                  key="form-submitting"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <TerminalConsole />
-                </motion.div>
-              )}
-
-              {formState === 'success' && (
-                <motion.div 
-                  key="form-success"
-                  className="transmission-success"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <TerminalSeal />
-                  <h3 className="success-title">Transmission Logged</h3>
-                  <p className="success-desc">
-                    Your data has been successfully routed to the IEEE RITB core server. A response will be dispatched shortly.
-                  </p>
-                  <motion.button 
-                    className="terminal-return"
-                    onClick={resetForm}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+          <motion.div variants={safeItemVariants} className="w-full">
+            <motion.div 
+              ref={containerRef}
+              className={`contact-form-container glass-panel ${isIntentHover ? 'intent-active' : ''}`}
+              onMouseMove={handleMouseMove}
+              layout
+            >
+              <div className="bracket bracket-tl" />
+              <div className="bracket bracket-tr" />
+              <div className="bracket bracket-bl" />
+              <div className="bracket bracket-br" />
+              
+              <AnimatePresence mode="wait">
+                {formState === 'idle' && (
+                  <motion.form 
+                    ref={formRef}
+                    key="form-idle"
+                    className="contact-form" 
+                    onSubmit={handleSubmit}
+                    onChange={checkValidity}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                   >
-                    RETURN TO TERMINAL
-                  </motion.button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    <div className="form-group">
+                      <label htmlFor="name" className="form-label">Full Name</label>
+                      <div className="input-wrapper">
+                        <input type="text" id="name" className="form-input" placeholder="Enter your name" required />
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label htmlFor="email" className="form-label">Email Address</label>
+                      <div className="input-wrapper">
+                        <input type="email" id="email" className="form-input" placeholder="name@example.com" required />
+                      </div>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label htmlFor="message" className="form-label">Message</label>
+                      <div className="input-wrapper">
+                        <textarea id="message" className="form-textarea" placeholder="How can we help you?" required />
+                      </div>
+                    </div>
+                    
+                    <SingularityButton state={formState} isValid={isFormValid} />
+                  </motion.form>
+                )}
+
+                {formState === 'submitting' && (
+                  <motion.div
+                    key="form-submitting"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <TerminalConsole />
+                  </motion.div>
+                )}
+
+                {formState === 'success' && (
+                  <motion.div 
+                    key="form-success"
+                    className="transmission-success"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <TerminalSeal />
+                    <h3 className="success-title">Transmission Logged</h3>
+                    <p className="success-desc">
+                      Your data has been successfully routed to the IEEE RITB core server. A response will be dispatched shortly.
+                    </p>
+                    <motion.button 
+                      className="terminal-return"
+                      onClick={resetForm}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      RETURN TO TERMINAL
+                    </motion.button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>
