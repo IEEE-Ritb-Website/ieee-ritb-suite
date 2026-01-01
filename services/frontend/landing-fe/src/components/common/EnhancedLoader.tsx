@@ -142,7 +142,7 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
     };
 
     advanceStage();
-  }, []);
+  }, [shouldReduceMotion]);
 
   useEffect(() => {
     if (isComplete) {

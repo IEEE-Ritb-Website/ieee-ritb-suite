@@ -6,9 +6,17 @@ import { motion, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
 import { useIntent } from '@/hooks/useIntent';
 
+// --- Types ---
+
+interface Feature {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}
+
 // --- Sub-components ---
 
-function FeatureCard({ feature, safeItemVariants }: { feature: any, safeItemVariants: Variants }) {
+function FeatureCard({ feature, safeItemVariants }: { feature: Feature, safeItemVariants: Variants }) {
   const { shouldReduceMotion } = useMotion();
   const { isMovingToward } = useIntent();
   const cardRef = useRef<HTMLDivElement>(null);
