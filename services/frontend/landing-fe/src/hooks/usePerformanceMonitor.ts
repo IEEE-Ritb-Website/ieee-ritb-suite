@@ -6,8 +6,10 @@ export type PerformanceTier = 'ULTRA' | 'BALANCED' | 'PERFORMANCE';
  * usePerformanceMonitor Hook
  * Real-time FPS tracking and dynamic quality tiering.
  * Helps maintain 60fps by signaling components to reduce complexity.
+ * 
+ * @param includeFps Whether to update the fps state (causes re-renders every second)
  */
-export function usePerformanceMonitor() {
+export function usePerformanceMonitor(includeFps = true) {
   const [tier, setTier] = useState<PerformanceTier>('ULTRA');
   const [fps, setFps] = useState(60);
   
@@ -27,7 +29,10 @@ export function usePerformanceMonitor() {
 
       if (delta >= 1000) {
         const currentFps = Math.round((frameCount.current * 1000) / delta);
-        setFps(currentFps);
+        
+        if (includeFps) {
+          setFps(currentFps);
+        }
         
         // Add to history
         fpsHistory.current.push(currentFps);
@@ -40,12 +45,12 @@ export function usePerformanceMonitor() {
 
         if (fpsHistory.current.length >= 30) { // Need at least 0.5s of data
           if (avgFps < 40) {
-            setTier('PERFORMANCE');
+            setTier(prev => prev !== 'PERFORMANCE' ? 'PERFORMANCE' : prev);
           } else if (avgFps < 52) {
-            setTier('BALANCED');
+            setTier(prev => prev !== 'BALANCED' ? 'BALANCED' : prev);
           } else if (avgFps >= 58) {
             // Only upshift if we have plenty of overhead
-            setTier('ULTRA');
+            setTier(prev => prev !== 'ULTRA' ? 'ULTRA' : prev);
           }
         }
 
@@ -58,7 +63,7 @@ export function usePerformanceMonitor() {
 
     animationFrameId = requestAnimationFrame(monitor);
     return () => cancelAnimationFrame(animationFrameId);
-  }, []);
+  }, [includeFps]);
 
   return { fps, tier };
 }

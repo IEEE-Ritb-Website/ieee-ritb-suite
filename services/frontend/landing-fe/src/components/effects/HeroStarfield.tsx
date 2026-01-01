@@ -256,7 +256,7 @@ interface HeroStarfieldProps {
 export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfieldProps) {
   const hasReducedMotion = prefersReducedMotion();
   const hasWebGL = hasWebGLSupport();
-  const { tier } = usePerformanceMonitor();
+  const { tier } = usePerformanceMonitor(false);
   
   const starCount = useMemo(() => {
     const baseCount = getOptimalStarCount() || ANIMATION_CONFIG.STAR_COUNT_FALLBACK;

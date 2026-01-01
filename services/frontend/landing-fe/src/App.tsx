@@ -31,7 +31,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showNavigation, setShowNavigation] = useState(false);
   const [warpComplete, setWarpComplete] = useState(false);
-  const { tier } = usePerformanceMonitor();
+  const { tier } = usePerformanceMonitor(false);
 
   // 🚀 Scroll Reset Logic: Land on Hero every refresh
   useEffect(() => {
