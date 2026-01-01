@@ -118,7 +118,8 @@
   overflow: hidden;
 }
 
-.stat-card:hover {
+.stat-card:hover,
+.stat-card.intent-active {
   transform: translateY(-8px) scale(1.02);
   border-color: var(--color-ieee-primary);
   box-shadow:
@@ -148,7 +149,8 @@
   z-index: 1;
 }
 
-.stat-card:hover::after {
+.stat-card:hover::after,
+.stat-card.intent-active::after {
   opacity: 1;
 }
 
@@ -173,7 +175,8 @@
   border-radius: inherit;
 }
 
-.stat-card:hover.holographic::before {
+.stat-card:hover.holographic::before,
+.stat-card.intent-active.holographic::before {
   opacity: 0.3;
   animation: holographicShine 2s linear infinite;
 }

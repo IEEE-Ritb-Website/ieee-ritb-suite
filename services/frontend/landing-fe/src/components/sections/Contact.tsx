@@ -2,9 +2,68 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import { useMotion } from '@/hooks/useMotion';
+import { useIntent } from '@/hooks/useIntent';
 import './Contact.css';
 
 // --- Logic Components ---
+
+function ChannelCard({ item, safeItemVariants }: { item: any, safeItemVariants: Variants }) {
+  const { shouldReduceMotion } = useMotion();
+  const { isMovingToward } = useIntent();
+  const cardRef = useRef<HTMLElement>(null);
+  const [isIntentHover, setIsIntentHover] = useState(false);
+
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+    const checkIntent = () => {
+      if (cardRef.current) {
+        const rect = cardRef.current.getBoundingClientRect();
+        setIsIntentHover(isMovingToward(rect, 0.4));
+      }
+    };
+    const interval = setInterval(checkIntent, 100);
+    return () => clearInterval(interval);
+  }, [isMovingToward, shouldReduceMotion]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (shouldReduceMotion) return;
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    card.style.setProperty('--mouse-x', `${x}%`);
+    card.style.setProperty('--mouse-y', `${y}%`);
+  };
+
+  const MotionTag = item.href ? motion.a : motion.div;
+
+  return (
+    <MotionTag 
+      ref={cardRef as any}
+      href={item.href as any} 
+      target={item.href ? "_blank" : undefined}
+      rel={item.href ? "noopener noreferrer" : undefined}
+      className={`channel-card glass-panel ${isIntentHover ? 'intent-active' : ''}`}
+      onMouseMove={handleMouseMove}
+      variants={safeItemVariants}
+    >
+      <div className="accent-strip" />
+      <div className="bracket bracket-tl" />
+      <div className="bracket bracket-tr" />
+      <div className="bracket bracket-bl" />
+      <div className="bracket bracket-br" />
+      <div className="channel-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d={item.icon} />
+        </svg>
+      </div>
+      <div className="channel-info">
+        <span className="channel-label">{item.label}</span>
+        <span className="channel-value">{item.value}</span>
+      </div>
+    </MotionTag>
+  );
+}
 
 const TERMINAL_LOGS = [
   { prefix: '[ OK ]', msg: 'INITIALIZING UPLINK PROTOCOL...' },
@@ -152,7 +211,22 @@ export default function Contact() {
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [isFormValid, setIsFormValid] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { orchestrate, shouldReduceMotion } = useMotion();
+  const { isMovingToward } = useIntent();
+  const [isIntentHover, setIsIntentHover] = useState(false);
+
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+    const checkIntent = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setIsIntentHover(isMovingToward(rect, 0.4));
+      }
+    };
+    const interval = setInterval(checkIntent, 100);
+    return () => clearInterval(interval);
+  }, [isMovingToward, shouldReduceMotion]);
 
   const safeContainerVariants = orchestrate(containerVariants);
   const safeItemVariants = orchestrate(itemVariants);
@@ -235,40 +309,15 @@ export default function Contact() {
               { label: 'Email Us', value: 'ieeeritb@gmail.com', href: 'mailto:ieeeritb@gmail.com', icon: 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22,6 12,13 2,6' },
               { label: 'Visit HQ', value: 'RIT Campus, Bangalore', href: 'https://goo.gl/maps/RITBangalore', icon: 'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 7 a3 3 0 1 0 0 6 a3 3 0 1 0 0 -6' },
               { label: 'Community', value: '500+ Active Members', href: null, icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 7 a4 4 0 1 0 0 8 a4 4 0 1 0 0 -8 M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75' }
-            ].map((item, i) => {
-              const MotionTag = item.href ? motion.a : motion.div;
-              return (
-                <MotionTag 
-                  key={i} 
-                  href={item.href as any} 
-                  target={item.href ? "_blank" : undefined}
-                  rel={item.href ? "noopener noreferrer" : undefined}
-                  className="channel-card glass-panel"
-                  onMouseMove={handleMouseMove}
-                  variants={safeItemVariants}
-                >
-                  <div className="accent-strip" />
-                  <div className="bracket bracket-tl" />
-                  <div className="bracket bracket-tr" />
-                  <div className="bracket bracket-bl" />
-                  <div className="bracket bracket-br" />
-                  <div className="channel-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d={item.icon} />
-                    </svg>
-                  </div>
-                  <div className="channel-info">
-                    <span className="channel-label">{item.label}</span>
-                    <span className="channel-value">{item.value}</span>
-                  </div>
-                </MotionTag>
-              );
-            })}
+            ].map((item, i) => (
+              <ChannelCard key={i} item={item} safeItemVariants={safeItemVariants} />
+            ))}
           </motion.div>
 
           {/* Contact Form Terminal */}
           <motion.div 
-            className="contact-form-container glass-panel"
+            ref={containerRef}
+            className={`contact-form-container glass-panel ${isIntentHover ? 'intent-active' : ''}`}
             onMouseMove={handleMouseMove}
             layout
           >

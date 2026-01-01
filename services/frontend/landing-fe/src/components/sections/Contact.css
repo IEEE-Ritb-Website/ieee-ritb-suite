@@ -82,7 +82,9 @@
 .bracket-br { bottom: 12px; right: 12px; border-width: 0 1.5px 1.5px 0; }
 
 .channel-card:hover .bracket,
-.contact-form-container:hover .bracket {
+.contact-form-container:hover .bracket,
+.channel-card.intent-active .bracket,
+.contact-form-container.intent-active .bracket {
   opacity: 1;
   width: 12px;
   height: 12px;
@@ -101,7 +103,8 @@
   transition: height var(--duration-moderate) var(--ease-elastic);
 }
 
-.channel-card:hover .accent-strip {
+.channel-card:hover .accent-strip,
+.channel-card.intent-active .accent-strip {
   height: 70%;
   background: var(--color-ieee-electric);
   box-shadow: 0 0 10px var(--color-accent-glow);
@@ -126,7 +129,8 @@
   transition: all var(--duration-moderate) var(--ease-default);
 }
 
-.channel-card:hover {
+.channel-card:hover,
+.channel-card.intent-active {
   background: rgba(255, 255, 255, 0.02);
   border-color: rgba(77, 127, 255, 0.2);
   transform: translateX(6px);
@@ -146,7 +150,8 @@
   z-index: 1;
 }
 
-.channel-card:hover .channel-icon {
+.channel-card:hover .channel-icon,
+.channel-card.intent-active .channel-icon {
   transform: scale(1.1) rotate(5deg);
   background: var(--color-ieee-primary);
   color: white;
@@ -180,6 +185,10 @@
 .contact-form-container {
   border-radius: 24px;
   padding: var(--space-8);
+}
+
+.contact-form-container.intent-active {
+  border-color: rgba(77, 127, 255, 0.3);
 }
 
 .contact-form {
