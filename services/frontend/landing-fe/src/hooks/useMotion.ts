@@ -27,7 +27,12 @@ export function useMotion() {
 
     // Neutralize translations (x, y, scale, rotate) in all keys
     Object.keys(safeVariants).forEach(key => {
-      const variant = { ...(safeVariants[key] as Record<string, unknown>) };
+      const originalVariant = safeVariants[key];
+      if (typeof originalVariant !== 'object' || originalVariant === null || Array.isArray(originalVariant)) return;
+
+      // We use a shadow copy for manipulation to bypass Framer Motion's strict index signatures
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const variant = { ...originalVariant } as any;
       
       // Remove motion-heavy properties
       delete variant.y;
