@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './About.css';
 import { Chapters, ChapterType } from '@astranova/catalogues';
@@ -51,7 +51,7 @@ function StatCard({ s, safeItemRightVariants }: { s: StatItemData, safeItemRight
       className={`stat-card holographic ${isIntentHover ? 'intent-active' : ''}`} 
       variants={safeItemRightVariants}
       onMouseMove={handleMouseMove}
-      whileHover={shouldReduceMotion ? {} : { y: -8, scale: 1.02 }}
+      whileHover={shouldReduceMotion ? {} : { y: 0, scale: 1.02 }}
     >
       <AnimatedNumber end={s.end} suffix={s.suffix} />
       <div className="stat-label">{s.label}</div>
@@ -149,10 +149,10 @@ const itemRightVariants: Variants = {
 };
 
 export default function About() {
-  const { orchestrate } = useMotion();
-  const safeContainerVariants = orchestrate(containerVariants);
-  const safeItemVariants = orchestrate(itemVariants);
-  const safeItemRightVariants = orchestrate(itemRightVariants);
+  const { orchestrate, shouldReduceMotion } = useMotion();
+  const safeContainerVariants = useMemo(() => orchestrate(containerVariants), [orchestrate]);
+  const safeItemVariants = useMemo(() => orchestrate(itemVariants), [orchestrate]);
+  const safeItemRightVariants = useMemo(() => orchestrate(itemRightVariants), [orchestrate]);
 
   return (
     <section className="section section-padding section-bg-base" id="about" aria-labelledby="about-heading">
@@ -209,7 +209,12 @@ export default function About() {
                   icon: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>
                 }
               ].map((h, i) => (
-                <motion.div key={i} className="highlight-item" variants={safeItemVariants}>
+                <motion.div 
+                  key={i} 
+                  className="highlight-item" 
+                  variants={safeItemVariants}
+                  whileHover={shouldReduceMotion ? {} : { x: 4 }}
+                >
                   <div className="highlight-icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       {h.icon}

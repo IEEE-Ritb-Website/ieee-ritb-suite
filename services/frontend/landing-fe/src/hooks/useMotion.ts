@@ -1,5 +1,5 @@
 import { useReducedMotion as useFramerReducedMotion, type Variants } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 /**
  * useMotion Hook
@@ -19,7 +19,7 @@ export function useMotion() {
    * Helper to automatically select variants based on motion preference.
    * If reduced motion is enabled, it returns a fade-only version of the variant.
    */
-  const orchestrate = (standardVariants: Variants): Variants => {
+  const orchestrate = useCallback((standardVariants: Variants): Variants => {
     if (!shouldReduceMotion) return standardVariants;
 
     // Create a "Safe" copy of the variants
@@ -61,7 +61,7 @@ export function useMotion() {
     });
 
     return safeVariants;
-  };
+  }, [shouldReduceMotion]);
 
   return {
     shouldReduceMotion,
