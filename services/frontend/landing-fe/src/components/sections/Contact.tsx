@@ -384,14 +384,14 @@ export default function Contact() {
                     <div className="form-group">
                       <label htmlFor="name" className="form-label">Full Name</label>
                       <div className="input-wrapper">
-                        <input type="text" id="name" className="form-input" placeholder="Enter your name" required />
+                        <input type="text" id="name" className="form-input" placeholder="Enter your name" required autoComplete="name" />
                       </div>
                     </div>
                     
                     <div className="form-group">
                       <label htmlFor="email" className="form-label">Email Address</label>
                       <div className="input-wrapper">
-                        <input type="email" id="email" className="form-input" placeholder="name@example.com" required />
+                        <input type="email" id="email" className="form-input" placeholder="name@example.com" required autoComplete="email" />
                       </div>
                     </div>
                     
