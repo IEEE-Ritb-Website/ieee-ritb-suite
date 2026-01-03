@@ -1,1 +1,1 @@
-export * from "./chapter-data";
+export * from "./chapter-data/index.js";
