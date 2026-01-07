@@ -422,3 +422,51 @@
   color: var(--color-text-primary);
   box-shadow: 0 0 15px rgba(77, 127, 255, 0.2);
 }
+
+/* Mobile Responsiveness for Terminal Success */
+@media (max-width: 640px) {
+  .contact-form-container {
+    padding: var(--space-5);
+  }
+
+  .transmission-success,
+  .terminal-console {
+    min-height: 380px;
+    padding: var(--space-4);
+  }
+
+  .terminal-seal {
+    width: 80px;
+    height: 80px;
+    margin-bottom: var(--space-4);
+  }
+  
+  .terminal-seal::before {
+    inset: -6px;
+  }
+  
+  /* Target specific seal text based on their inline styles logic 
+     Note: Since we can't easily override inline styles without !important,
+     we'll use it here for this specific responsive adjustment. */
+  .terminal-seal .seal-text[style*="top"] {
+    top: -18px !important;
+  }
+  
+  .terminal-seal .seal-text[style*="bottom"] {
+    bottom: -18px !important;
+  }
+
+  .success-title {
+    font-size: var(--text-xl);
+  }
+  
+  .success-desc {
+    max-width: 100%;
+    font-size: var(--text-xs);
+    padding: 0 var(--space-2);
+  }
+
+  .terminal-return {
+    margin-top: var(--space-2);
+  }
+}

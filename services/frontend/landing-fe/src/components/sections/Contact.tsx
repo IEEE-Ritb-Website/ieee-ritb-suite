@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import { useMotion } from '@/hooks/useMotion';
 import { useIntent } from '@/hooks/useIntent';
@@ -271,12 +272,23 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isFormValid || !formRef.current) return;
 
     setFormState('submitting');
-    // Mimic technical processing time
-    await new Promise(resolve => setTimeout(resolve, 2800));
-    setFormState('success');
+    
+    try {
+      await emailjs.sendForm(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        formRef.current,
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
+      setFormState('success');
+    } catch (error) {
+      console.error('EmailJS Error:', error);
+      alert('Failed to send message. Please try again later.');
+      setFormState('idle');
+    }
   };
 
   return (
@@ -382,23 +394,23 @@ export default function Contact() {
                     exit={{ opacity: 0 }}
                   >
                     <div className="form-group">
-                      <label htmlFor="name" className="form-label">Full Name</label>
+                      <label htmlFor="user_name" className="form-label">Full Name</label>
                       <div className="input-wrapper">
-                        <input type="text" id="name" className="form-input" placeholder="Enter your name" required />
+                        <input type="text" id="user_name" name="user_name" className="form-input" placeholder="Enter your name" required autoComplete="name" />
                       </div>
                     </div>
                     
                     <div className="form-group">
-                      <label htmlFor="email" className="form-label">Email Address</label>
+                      <label htmlFor="user_email" className="form-label">Email Address</label>
                       <div className="input-wrapper">
-                        <input type="email" id="email" className="form-input" placeholder="name@example.com" required />
+                        <input type="email" id="user_email" name="user_email" className="form-input" placeholder="name@example.com" required autoComplete="email" />
                       </div>
                     </div>
                     
                     <div className="form-group">
                       <label htmlFor="message" className="form-label">Message</label>
                       <div className="input-wrapper">
-                        <textarea id="message" className="form-textarea" placeholder="How can we help you?" required />
+                        <textarea id="message" name="message" className="form-textarea" placeholder="How can we help you?" required />
                       </div>
                     </div>
                     
