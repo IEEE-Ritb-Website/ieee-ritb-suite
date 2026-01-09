@@ -1,0 +1,217 @@
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import ParallaxLayer from '../effects/ParallaxLayer';
+import './Events.css';
+
+// --- Types ---
+interface Event {
+  id: string;
+  title: string;
+  date: string;
+  description: string;
+  image: string;
+  category: string;
+  link: string;
+}
+
+// --- Dummy Data ---
+const EVENTS: Event[] = [
+  {
+    id: 'e1',
+    title: 'Event X',
+    date: 'TBA',
+    description: 'Details for Event X coming soon. Stay tuned for updates.',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop',
+    category: 'Category A',
+    link: '#'
+  },
+  {
+    id: 'e2',
+    title: 'Event Y',
+    date: 'TBA',
+    description: 'Details for Event Y coming soon. Stay tuned for updates.',
+    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070&auto=format&fit=crop',
+    category: 'Category B',
+    link: '#'
+  },
+  {
+    id: 'e3',
+    title: 'Event Z',
+    date: 'TBA',
+    description: 'Details for Event Z coming soon. Stay tuned for updates.',
+    image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop',
+    category: 'Category C',
+    link: '#'
+  }
+];
+
+// --- Components ---
+
+/**
+ * Decodes text from random characters to the final string.
+ */
+const DecoderText = ({ text, active }: { text: string; active: boolean }) => {
+  const [display, setDisplay] = useState(text);
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&';
+  
+  useEffect(() => {
+    if (!active) {
+      setDisplay(text); // Reset immediately if not active
+      return;
+    }
+
+    let iteration = 0;
+    const interval = setInterval(() => {
+      setDisplay(() => 
+        text
+          .split('')
+          .map((_, index) => {
+            if (index < iteration) return text[index];
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join('')
+      );
+
+      if (iteration >= text.length) clearInterval(interval);
+      iteration += 1 / 2; // Speed control
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, [text, active]);
+
+  return <>{display}</>;
+};
+
+export default function Events() {
+  const [activeId, setActiveId] = useState<string>(EVENTS[0].id);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+
+  // Auto-rotate if user hasn't interacted? 
+  // Maybe too distracting for this design. keeping it manual for now.
+
+  return (
+    <section className="section section-padding section-bg-base" id="events" aria-labelledby="events-heading">
+      {/* Background Ambience */}
+      <ParallaxLayer speed={0.2} zIndex={0}>
+        <div className="absolute top-1/4 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px]" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={0.3} zIndex={0}>
+        <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-purple-500/10 rounded-full blur-[80px]" />
+      </ParallaxLayer>
+
+      <div className="section-container" ref={containerRef}>
+        <motion.div 
+          className="section-header mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+        >
+          <span className="section-overline">Calendar</span>
+          <h2 id="events-heading" className="section-heading">
+            Upcoming
+            <span className="section-heading-accent"> Events</span>
+          </h2>
+          <p className="section-description">
+            Don't miss out on the action. Join us for workshops, hackathons, and tech talks.
+          </p>
+        </motion.div>
+
+        <LayoutGroup>
+          <motion.div 
+            className="chronosphere-container"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            {EVENTS.map((event) => {
+              const isActive = activeId === event.id;
+              
+              return (
+                <motion.div
+                  layout
+                  key={event.id}
+                  className={`chrono-slice ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveId(event.id)}
+                  initial={false}
+                  animate={{ 
+                    flexGrow: isActive ? 3 : 1, // Expand active
+                    flexBasis: isActive ? '400px' : '100px'
+                  }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                >
+                  {/* Background Image */}
+                  <div className="slice-bg">
+                    <img src={event.image} alt="" className="slice-bg-img" loading="lazy" />
+                    <div className="slice-overlay" />
+                  </div>
+
+                  {/* Inactive Vertical Label */}
+                  <AnimatePresence>
+                    {!isActive && (
+                      <motion.div 
+                        className="slice-vertical-label"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.8 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {event.date} • {event.category}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Active Content */}
+                  <div className="slice-content">
+                    <AnimatePresence mode="wait">
+                      {isActive && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          transition={{ duration: 0.4, delay: 0.2 }}
+                        >
+                          <span className="event-date-badge">
+                            {event.date}
+                          </span>
+                          
+                          <h3 className="event-title">
+                            <DecoderText text={event.title} active={isActive} />
+                          </h3>
+
+                          <motion.p 
+                            className="event-desc"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.5, duration: 0.5 }}
+                          >
+                            {event.description}
+                          </motion.p>
+
+                          <motion.a 
+                            href={event.link} 
+                            className="event-link"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.7 }}
+                          >
+                            <span>Register Now</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="5" y1="12" x2="19" y2="12"></line>
+                              <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                          </motion.a>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </LayoutGroup>
+      </div>
+    </section>
+  );
+}
