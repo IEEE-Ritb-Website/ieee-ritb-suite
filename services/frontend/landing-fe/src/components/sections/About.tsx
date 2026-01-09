@@ -4,7 +4,6 @@ import './About.css';
 import { Chapters, ChapterType } from '@astranova/catalogues';
 import { motion, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
-import { useIntent } from '@/hooks/useIntent';
 
 // --- Types ---
 
@@ -19,21 +18,7 @@ interface StatItemData {
 
 function StatCard({ s, safeItemRightVariants }: { s: StatItemData, safeItemRightVariants: Variants }) {
   const { shouldReduceMotion } = useMotion();
-  const { isMovingToward } = useIntent();
   const cardRef = useRef<HTMLDivElement>(null);
-  const [isIntentHover, setIsIntentHover] = useState(false);
-
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-    const checkIntent = () => {
-      if (cardRef.current) {
-        const rect = cardRef.current.getBoundingClientRect();
-        setIsIntentHover(isMovingToward(rect, 0.4));
-      }
-    };
-    const interval = setInterval(checkIntent, 100);
-    return () => clearInterval(interval);
-  }, [isMovingToward, shouldReduceMotion]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (shouldReduceMotion) return;
@@ -48,7 +33,7 @@ function StatCard({ s, safeItemRightVariants }: { s: StatItemData, safeItemRight
   return (
     <motion.div 
       ref={cardRef}
-      className={`stat-card holographic ${isIntentHover ? 'intent-active' : ''}`} 
+      className="stat-card holographic" 
       variants={safeItemRightVariants}
       onMouseMove={handleMouseMove}
       whileHover={shouldReduceMotion ? {} : { y: 0, scale: 1.02 }}

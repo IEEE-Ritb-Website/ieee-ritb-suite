@@ -3,7 +3,6 @@ import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import { useMotion } from '@/hooks/useMotion';
-import { useIntent } from '@/hooks/useIntent';
 import './Contact.css';
 
 // --- Types ---
@@ -19,21 +18,7 @@ interface ChannelItem {
 
 function ChannelCard({ item, safeItemVariants }: { item: ChannelItem, safeItemVariants: Variants }) {
   const { shouldReduceMotion } = useMotion();
-  const { isMovingToward } = useIntent();
   const cardRef = useRef<HTMLElement>(null);
-  const [isIntentHover, setIsIntentHover] = useState(false);
-
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-    const checkIntent = () => {
-      if (cardRef.current) {
-        const rect = cardRef.current.getBoundingClientRect();
-        setIsIntentHover(isMovingToward(rect, 0.4));
-      }
-    };
-    const interval = setInterval(checkIntent, 100);
-    return () => clearInterval(interval);
-  }, [isMovingToward, shouldReduceMotion]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (shouldReduceMotion) return;
@@ -53,7 +38,7 @@ function ChannelCard({ item, safeItemVariants }: { item: ChannelItem, safeItemVa
       href={item.href || undefined} 
       target={item.href ? "_blank" : undefined}
       rel={item.href ? "noopener noreferrer" : undefined}
-      className={`channel-card glass-panel ${isIntentHover ? 'intent-active' : ''}`}
+      className="channel-card glass-panel"
       onMouseMove={handleMouseMove}
       variants={safeItemVariants}
       whileHover={shouldReduceMotion ? {} : { x: 6 }}
@@ -224,20 +209,6 @@ export default function Contact() {
   const formRef = useRef<HTMLFormElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { orchestrate, shouldReduceMotion } = useMotion();
-  const { isMovingToward } = useIntent();
-  const [isIntentHover, setIsIntentHover] = useState(false);
-
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-    const checkIntent = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        setIsIntentHover(isMovingToward(rect, 0.4));
-      }
-    };
-    const interval = setInterval(checkIntent, 100);
-    return () => clearInterval(interval);
-  }, [isMovingToward, shouldReduceMotion]);
 
   const safeContainerVariants = orchestrate(containerVariants);
   const safeItemVariants = orchestrate(itemVariants);
@@ -372,7 +343,7 @@ export default function Contact() {
           <motion.div variants={safeItemVariants} className="w-full">
             <motion.div 
               ref={containerRef}
-              className={`contact-form-container glass-panel ${isIntentHover ? 'intent-active' : ''}`}
+              className="contact-form-container glass-panel"
               onMouseMove={handleMouseMove}
               layout
             >
