@@ -97,14 +97,12 @@
   z-index: 1;
 }
 
-.feature-card:hover::after,
-.feature-card.intent-active::after {
+.feature-card:hover::after {
   opacity: 1;
 }
 
 /* Enhanced depth and glow on hover */
-.feature-card:hover,
-.feature-card.intent-active {
+.feature-card:hover {
   border-color: rgba(77, 127, 255, 0.4);
   box-shadow:
     0 15px 45px rgba(0, 0, 0, 0.4),
@@ -147,8 +145,7 @@
   border-radius: inherit;
 }
 
-.holographic:hover::before,
-.holographic.intent-active::before {
+.holographic:hover::before {
   opacity: 0.5;
   animation: holographicShine 6s linear infinite;
 }

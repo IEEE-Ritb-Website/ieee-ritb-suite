@@ -14,6 +14,7 @@ import PerformanceMonitor from './components/debug/PerformanceMonitor';
 // Lazy load sections
 const About = lazy(() => import('./components/sections/About'));
 const Features = lazy(() => import('./components/sections/Features'));
+const Events = lazy(() => import('./components/sections/Events'));
 const Chapters = lazy(() => import('./components/sections/Chapters'));
 const Contact = lazy(() => import('./components/sections/Contact'));
 
@@ -99,6 +100,9 @@ function App() {
         </Suspense>
         <Suspense fallback={<SectionLoader />}>
           <Features />
+        </Suspense>
+        <Suspense fallback={<SectionLoader />}>
+          <Events />
         </Suspense>
         <Suspense fallback={<SectionLoader />}>
           <Chapters />

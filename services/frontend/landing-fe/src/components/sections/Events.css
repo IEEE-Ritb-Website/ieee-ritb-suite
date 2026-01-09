@@ -1,0 +1,209 @@
+/* Services/frontend/landing-fe/src/components/sections/Events.css */
+
+.chronosphere-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+  height: 600px; /* Fixed height for desktop */
+}
+
+/* Mobile: Stack vertically */
+@media (max-width: 768px) {
+  .chronosphere-container {
+    height: auto;
+    flex-direction: column;
+  }
+}
+
+/* Desktop: Horizontal Layout */
+@media (min-width: 769px) {
+  .chronosphere-container {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+/* --- The Slice (Card) --- */
+.chrono-slice {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(10, 11, 20, 0.6);
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: border-color 0.4s ease;
+  flex-shrink: 0; /* Prevent shrinking below basis */
+  
+  /* Flex basis controlled by Framer Motion, but default here */
+  flex-basis: 100px; 
+}
+
+.chrono-slice.active {
+  border-color: var(--color-ieee-primary);
+  box-shadow: 0 0 30px var(--color-accent-subtle);
+  flex-grow: 1; /* Allow expansion */
+}
+
+.chrono-slice:hover:not(.active) {
+  border-color: var(--color-border-hover);
+  background: rgba(10, 11, 20, 0.8);
+}
+
+/* --- Background Image/Effect --- */
+.slice-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.4;
+  transition: opacity 0.5s ease;
+}
+
+.chrono-slice.active .slice-bg {
+  opacity: 0.8;
+}
+
+.slice-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Time Dilation Effect: Scale gently */
+  transition: transform 8s ease-out;
+  filter: grayscale(100%) contrast(1.2);
+}
+
+.chrono-slice.active .slice-bg-img {
+  transform: scale(1.1);
+  filter: grayscale(20%) contrast(1.1);
+}
+
+.slice-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 6, 15, 0) 0%,
+    rgba(5, 6, 15, 0.8) 60%,
+    rgba(5, 6, 15, 0.95) 100%
+  );
+  z-index: 1;
+}
+
+/* --- Content Wrapper --- */
+.slice-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: var(--space-6);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* --- Inactive State (Vertical Text) --- */
+.slice-vertical-label {
+  position: absolute;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.8;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* --- Active Content --- */
+.event-date-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: rgba(77, 127, 255, 0.1);
+  border: 1px solid rgba(77, 127, 255, 0.3);
+  border-radius: 4px;
+  color: var(--color-ieee-pulse);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-3);
+  width: fit-content;
+  backdrop-filter: blur(4px);
+}
+
+.event-title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+  line-height: 1.1;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.event-desc {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  max-width: 480px;
+  margin-bottom: var(--space-4);
+  opacity: 0; /* Animated by Framer Motion */
+}
+
+.event-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-ieee-primary);
+  font-weight: var(--font-medium);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.event-link:hover {
+  color: var(--color-ieee-electric);
+}
+
+.event-link svg {
+  transition: transform 0.2s ease;
+}
+
+.event-link:hover svg {
+  transform: translateX(4px);
+}
+
+/* --- Content Wrapper --- */
+
+/* Mobile Styles Override */
+@media (max-width: 768px) {
+  .chrono-slice {
+    height: 120px; /* Collapsed height */
+    flex-basis: auto !important;
+  }
+  
+  .chrono-slice.active {
+    height: 400px;
+  }
+  
+  .slice-vertical-label {
+    writing-mode: horizontal-tb;
+    transform: none;
+    left: var(--space-6);
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}

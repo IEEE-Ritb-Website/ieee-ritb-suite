@@ -1,10 +1,9 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 import { Chapters } from '@astranova/catalogues';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './Features.css';
 import { motion, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
-import { useIntent } from '@/hooks/useIntent';
 
 // --- Types ---
 
@@ -18,24 +17,7 @@ interface Feature {
 
 function FeatureCard({ feature, safeItemVariants }: { feature: Feature, safeItemVariants: Variants }) {
   const { shouldReduceMotion } = useMotion();
-  const { isMovingToward } = useIntent();
   const cardRef = useRef<HTMLDivElement>(null);
-  const [isIntentHover, setIsIntentHover] = useState(false);
-
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-
-    const checkIntent = () => {
-      if (cardRef.current) {
-        const rect = cardRef.current.getBoundingClientRect();
-        const toward = isMovingToward(rect, 0.4);
-        setIsIntentHover(toward);
-      }
-    };
-
-    const interval = setInterval(checkIntent, 100);
-    return () => clearInterval(interval);
-  }, [isMovingToward, shouldReduceMotion]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (shouldReduceMotion) return;
@@ -64,7 +46,7 @@ function FeatureCard({ feature, safeItemVariants }: { feature: Feature, safeItem
     <motion.div variants={safeItemVariants}>
       <article
         ref={cardRef}
-        className={`feature-card holographic ${isIntentHover ? 'intent-active' : ''}`}
+        className="feature-card holographic"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
