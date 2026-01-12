@@ -1,5 +1,5 @@
 import './Hero.css';
-import HeroStarfield from '../effects/HeroStarfield';
+import HeroStarfield, { HeroFallback } from '../effects/HeroStarfield';
 import type { AnimationPhase } from '../effects/HeroStarfield';
 import { useEffect, useRef, useState } from 'react';
 import { Chapters } from '@astranova/catalogues';
@@ -120,7 +120,7 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
 
   return (
     <section className="hero" id="home" aria-labelledby="hero-title">
-      <ErrorBoundary fallback={<div className="hero-starfield-static absolute inset-0 bg-[#05060f]" />}>
+      <ErrorBoundary fallback={<HeroFallback />}>
         <HeroStarfield isLoading={isLoading} onPhaseChange={handlePhaseChange} />
       </ErrorBoundary>
 

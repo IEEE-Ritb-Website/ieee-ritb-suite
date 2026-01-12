@@ -253,6 +253,14 @@ interface HeroStarfieldProps {
   onPhaseChange?: (phase: AnimationPhase) => void;
 }
 
+export function HeroFallback() {
+  return (
+    <div className="hero-starfield hero-starfield-static">
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-black to-indigo-950/20" aria-hidden="true" />
+    </div>
+  );
+}
+
 export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfieldProps) {
   const hasReducedMotion = prefersReducedMotion();
   const hasWebGL = hasWebGLSupport();
@@ -267,11 +275,7 @@ export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfiel
   }, [tier]);
 
   if (hasReducedMotion || !hasWebGL) {
-    return (
-      <div className="hero-starfield hero-starfield-static">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-black to-indigo-950/20" aria-hidden="true" />
-      </div>
-    );
+    return <HeroFallback />;
   }
 
   return (
