@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Chapters } from '@astranova/catalogues';
 import { motion, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
+import { ErrorBoundary } from '../common/ErrorBoundary';
 
 interface Props {
   isLoading: boolean;
@@ -67,21 +68,21 @@ const StatItem = ({ value, label, delay, shouldStart }: { value: number; label: 
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
-    transition: { 
-      duration: 1.2, 
+    transition: {
+      duration: 1.2,
       ease: [0.4, 0, 0.2, 1],
       staggerChildren: 0.15,
       delayChildren: 0.2
-    } 
+    }
   }
 };
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
   }
@@ -119,7 +120,9 @@ export default function Hero({ isLoading, onWarpComplete }: Props) {
 
   return (
     <section className="hero" id="home" aria-labelledby="hero-title">
-      <HeroStarfield isLoading={isLoading} onPhaseChange={handlePhaseChange} />
+      <ErrorBoundary fallback={<div className="hero-starfield-static absolute inset-0 bg-[#05060f]" />}>
+        <HeroStarfield isLoading={isLoading} onPhaseChange={handlePhaseChange} />
+      </ErrorBoundary>
 
       <motion.div
         className="hero-content"
