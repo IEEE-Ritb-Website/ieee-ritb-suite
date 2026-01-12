@@ -4,28 +4,33 @@
  */
 
 import { useEffect, useState } from 'react';
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import './BackToTop.css';
 
 export default function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  
+  // Framer Motion Scroll Progress
+  const { scrollYProgress } = useScroll();
+  const scrollSpring = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  // Calculate stroke dash for circular progress
+  const radius = 22;
+  const circumference = 2 * Math.PI * radius;
+  
+  const strokeDashoffset = useTransform(scrollSpring, [0, 1], [circumference, 0]);
 
   useEffect(() => {
     const handleScroll = () => {
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY;
-
       // Show button after scrolling 300px
-      setIsVisible(scrollTop > 300);
-
-      // Calculate scroll progress
-      const totalScrollableHeight = documentHeight - windowHeight;
-      const progress = (scrollTop / totalScrollableHeight) * 100;
-      setScrollProgress(Math.min(100, Math.max(0, progress)));
+      setIsVisible(window.scrollY > 300);
     };
 
-    // Throttle scroll events
+    // Throttle scroll events for visibility check
     let ticking = false;
     const throttledScroll = () => {
       if (!ticking) {
@@ -48,11 +53,6 @@ export default function BackToTop() {
     });
   };
 
-  // Calculate stroke dash for circular progress
-  const radius = 22;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (scrollProgress / 100) * circumference;
-
   return (
     <button
       className={`back-to-top ${isVisible ? 'visible' : ''}`}
@@ -72,7 +72,7 @@ export default function BackToTop() {
           strokeWidth="2"
           opacity="0.2"
         />
-        <circle
+        <motion.circle
           className="progress-ring-fill"
           cx="28"
           cy="28"
@@ -81,7 +81,7 @@ export default function BackToTop() {
           stroke="currentColor"
           strokeWidth="2"
           strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
+          style={{ strokeDashoffset }}
           transform="rotate(-90 28 28)"
         />
       </svg>

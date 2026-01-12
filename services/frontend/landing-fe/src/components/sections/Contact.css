@@ -215,6 +215,7 @@
   font-size: var(--text-base);
   color: var(--color-text-primary);
   outline: none;
+  cursor: none;
 }
 
 .form-textarea { min-height: 140px; resize: none; }
@@ -231,7 +232,7 @@
 .btn-primary.dormant {
   filter: grayscale(1);
   opacity: 0.5;
-  cursor: not-allowed;
+  cursor: none;
   background: var(--color-text-disabled);
   border-color: transparent;
   pointer-events: none;
@@ -404,7 +405,7 @@
   font-family: 'JetBrains Mono', var(--font-fallback-mono);
   font-size: 10px;
   color: var(--color-text-muted);
-  cursor: pointer;
+  cursor: none;
   transition: all var(--duration-fast) ease;
 }
 

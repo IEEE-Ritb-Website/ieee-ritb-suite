@@ -157,7 +157,7 @@
   border: none;
   border-radius: 6px;
   color: var(--color-text-muted);
-  cursor: pointer;
+  cursor: none;
   transition: all var(--duration-fast) var(--ease-default);
   margin: -4px -4px 0 0;
 }

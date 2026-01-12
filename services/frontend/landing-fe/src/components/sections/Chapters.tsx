@@ -133,7 +133,7 @@ export default function Chapters() {
           {filteredChapters.map((chapter, index) => (
             <motion.div key={`${chapter.acronym}-${index}`} variants={safeItemVariants}>
               <article
-                className={`chapter-card ${activeChapter === index ? 'active' : ''}`}
+                className={`chapter-card magnetic ${activeChapter === index ? 'active' : ''}`}
                 onMouseEnter={() => !shouldReduceMotion && setActiveChapter(index)}
                 onMouseLeave={() => setActiveChapter(null)}
                 onFocus={() => setActiveChapter(index)}

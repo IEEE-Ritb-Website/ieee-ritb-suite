@@ -6,6 +6,7 @@ import { getOptimalStarCount, prefersReducedMotion } from '@/utils/deviceDetecti
 import { hasWebGLSupport } from '@/utils/webglSupport';
 import { throttle } from '@/utils/throttle';
 import { usePerformanceMonitor, type PerformanceTier } from '@/hooks/usePerformanceMonitor';
+import { useInView } from 'framer-motion';
 import './HeroStarfield.css';
 
 // ==================== CONSTANTS ====================
@@ -53,9 +54,10 @@ interface StarsFieldProps {
   starCount: number;
   tier: PerformanceTier;
   onPhaseChange?: (phase: AnimationPhase) => void;
+  paused?: boolean;
 }
 
-const StarsField = ({ isLoading, starCount, tier, onPhaseChange }: StarsFieldProps) => {
+const StarsField = ({ isLoading, starCount, tier, onPhaseChange, paused = false }: StarsFieldProps) => {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
   const [phase, setPhase] = useState<AnimationPhase>('warp');
@@ -154,7 +156,7 @@ const StarsField = ({ isLoading, starCount, tier, onPhaseChange }: StarsFieldPro
   }, []);
 
   useFrame((_state, delta) => {
-    if (isLoading || !pointsRef.current || !linesRef.current) return;
+    if (paused || isLoading || !pointsRef.current || !linesRef.current) return;
     timeRef.current += delta;
 
     const positionsArray = pointsRef.current.geometry.attributes.position.array as Float32Array;
@@ -239,7 +241,7 @@ const StarsField = ({ isLoading, starCount, tier, onPhaseChange }: StarsFieldPro
         <bufferGeometry />
         <lineBasicMaterial color={0xaaccff} transparent opacity={ANIMATION_CONFIG.LINE_OPACITY} blending={THREE.AdditiveBlending} />
       </lineSegments>
-      {shootingStarConfig.count > 0 && (
+      {shootingStarConfig.count > 0 && !paused && (
         <ShootingStars count={shootingStarConfig.count} spawnInterval={shootingStarConfig.interval} />
       )}
     </>
@@ -253,10 +255,20 @@ interface HeroStarfieldProps {
   onPhaseChange?: (phase: AnimationPhase) => void;
 }
 
+export function HeroFallback() {
+  return (
+    <div className="hero-starfield hero-starfield-static">
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-black to-indigo-950/20" aria-hidden="true" />
+    </div>
+  );
+}
+
 export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfieldProps) {
   const hasReducedMotion = prefersReducedMotion();
   const hasWebGL = hasWebGLSupport();
   const { tier } = usePerformanceMonitor(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "200px" });
   
   const starCount = useMemo(() => {
     const baseCount = getOptimalStarCount() || ANIMATION_CONFIG.STAR_COUNT_FALLBACK;
@@ -267,18 +279,20 @@ export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfiel
   }, [tier]);
 
   if (hasReducedMotion || !hasWebGL) {
-    return (
-      <div className="hero-starfield hero-starfield-static">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-black to-indigo-950/20" aria-hidden="true" />
-      </div>
-    );
+    return <HeroFallback />;
   }
 
   return (
-    <div className="hero-starfield">
+    <div className="hero-starfield" ref={containerRef}>
       <Canvas camera={{ position: [0, 0, 30], fov: 75 }} gl={{ alpha: true, antialias: true }}>
         <Suspense fallback={null}>
-          <StarsField isLoading={isLoading} starCount={starCount} tier={tier} onPhaseChange={onPhaseChange} />
+          <StarsField 
+            isLoading={isLoading} 
+            starCount={starCount} 
+            tier={tier} 
+            onPhaseChange={onPhaseChange} 
+            paused={!isInView}
+          />
         </Suspense>
       </Canvas>
     </div>

@@ -63,7 +63,7 @@
   padding: var(--space-7);
   transition: all var(--duration-moderate) var(--ease-smooth);
   overflow: hidden;
-  cursor: default;
+  cursor: none;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   transform-style: preserve-3d;
