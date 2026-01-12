@@ -177,7 +177,7 @@
   border: none;
   color: var(--color-text-secondary);
   padding: var(--space-2);
-  cursor: pointer;
+  cursor: none;
   border-radius: 6px;
   transition: all var(--duration-fast) var(--ease-default);
   display: flex;
@@ -205,7 +205,7 @@
   border: none;
   color: var(--color-text-primary);
   padding: var(--space-2);
-  cursor: pointer;
+  cursor: none;
   min-width: var(--min-touch-target);
   min-height: var(--min-touch-target);
   z-index: calc(var(--z-navigation) + 1);

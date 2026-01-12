@@ -326,7 +326,7 @@
   border: none;
   border-radius: 12px;
   text-decoration: none;
-  cursor: pointer;
+  cursor: none;
   transition: all var(--duration-base) var(--ease-default);
   position: relative;
   overflow: hidden;
@@ -437,7 +437,7 @@
   border: 2px solid var(--color-border-hover);
   border-radius: 12px;
   text-decoration: none;
-  cursor: pointer;
+  cursor: none;
   transition: all var(--duration-base) var(--ease-default);
   min-height: var(--min-touch-target);
   position: relative;

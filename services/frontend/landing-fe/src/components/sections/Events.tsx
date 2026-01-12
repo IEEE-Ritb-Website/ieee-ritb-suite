@@ -132,7 +132,7 @@ export default function Events() {
                 <motion.div
                   layout
                   key={event.id}
-                  className={`chrono-slice ${isActive ? 'active' : ''}`}
+                  className={`chrono-slice magnetic ${isActive ? 'active' : ''}`}
                   onClick={() => setActiveId(event.id)}
                   initial={false}
                   animate={{ 
