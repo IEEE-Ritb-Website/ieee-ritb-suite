@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link, useOutletContext } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -7,32 +8,80 @@ import type { LayoutContext } from '../layouts/MainLayout';
 import './EventDetails.css';
 
 /**
- * EventDetails Page
- * 
- * Displays detailed information about a specific event.
- * Features: Hero header, poster, details panel, and registration CTA.
+ * Countdown Hook - Calculates time until event
+ */
+function useCountdown(targetDate: string) {
+    const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
+
+    useEffect(() => {
+        const calculateTimeLeft = () => {
+            // Parse date - for "TBA" or invalid dates, show placeholder
+            const target = new Date(targetDate);
+            const now = new Date();
+
+            if (isNaN(target.getTime()) || target <= now) {
+                return { days: 0, hours: 0, mins: 0, secs: 0 };
+            }
+
+            const diff = target.getTime() - now.getTime();
+            return {
+                days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+                mins: Math.floor((diff / 1000 / 60) % 60),
+                secs: Math.floor((diff / 1000) % 60),
+            };
+        };
+
+        setTimeLeft(calculateTimeLeft());
+        const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
+        return () => clearInterval(timer);
+    }, [targetDate]);
+
+    return timeLeft;
+}
+
+/**
+ * EventDetails Page - Cinematic Poster Reveal + Split Showcase
  */
 export default function EventDetails() {
     const { eventId } = useParams<{ eventId: string }>();
     const { warpComplete } = useOutletContext<LayoutContext>();
     const { data: event, loading, error } = useEvent(eventId);
-    const { orchestrate } = useMotion();
+    const { orchestrate, shouldReduceMotion } = useMotion();
+
+    // Countdown timer
+    const countdown = useCountdown(event?.date || '');
+    const hasCountdown = countdown.days > 0 || countdown.hours > 0 || countdown.mins > 0;
 
     const containerVariants = orchestrate({
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+            transition: { staggerChildren: 0.1, delayChildren: 0.15 }
         }
     });
 
     const itemVariants = orchestrate({
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: 0, y: 25 },
         visible: {
             opacity: 1,
             y: 0,
-            transition: { duration: 0.6, ease: 'easeOut' }
+            transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] }
         }
+    });
+
+    const pillVariants = orchestrate({
+        hidden: { opacity: 0, y: 15, scale: 0.9 },
+        visible: (i: number) => ({
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            transition: {
+                duration: 0.5,
+                delay: i * 0.08,
+                ease: [0.22, 1, 0.36, 1]
+            }
+        })
     });
 
     if (loading) {
@@ -74,124 +123,216 @@ export default function EventDetails() {
                 initial="hidden"
                 animate={warpComplete ? "visible" : "hidden"}
             >
-                {/* Hero Header */}
+                {/* Back Link - Fixed Position */}
+                <Link to="/#events" className="back-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Back to Events
+                </Link>
+
+                {/* ===== CINEMATIC HERO ===== */}
                 <motion.section className="event-hero" variants={itemVariants}>
+                    {/* Full-bleed Background */}
                     <div className="event-hero-bg">
-                        <img src={event.image} alt="" className="event-hero-image" />
+                        <img
+                            src={event.image}
+                            alt=""
+                            className="event-hero-image"
+                            loading="eager"
+                        />
                         <div className="event-hero-overlay" />
                     </div>
 
+                    {/* Hero Content */}
                     <div className="event-hero-content">
-                        <Link to="/#events" className="back-link">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M19 12H5M12 19l-7-7 7-7" />
-                            </svg>
-                            Back to Events
-                        </Link>
+                        {/* Floating Info Pills */}
+                        <motion.div className="event-badges" variants={itemVariants}>
+                            <motion.span
+                                className="event-badge event-category-badge"
+                                custom={0}
+                                variants={pillVariants}
+                            >
+                                {event.category}
+                            </motion.span>
 
-                        <div className="event-badges">
-                            <span className="event-category-badge">{event.category}</span>
-                            <span className="event-date-badge">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <motion.span
+                                className="event-badge event-date-badge"
+                                custom={1}
+                                variants={pillVariants}
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                                     <line x1="16" y1="2" x2="16" y2="6" />
                                     <line x1="8" y1="2" x2="8" y2="6" />
                                     <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
                                 {event.date}
-                            </span>
+                            </motion.span>
+
                             {event.time && (
-                                <span className="event-time-badge">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <motion.span
+                                    className="event-badge event-time-badge"
+                                    custom={2}
+                                    variants={pillVariants}
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <circle cx="12" cy="12" r="10" />
                                         <polyline points="12 6 12 12 16 14" />
                                     </svg>
                                     {event.time}
-                                </span>
+                                </motion.span>
                             )}
-                        </div>
+                        </motion.div>
 
-                        <h1 className="event-title">{event.title}</h1>
-                        <p className="event-description">{event.description}</p>
+                        {/* Event Title */}
+                        <motion.h1 className="event-title" variants={itemVariants}>
+                            {event.title}
+                        </motion.h1>
+
+                        {/* Short Tagline */}
+                        <motion.p className="event-tagline" variants={itemVariants}>
+                            {event.description}
+                        </motion.p>
                     </div>
                 </motion.section>
 
-                {/* Main Content */}
-                <div className="event-content-grid">
-                    {/* Poster / Media */}
-                    <motion.section className="event-poster" variants={itemVariants}>
-                        <div className="poster-frame glass-panel">
-                            <img src={event.image} alt={event.title} className="poster-image" />
-                        </div>
-                    </motion.section>
+                {/* ===== SPLIT SHOWCASE CONTENT ===== */}
+                <motion.section className="event-showcase" variants={itemVariants}>
+                    <div className="showcase-container">
 
-                    {/* Details Panel */}
-                    <motion.section className="event-info" variants={itemVariants}>
-                        {/* About */}
-                        <div className="info-card glass-panel">
-                            <h2 className="info-heading">About This Event</h2>
-                            <p className="info-text">{event.longDescription || event.description}</p>
-                        </div>
-
-                        {/* Schedule */}
-                        {event.schedule && event.schedule.length > 0 && (
-                            <div className="info-card glass-panel">
-                                <h2 className="info-heading">Schedule</h2>
-                                <table className="schedule-table">
-                                    <tbody>
-                                        {event.schedule.map((item, index) => (
-                                            <tr key={index}>
-                                                <td className="schedule-time">{item.time}</td>
-                                                <td className="schedule-activity">{item.activity}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-
-                        {/* Venue */}
-                        {event.venue && (
-                            <div className="info-card glass-panel">
-                                <h2 className="info-heading">Venue</h2>
-                                <div className="venue-info">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        {/* Metadata Pills Row */}
+                        <motion.div className="meta-pills-row" variants={itemVariants}>
+                            {event.venue && (
+                                <div className="meta-pill">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                                         <circle cx="12" cy="10" r="3" />
                                     </svg>
-                                    <span>{event.venue}</span>
+                                    <span className="meta-label">Venue</span>
+                                    <span className="meta-value">{event.venue}</span>
+                                </div>
+                            )}
+
+                            <div className="meta-pill">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                                <span className="meta-label">Date</span>
+                                <span className="meta-value">{event.date}</span>
+                            </div>
+
+                            {event.time && (
+                                <div className="meta-pill">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                    <span className="meta-label">Time</span>
+                                    <span className="meta-value">{event.time}</span>
+                                </div>
+                            )}
+                        </motion.div>
+
+                        {/* Large About Card with Pullquote */}
+                        <motion.div className="about-showcase" variants={itemVariants}>
+                            <div className="about-accent" aria-hidden="true">"</div>
+                            <p className="about-text">
+                                {event.longDescription || event.description}
+                            </p>
+                        </motion.div>
+
+                        {/* Horizontal Timeline Schedule */}
+                        {event.schedule && event.schedule.length > 0 && (
+                            <motion.div className="schedule-timeline" variants={itemVariants}>
+                                <h3 className="timeline-heading">Event Timeline</h3>
+                                <div className="timeline-track">
+                                    {event.schedule.map((item, index) => (
+                                        <div key={index} className="timeline-node">
+                                            <div className="node-marker">
+                                                <span className="node-dot" />
+                                                {index < event.schedule!.length - 1 && (
+                                                    <span className="node-line" />
+                                                )}
+                                            </div>
+                                            <div className="node-content">
+                                                <span className="node-time">{item.time}</span>
+                                                <span className="node-activity">{item.activity}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Floating Tags */}
+                        {event.tags && event.tags.length > 0 && (
+                            <motion.div className="tags-float" variants={itemVariants}>
+                                {event.tags.map((tag, index) => (
+                                    <span key={index} className="tag-chip">{tag}</span>
+                                ))}
+                            </motion.div>
+                        )}
+                    </div>
+                </motion.section>
+
+                {/* ===== COUNTDOWN URGENCY CTA ===== */}
+                <motion.section className="event-registration countdown-cta" variants={itemVariants}>
+                    <div className="countdown-card">
+                        {/* Countdown Timer */}
+                        {hasCountdown ? (
+                            <div className="countdown-section">
+                                <span className="countdown-label">Event starts in</span>
+                                <div className="countdown-digits">
+                                    <div className="countdown-unit">
+                                        <span className="countdown-number">{String(countdown.days).padStart(2, '0')}</span>
+                                        <span className="countdown-text">Days</span>
+                                    </div>
+                                    <span className="countdown-separator">:</span>
+                                    <div className="countdown-unit">
+                                        <span className="countdown-number">{String(countdown.hours).padStart(2, '0')}</span>
+                                        <span className="countdown-text">Hours</span>
+                                    </div>
+                                    <span className="countdown-separator">:</span>
+                                    <div className="countdown-unit">
+                                        <span className="countdown-number">{String(countdown.mins).padStart(2, '0')}</span>
+                                        <span className="countdown-text">Mins</span>
+                                    </div>
+                                    {!shouldReduceMotion && (
+                                        <>
+                                            <span className="countdown-separator">:</span>
+                                            <div className="countdown-unit">
+                                                <span className="countdown-number countdown-secs">{String(countdown.secs).padStart(2, '0')}</span>
+                                                <span className="countdown-text">Secs</span>
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
                             </div>
-                        )}
-
-                        {/* Tags */}
-                        {event.tags && event.tags.length > 0 && (
-                            <div className="event-tags">
-                                {event.tags.map((tag, index) => (
-                                    <span key={index} className="event-tag">{tag}</span>
-                                ))}
+                        ) : (
+                            <div className="countdown-section">
+                                <span className="countdown-label">Don't miss out!</span>
+                                <p className="countdown-tagline">Secure your spot for this experience</p>
                             </div>
                         )}
-                    </motion.section>
-                </div>
 
-                {/* Registration CTA */}
-                <motion.section className="event-registration" variants={itemVariants}>
-                    <div className="registration-card glass-panel">
-                        <div className="registration-content">
-                            <h2>Ready to Join?</h2>
-                            <p>Don't miss out on this exciting event. Register now to secure your spot!</p>
+                        {/* Urgency Indicator */}
+                        <div className="urgency-indicator">
+                            <span className="urgency-dot" />
+                            <span className="urgency-text">Spots filling fast</span>
                         </div>
-                        <div className="registration-actions">
-                            <a href={event.registrationLink || '#'} className="btn-primary em-field">
+
+                        {/* CTA Button */}
+                        <div className="countdown-actions">
+                            <a href={event.registrationLink || '#'} className="btn-register pulse-glow">
                                 <span>Register Now</span>
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M5 12h14M12 5l7 7-7 7" />
                                 </svg>
                             </a>
-                            <Link to="/" className="btn-secondary">
-                                Back to Home
-                            </Link>
                         </div>
                     </div>
                 </motion.section>
