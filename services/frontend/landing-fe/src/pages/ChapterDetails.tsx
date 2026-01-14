@@ -17,32 +17,49 @@ const chapterColors: Record<string, string> = {
 };
 
 /**
- * ChapterDetails Page
+ * ChapterDetails Page - Immersive Hero Showcase
  * 
- * Displays detailed information about a specific IEEE chapter.
- * Features: Hero with logo, overview grid, mission statement, and CTA.
+ * A cinematic experience featuring:
+ * - Parallax background orbs in chapter colors
+ * - Pulsating glow rings around the central icon
+ * - Glassmorphic floating stat cards
+ * - Premium animations and transitions
  */
 export default function ChapterDetails() {
     const { chapterId } = useParams<{ chapterId: string }>();
     const { warpComplete } = useOutletContext<LayoutContext>();
     const { data: chapter, loading, error } = useChapter(chapterId);
-    const { orchestrate } = useMotion();
+    const { orchestrate, shouldReduceMotion } = useMotion();
 
     const containerVariants = orchestrate({
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+            transition: { staggerChildren: 0.12, delayChildren: 0.1 }
         }
     });
 
     const itemVariants = orchestrate({
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: 0, y: 30 },
         visible: {
             opacity: 1,
             y: 0,
-            transition: { duration: 0.6, ease: 'easeOut' }
+            transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] }
         }
+    });
+
+    const floatVariants = orchestrate({
+        hidden: { opacity: 0, y: 40, scale: 0.95 },
+        visible: (i: number) => ({
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            transition: {
+                duration: 0.6,
+                delay: i * 0.1,
+                ease: [0.22, 1, 0.36, 1]
+            }
+        })
     });
 
     const color = chapter ? chapterColors[chapter.acronym] || '#4d7fff' : '#4d7fff';
@@ -73,6 +90,28 @@ export default function ChapterDetails() {
         );
     }
 
+    // Stat card data
+    const statCards = [
+        {
+            label: 'Domain',
+            value: chapter.type === 'tech' ? 'Technical Society' : 'Operations & Support',
+        },
+        {
+            label: 'Chapter Type',
+            value: chapter.type === 'tech' ? 'IEEE Technical Society' : 'IEEE Affinity Group',
+        },
+        {
+            label: 'Acronym',
+            value: chapter.acronym,
+            isAccent: true,
+        },
+        {
+            label: 'Status',
+            value: 'Active',
+            isStatus: true,
+        },
+    ];
+
     return (
         <>
             <Helmet>
@@ -86,74 +125,155 @@ export default function ChapterDetails() {
                 initial="hidden"
                 animate={warpComplete ? "visible" : "hidden"}
             >
-                {/* Hero Section */}
+                {/* ===== CINEMATIC HERO SECTION ===== */}
                 <motion.section className="chapter-hero" variants={itemVariants}>
-                    <div className="chapter-hero-glow" style={{ background: `radial-gradient(ellipse at center, ${color}30, transparent 70%)` }} />
+                    {/* Parallax Background Orbs */}
+                    <div className="chapter-orbs-container" aria-hidden="true">
+                        <div
+                            className="chapter-orb chapter-orb-1"
+                            style={{ background: `radial-gradient(circle, ${color}40, transparent 70%)` }}
+                        />
+                        <div
+                            className="chapter-orb chapter-orb-2"
+                            style={{ background: `radial-gradient(circle, ${color}30, transparent 70%)` }}
+                        />
+                        <div
+                            className="chapter-orb chapter-orb-3"
+                            style={{ background: `radial-gradient(circle, ${color}25, transparent 70%)` }}
+                        />
+                    </div>
 
+                    {/* Central Glow */}
+                    <div
+                        className="chapter-hero-glow"
+                        style={{ background: `radial-gradient(ellipse at center, ${color}20, transparent 60%)` }}
+                    />
+
+                    {/* Back Link */}
+                    <Link to="/#chapters" className="back-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7" />
+                        </svg>
+                        Back to Chapters
+                    </Link>
+
+                    {/* Hero Content */}
                     <div className="chapter-hero-content">
-                        <Link to="/#chapters" className="back-link">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M19 12H5M12 19l-7-7 7-7" />
-                            </svg>
-                            Back to Chapters
-                        </Link>
+                        {/* Icon with Pulsating Glow Rings */}
+                        <motion.div className="chapter-icon-container" variants={itemVariants}>
+                            {/* Glow Rings */}
+                            {!shouldReduceMotion && (
+                                <>
+                                    <div
+                                        className="chapter-glow-ring chapter-glow-ring-1"
+                                        style={{ borderColor: color }}
+                                        aria-hidden="true"
+                                    />
+                                    <div
+                                        className="chapter-glow-ring chapter-glow-ring-2"
+                                        style={{ borderColor: color }}
+                                        aria-hidden="true"
+                                    />
+                                    <div
+                                        className="chapter-glow-ring chapter-glow-ring-3"
+                                        style={{ borderColor: color }}
+                                        aria-hidden="true"
+                                    />
+                                </>
+                            )}
 
-                        <div className="chapter-hero-icon" style={{ color }}>
-                            <ChapterIcon acronym={chapter.acronym as IChapterAcronyms} size={80} />
-                        </div>
+                            {/* Main Icon */}
+                            <div
+                                className="chapter-hero-icon"
+                                style={{
+                                    color,
+                                    '--glow-color': `${color}50`,
+                                } as React.CSSProperties}
+                            >
+                                <ChapterIcon acronym={chapter.acronym as IChapterAcronyms} size={80} />
+                            </div>
+                        </motion.div>
 
-                        <div className="chapter-hero-text">
-                            <span className="chapter-type-badge" style={{ borderColor: color, color }}>
+                        {/* Text Content */}
+                        <motion.div className="chapter-hero-text" variants={itemVariants}>
+                            <span
+                                className="chapter-type-badge"
+                                style={{ borderColor: `${color}60`, color }}
+                            >
                                 {chapter.type === 'tech' ? 'Technical Chapter' : 'Non-Technical Chapter'}
                             </span>
+
                             <h1 className="chapter-title">{chapter.name}</h1>
-                            <span className="chapter-acronym-large" style={{ color }}>{chapter.acronym}</span>
-                        </div>
+
+                            <span className="chapter-acronym-large" style={{ color }}>
+                                {chapter.acronym}
+                            </span>
+                        </motion.div>
                     </div>
                 </motion.section>
 
-                {/* Overview Grid */}
+                {/* ===== MINIMALISTIC STAT CARDS ===== */}
                 <motion.section className="chapter-overview" variants={itemVariants}>
                     <div className="chapter-section-container">
-                        <div className="bento-grid">
-                            <div className="bento-card glass-panel">
-                                <span className="bento-label">Domain</span>
-                                <span className="bento-value">{chapter.type === 'tech' ? 'Technical Society' : 'Operations & Support'}</span>
-                            </div>
-                            <div className="bento-card glass-panel">
-                                <span className="bento-label">Chapter Type</span>
-                                <span className="bento-value">{chapter.type === 'tech' ? 'IEEE Technical Society' : 'IEEE Affinity Group'}</span>
-                            </div>
-                            <div className="bento-card glass-panel">
-                                <span className="bento-label">Acronym</span>
-                                <span className="bento-value" style={{ color }}>{chapter.acronym}</span>
-                            </div>
-                            <div className="bento-card glass-panel">
-                                <span className="bento-label">Status</span>
-                                <span className="bento-value bento-active">Active</span>
-                            </div>
+                        <div className="stat-cards-grid">
+                            {statCards.map((card, index) => (
+                                <motion.div
+                                    key={card.label}
+                                    className="stat-card"
+                                    custom={index}
+                                    variants={floatVariants}
+                                    style={{ '--card-accent': color } as React.CSSProperties}
+                                >
+                                    <span className="stat-card-label">{card.label}</span>
+                                    <span
+                                        className={`stat-card-value ${card.isStatus ? 'active-status' : ''}`}
+                                        style={card.isAccent ? { color } : undefined}
+                                    >
+                                        {card.isStatus ? (
+                                            <span className="status-indicator">
+                                                <span className="status-dot" aria-hidden="true" />
+                                                {card.value}
+                                            </span>
+                                        ) : (
+                                            card.value
+                                        )}
+                                    </span>
+                                </motion.div>
+                            ))}
                         </div>
                     </div>
                 </motion.section>
 
-                {/* Mission Statement */}
+                {/* ===== MISSION SECTION ===== */}
                 <motion.section className="chapter-mission" variants={itemVariants}>
                     <div className="chapter-section-container">
-                        <div className="mission-content glass-panel">
+                        <div className="mission-content">
                             <h2 className="mission-heading">About This Chapter</h2>
                             <p className="mission-text">{chapter.shortDescription}</p>
                         </div>
                     </div>
                 </motion.section>
 
-                {/* CTA Section */}
+                {/* ===== CTA SECTION ===== */}
                 <motion.section className="chapter-cta" variants={itemVariants}>
                     <div className="chapter-section-container">
                         <div className="cta-content">
+                            {/* CTA Glow */}
+                            <div
+                                className="cta-glow"
+                                style={{ background: color }}
+                                aria-hidden="true"
+                            />
+
                             <h3>Interested in joining {chapter.acronym}?</h3>
-                            <p>Connect with us to learn more about our activities and how you can contribute.</p>
+                            <p>Connect with us to learn more about our activities and how you can contribute to this vibrant community.</p>
+
                             <div className="cta-buttons">
-                                <Link to="/#contact" className="btn-primary em-field" style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}>
+                                <Link
+                                    to="/#contact"
+                                    className="btn-primary em-field"
+                                    style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
+                                >
                                     <span>Get in Touch</span>
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M5 12h14M12 5l7 7-7 7" />
