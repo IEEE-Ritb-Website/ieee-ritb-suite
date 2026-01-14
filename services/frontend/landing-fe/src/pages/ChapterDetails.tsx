@@ -114,7 +114,7 @@ export default function ChapterDetails() {
 
                 {/* Overview Grid */}
                 <motion.section className="chapter-overview" variants={itemVariants}>
-                    <div className="section-container">
+                    <div className="chapter-section-container">
                         <div className="bento-grid">
                             <div className="bento-card glass-panel">
                                 <span className="bento-label">Domain</span>
@@ -138,7 +138,7 @@ export default function ChapterDetails() {
 
                 {/* Mission Statement */}
                 <motion.section className="chapter-mission" variants={itemVariants}>
-                    <div className="section-container">
+                    <div className="chapter-section-container">
                         <div className="mission-content glass-panel">
                             <h2 className="mission-heading">About This Chapter</h2>
                             <p className="mission-text">{chapter.shortDescription}</p>
@@ -148,7 +148,7 @@ export default function ChapterDetails() {
 
                 {/* CTA Section */}
                 <motion.section className="chapter-cta" variants={itemVariants}>
-                    <div className="section-container">
+                    <div className="chapter-section-container">
                         <div className="cta-content">
                             <h3>Interested in joining {chapter.acronym}?</h3>
                             <p>Connect with us to learn more about our activities and how you can contribute.</p>
