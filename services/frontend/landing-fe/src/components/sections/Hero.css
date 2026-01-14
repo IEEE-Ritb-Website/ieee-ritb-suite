@@ -11,7 +11,7 @@
   justify-content: center;
   overflow: hidden;
   padding: calc(var(--space-12) + 60px) var(--space-5) calc(var(--space-12) + 20px);
-  background: var(--color-base);
+  /* Background is transparent to show the starfield from MainLayout */
 }
 
 @media (min-width: 768px) {

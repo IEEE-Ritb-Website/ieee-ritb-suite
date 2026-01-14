@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import ChapterIcon from '../ui/ChapterIcon';
 import './Chapters.css';
@@ -17,8 +18,8 @@ type TabType = 'all' | ChapterType.TECH | ChapterType.NON_TECH;
 
 const headerVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
   }
@@ -26,16 +27,16 @@ const headerVariants: Variants = {
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.05, delayChildren: 0.1 } 
+    transition: { staggerChildren: 0.05, delayChildren: 0.1 }
   }
 };
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
   }
@@ -59,21 +60,6 @@ export default function Chapters() {
   const techCount = chapters.filter(ch => ch.type === ChapterType.TECH).length;
   const nonTechCount = chapters.filter(ch => ch.type === ChapterType.NON_TECH).length;
 
-  const handleChapterKeyDown = (event: React.KeyboardEvent, index: number) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      setActiveChapter(index);
-    }
-  };
-
-  const handleTabKeyDown = (event: React.KeyboardEvent, tab: TabType) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      setActiveTab(tab);
-      setActiveChapter(null);
-    }
-  };
-
   return (
     <section className="section section-padding section-bg-surface" id="chapters" aria-labelledby="chapters-heading">
       <ParallaxLayer speed={0.35} zIndex={-2}>
@@ -84,7 +70,7 @@ export default function Chapters() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div 
+        <motion.div
           className="section-header"
           variants={safeHeaderVariants}
           initial="hidden"
@@ -114,7 +100,6 @@ export default function Chapters() {
               aria-selected={activeTab === tab.id}
               className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
               onClick={() => { setActiveTab(tab.id as TabType); setActiveChapter(null); }}
-              onKeyDown={(e) => handleTabKeyDown(e, tab.id as TabType)}
             >
               <span className="tab-text">{tab.label}</span>
               <span className="tab-count">{tab.count}</span>
@@ -132,15 +117,14 @@ export default function Chapters() {
         >
           {filteredChapters.map((chapter, index) => (
             <motion.div key={`${chapter.acronym}-${index}`} variants={safeItemVariants}>
-              <article
+              <Link
+                to={`/chapters/${chapter.acronym.toLowerCase()}`}
                 className={`chapter-card magnetic ${activeChapter === index ? 'active' : ''}`}
                 onMouseEnter={() => !shouldReduceMotion && setActiveChapter(index)}
                 onMouseLeave={() => setActiveChapter(null)}
                 onFocus={() => setActiveChapter(index)}
                 onBlur={() => setActiveChapter(null)}
-                onKeyDown={(e) => handleChapterKeyDown(e, index)}
-                tabIndex={0}
-                role="button"
+                style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 <div className="chapter-glow" style={{ background: `radial-gradient(circle at center, ${chapter.color}40, transparent)` }} />
                 <div className="chapter-icon" style={{ color: chapter.color }}>
@@ -152,13 +136,13 @@ export default function Chapters() {
                 </div>
                 <p className="chapter-description">{chapter.shortDescription.slice(0, 48) + '...'}</p>
                 <div className="chapter-footer">
-                  <button className="chapter-link magnetic" aria-label={`Learn more about ${chapter.name}`}>
-                    <span>Learn More</span>
+                  <span className="chapter-link magnetic" aria-label={`Learn more about ${chapter.name}`}>
+                    <span>View Details</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
-                  </button>
+                  </span>
                 </div>
                 <div className="chapter-border" style={{ borderColor: chapter.color }} />
-              </article>
+              </Link>
             </motion.div>
           ))}
         </motion.div>
