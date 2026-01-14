@@ -1,15 +1,13 @@
 import './Hero.css';
-import HeroStarfield, { HeroFallback } from '../effects/HeroStarfield';
-import type { AnimationPhase } from '../effects/HeroStarfield';
 import { useEffect, useRef, useState } from 'react';
 import { Chapters } from '@astranova/catalogues';
 import { motion, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
-import { ErrorBoundary } from '../common/ErrorBoundary';
+import { useOutletContext } from 'react-router-dom';
+import type { LayoutContext } from '@/layouts/MainLayout';
 
 interface Props {
-  isLoading: boolean;
-  onWarpComplete?: () => void;
+  isLoading?: boolean; // Optional, kept for backwards compatibility
 }
 
 interface AnimatedNumberProps {
@@ -88,41 +86,20 @@ const itemVariants: Variants = {
   }
 };
 
-export default function Hero({ isLoading, onWarpComplete }: Props) {
-  const [warpPhase, setWarpPhase] = useState<AnimationPhase>('warp');
-  const [contentVisible, setContentVisible] = useState(false);
+export default function Hero(_props: Props) {
+  // Get warpComplete from layout context (starfield is in MainLayout)
+  const { warpComplete } = useOutletContext<LayoutContext>();
   const { orchestrate, shouldReduceMotion } = useMotion();
 
   const safeContainerVariants = orchestrate(containerVariants);
   const safeItemVariants = orchestrate(itemVariants);
 
-  // Control content visibility based on warp phase
-  useEffect(() => {
-    if (shouldReduceMotion) {
-      // Bypassing warp wait for reduced motion
-      setContentVisible(true);
-      if (onWarpComplete) onWarpComplete();
-      return;
-    }
-
-    if (warpPhase === 'slowing') {
-      const timer = setTimeout(() => {
-        setContentVisible(true);
-        if (onWarpComplete) onWarpComplete();
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [warpPhase, onWarpComplete, shouldReduceMotion]);
-
-  const handlePhaseChange = (phase: AnimationPhase) => {
-    setWarpPhase(phase);
-  };
+  // Content visible when warp is complete or reduced motion is on
+  const contentVisible = warpComplete || shouldReduceMotion;
 
   return (
     <section className="hero" id="home" aria-labelledby="hero-title">
-      <ErrorBoundary fallback={<HeroFallback />}>
-        <HeroStarfield isLoading={isLoading} onPhaseChange={handlePhaseChange} />
-      </ErrorBoundary>
+      {/* Starfield is now rendered in MainLayout for persistence */}
 
       <motion.div
         className="hero-content"

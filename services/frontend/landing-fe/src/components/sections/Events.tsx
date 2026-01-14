@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import ParallaxLayer from '../effects/ParallaxLayer';
@@ -54,7 +55,7 @@ const EVENTS: Event[] = [
 const DecoderText = ({ text, active }: { text: string; active: boolean }) => {
   const [display, setDisplay] = useState(text);
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&';
-  
+
   useEffect(() => {
     if (!active) {
       setDisplay(text); // Reset immediately if not active
@@ -63,7 +64,7 @@ const DecoderText = ({ text, active }: { text: string; active: boolean }) => {
 
     let iteration = 0;
     const interval = setInterval(() => {
-      setDisplay(() => 
+      setDisplay(() =>
         text
           .split('')
           .map((_, index) => {
@@ -102,7 +103,7 @@ export default function Events() {
       </ParallaxLayer>
 
       <div className="section-container" ref={containerRef}>
-        <motion.div 
+        <motion.div
           className="section-header mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -119,7 +120,7 @@ export default function Events() {
         </motion.div>
 
         <LayoutGroup>
-          <motion.div 
+          <motion.div
             className="chronosphere-container"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
@@ -127,7 +128,7 @@ export default function Events() {
           >
             {EVENTS.map((event) => {
               const isActive = activeId === event.id;
-              
+
               return (
                 <motion.div
                   layout
@@ -135,7 +136,7 @@ export default function Events() {
                   className={`chrono-slice magnetic ${isActive ? 'active' : ''}`}
                   onClick={() => setActiveId(event.id)}
                   initial={false}
-                  animate={{ 
+                  animate={{
                     flexGrow: isActive ? 3 : 1, // Expand active
                     flexBasis: isActive ? '400px' : '100px'
                   }}
@@ -150,7 +151,7 @@ export default function Events() {
                   {/* Inactive Vertical Label */}
                   <AnimatePresence>
                     {!isActive && (
-                      <motion.div 
+                      <motion.div
                         className="slice-vertical-label"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.8 }}
@@ -175,12 +176,12 @@ export default function Events() {
                           <span className="event-date-badge">
                             {event.date}
                           </span>
-                          
+
                           <h3 className="event-title">
                             <DecoderText text={event.title} active={isActive} />
                           </h3>
 
-                          <motion.p 
+                          <motion.p
                             className="event-desc"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -189,19 +190,18 @@ export default function Events() {
                             {event.description}
                           </motion.p>
 
-                          <motion.a 
-                            href={event.link} 
-                            className="event-link"
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.7 }}
-                          >
-                            <span>Register Now</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <line x1="5" y1="12" x2="19" y2="12"></line>
-                              <polyline points="12 5 19 12 12 19"></polyline>
-                            </svg>
-                          </motion.a>
+                          <div className="event-actions">
+                            <Link
+                              to={`/events/${event.id}`}
+                              className="event-link"
+                            >
+                              <span>View Details</span>
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                              </svg>
+                            </Link>
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
