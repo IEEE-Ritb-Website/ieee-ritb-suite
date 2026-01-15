@@ -32,7 +32,14 @@ export default function MainLayout() {
 
     // Scroll to top on route change
     useLayoutEffect(() => {
+        // Reset scroll position for both native and Lenis smooth scroll
         window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+
+        // Also reset any wrapper that Lenis might be using
+        const wrapper = document.querySelector('[data-lenis-wrapper]') as HTMLElement;
+        if (wrapper) wrapper.scrollTop = 0;
     }, [location.pathname]);
 
     // Scroll Reset Logic: Land on Hero every refresh
