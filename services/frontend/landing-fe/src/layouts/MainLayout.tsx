@@ -38,6 +38,35 @@ function markAnimationSeen(): void {
     }
 }
 
+// Detect if this is a page reload/refresh
+function isPageReload(): boolean {
+    try {
+        // Use Performance Navigation API to detect reload
+        const navEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
+        if (navEntries.length > 0) {
+            return navEntries[0].type === 'reload';
+        }
+        // Fallback for older browsers
+        return performance.navigation?.type === 1;
+    } catch {
+        return false;
+    }
+}
+
+// Clear animation flag if page was reloaded so animation plays again
+function clearAnimationOnReload(): void {
+    if (isPageReload()) {
+        try {
+            sessionStorage.removeItem(ANIMATION_SEEN_KEY);
+        } catch {
+            // Silently fail
+        }
+    }
+}
+
+// Run on module load to handle reload before React hydrates
+clearAnimationOnReload();
+
 /**
  * MainLayout - Persistent Shell
  * 
@@ -45,7 +74,8 @@ function markAnimationSeen(): void {
  * 1. The WebGL starfield background persists across navigation
  * 2. Navigation and Footer remain mounted
  * 3. Page transitions are animated via AnimatePresence
- * 4. Loader/warp animation only plays on initial site load (not internal navigation)
+ * 4. Loader/warp animation plays on initial load and page refresh
+ * 5. Internal navigation (clicking links) skips the animation for instant loading
  */
 export default function MainLayout() {
     // Check if animation was already shown this session
@@ -115,8 +145,12 @@ export default function MainLayout() {
         markAnimationSeen();
     };
 
-    // Page transition variants
-    const pageVariants = {
+    // Page transition variants - instant if animation already seen
+    const pageVariants = animationAlreadySeen ? {
+        initial: { opacity: 1, y: 0 },
+        animate: { opacity: 1, y: 0, transition: { duration: 0 } },
+        exit: { opacity: 1, y: 0, transition: { duration: 0 } }
+    } : {
         initial: { opacity: 0, y: 20 },
         animate: {
             opacity: 1,
