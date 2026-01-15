@@ -320,7 +320,7 @@
 }
 
 /* ===================================================================
-   FLOATING STAT CARDS
+   DATA ORBS STATS
    =================================================================== */
 
 .chapter-overview {
@@ -334,43 +334,153 @@
   padding: 0 var(--space-6);
 }
 
-/* Stat Cards Grid */
-.stat-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-4);
+/* Data Orbs Container */
+.data-orbs-container {
+  position: relative;
+  padding: var(--space-8) 0;
+}
+
+/* Constellation Dots SVG */
+.constellation-lines {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 700px;
+  height: 100%;
+  pointer-events: none;
+  display: none;
 }
 
 @media (min-width: 768px) {
-  .stat-cards-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-5);
+  .constellation-lines {
+    display: block;
   }
 }
 
-/* Individual Stat Card - Minimalistic Style */
-.stat-card {
+.constellation-dot {
+  fill: var(--color-ieee-primary);
+  opacity: 0.7;
+  filter: drop-shadow(0 0 6px var(--color-accent-glow));
+}
+
+/* Data Orbs Grid */
+.data-orbs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+  justify-items: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .data-orbs-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-10);
+  }
+}
+
+/* Individual Data Orb */
+.data-orb {
   position: relative;
-  background: rgba(255, 255, 255, 0.015);
-  border: 1px solid var(--color-border);
-  border-left: 3px solid var(--card-accent, var(--color-ieee-primary));
-  border-radius: 12px;
-  padding: var(--space-5) var(--space-5);
+  width: clamp(120px, 20vw, 160px);
+  height: clamp(120px, 20vw, 160px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--duration-moderate) var(--ease-default);
+  cursor: default;
+}
+
+.data-orb:hover {
+  transform: scale(1.08);
+  box-shadow:
+    0 0 40px rgba(var(--orb-color), 0.2),
+    0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Rotating Rings */
+.orb-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid var(--orb-color, var(--color-ieee-primary));
+  opacity: 0;
+  transition: opacity var(--duration-moderate) var(--ease-default);
+}
+
+.orb-ring-2 {
+  inset: -16px;
+  border-style: dashed;
+}
+
+.data-orb:hover .orb-ring {
+  opacity: 0.5;
+  animation: orbRingSpin 8s linear infinite;
+}
+
+.data-orb:hover .orb-ring-2 {
+  opacity: 0.3;
+  animation: orbRingSpin 12s linear infinite reverse;
+}
+
+/* Orb Inner Content */
+.orb-inner {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: var(--space-2);
-  transition: all var(--duration-base) var(--ease-default);
+  padding: var(--space-3);
+  z-index: 1;
 }
 
-.stat-card:hover {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: var(--color-border-hover);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+/* Orb Value */
+.orb-value {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+  text-align: center;
+  line-height: var(--leading-snug);
 }
 
-/* Card Content */
-.stat-card-label {
+@media (min-width: 768px) {
+  .orb-value {
+    font-size: var(--text-base);
+  }
+}
+
+.orb-value-accent {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--font-black);
+  letter-spacing: var(--tracking-wide);
+  text-shadow: 0 0 20px currentColor;
+}
+
+@media (min-width: 768px) {
+  .orb-value-accent {
+    font-size: var(--text-2xl);
+  }
+}
+
+/* Orb Label */
+.orb-label {
   font-size: var(--text-2xs);
   font-weight: var(--font-medium);
   color: var(--color-text-muted);
@@ -378,38 +488,40 @@
   letter-spacing: var(--tracking-widest);
 }
 
-.stat-card-value {
-  font-family: var(--font-primary);
-  font-size: var(--text-base);
-  font-weight: var(--font-semibold);
-  color: var(--color-text-primary);
-  line-height: var(--leading-normal);
-}
-
-@media (min-width: 768px) {
-  .stat-card-value {
-    font-size: var(--text-lg);
-  }
-}
-
-/* Status indicator - inline dot */
-.stat-card-value.active-status {
+/* Status Orb */
+.data-orb-status .orb-value {
   color: var(--color-success);
 }
 
-.status-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.status-dot {
-  width: 6px;
-  height: 6px;
+.orb-status-dot {
+  width: 8px;
+  height: 8px;
   background: var(--color-success);
   border-radius: 50%;
   flex-shrink: 0;
-  animation: statusPulse 2s ease-in-out infinite;
+  box-shadow: 0 0 12px var(--color-success);
+  animation: orbStatusPulse 2s ease-in-out infinite;
+}
+
+/* Orb Animations */
+@keyframes orbRingSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbStatusPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
 }
 
 /* ===================================================================
@@ -463,10 +575,6 @@
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
   margin-bottom: var(--space-6);
-  background: var(--gradient-ieee);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .mission-text {
@@ -707,11 +815,13 @@
   .chapter-glow-ring,
   .chapter-title,
   .status-pulse,
+  .orb-ring,
+  .orb-status-dot,
   .em-field::before {
     animation: none;
   }
 
-  .stat-card:hover,
+  .data-orb:hover,
   .chapter-hero-icon:hover,
   .btn-primary:hover,
   .btn-secondary:hover,
@@ -722,6 +832,10 @@
   .chapter-glow-ring {
     opacity: 0.3;
     transform: scale(1);
+  }
+
+  .orb-ring {
+    display: none;
   }
 }
 
@@ -744,13 +858,13 @@
     gap: var(--space-6);
   }
 
-  .stat-cards-grid {
-    gap: var(--space-3);
+  .data-orbs-grid {
+    gap: var(--space-4);
   }
 
-  .stat-card {
-    padding: var(--space-5);
-    border-radius: 16px;
+  .data-orb {
+    width: 110px;
+    height: 110px;
   }
 
   .mission-content {

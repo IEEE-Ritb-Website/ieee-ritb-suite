@@ -97,10 +97,6 @@ export default function ChapterDetails() {
             value: chapter.type === 'tech' ? 'Technical Society' : 'Operations & Support',
         },
         {
-            label: 'Chapter Type',
-            value: chapter.type === 'tech' ? 'IEEE Technical Society' : 'IEEE Affinity Group',
-        },
-        {
             label: 'Acronym',
             value: chapter.acronym,
             isAccent: true,
@@ -212,34 +208,44 @@ export default function ChapterDetails() {
                     </div>
                 </motion.section>
 
-                {/* ===== MINIMALISTIC STAT CARDS ===== */}
+                {/* ===== DATA ORBS STATS ===== */}
                 <motion.section className="chapter-overview" variants={itemVariants}>
                     <div className="chapter-section-container">
-                        <div className="stat-cards-grid">
-                            {statCards.map((card, index) => (
-                                <motion.div
-                                    key={card.label}
-                                    className="stat-card"
-                                    custom={index}
-                                    variants={floatVariants}
-                                    style={{ '--card-accent': color } as React.CSSProperties}
-                                >
-                                    <span className="stat-card-label">{card.label}</span>
-                                    <span
-                                        className={`stat-card-value ${card.isStatus ? 'active-status' : ''}`}
-                                        style={card.isAccent ? { color } : undefined}
+                        <div className="data-orbs-container">
+                            {/* Data Orbs */}
+                            <div className="data-orbs-grid">
+                                {statCards.map((card, index) => (
+                                    <motion.div
+                                        key={card.label}
+                                        className={`data-orb ${card.isStatus ? 'data-orb-status' : ''}`}
+                                        custom={index}
+                                        variants={floatVariants}
+                                        style={{ '--orb-color': color } as React.CSSProperties}
                                     >
-                                        {card.isStatus ? (
-                                            <span className="status-indicator">
-                                                <span className="status-dot" aria-hidden="true" />
-                                                {card.value}
+                                        {/* Rotating Ring */}
+                                        <div className="orb-ring" aria-hidden="true" />
+                                        <div className="orb-ring orb-ring-2" aria-hidden="true" />
+
+                                        {/* Orb Content */}
+                                        <div className="orb-inner">
+                                            <span
+                                                className={`orb-value ${card.isAccent ? 'orb-value-accent' : ''}`}
+                                                style={card.isStatus ? undefined : { color }}
+                                            >
+                                                {card.isStatus ? (
+                                                    <>
+                                                        <span className="orb-status-dot" />
+                                                        {card.value}
+                                                    </>
+                                                ) : (
+                                                    card.value
+                                                )}
                                             </span>
-                                        ) : (
-                                            card.value
-                                        )}
-                                    </span>
-                                </motion.div>
-                            ))}
+                                            <span className="orb-label">{card.label}</span>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </motion.section>
@@ -248,7 +254,7 @@ export default function ChapterDetails() {
                 <motion.section className="chapter-mission" variants={itemVariants}>
                     <div className="chapter-section-container">
                         <div className="mission-content">
-                            <h2 className="mission-heading">About This Chapter</h2>
+                            <h2 className="mission-heading" style={{ color }}>About This Chapter</h2>
                             <p className="mission-text">{chapter.shortDescription}</p>
                         </div>
                     </div>
@@ -271,7 +277,7 @@ export default function ChapterDetails() {
                             <div className="cta-buttons">
                                 <Link
                                     to="/#contact"
-                                    className="btn-primary em-field"
+                                    className="btn-primary"
                                     style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
                                 >
                                     <span>Get in Touch</span>
