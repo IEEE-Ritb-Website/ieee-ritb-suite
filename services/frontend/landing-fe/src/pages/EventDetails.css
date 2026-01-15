@@ -489,7 +489,6 @@
   font-weight: var(--font-medium);
   color: var(--color-text-muted);
   transition: all var(--duration-base) var(--ease-default);
-  cursor: default;
 }
 
 .tag-chip:hover {
