@@ -121,6 +121,14 @@ export default function ChapterDetails() {
                 initial="hidden"
                 animate={warpComplete ? "visible" : "hidden"}
             >
+                {/* Back Link */}
+                <Link to="/#chapters" className="back-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    Back to Chapters
+                </Link>
+
                 {/* ===== CINEMATIC HERO SECTION ===== */}
                 <motion.section className="chapter-hero" variants={itemVariants}>
                     {/* Parallax Background Orbs */}
@@ -144,14 +152,6 @@ export default function ChapterDetails() {
                         className="chapter-hero-glow"
                         style={{ background: `radial-gradient(ellipse at center, ${color}20, transparent 60%)` }}
                     />
-
-                    {/* Back Link */}
-                    <Link to="/#chapters" className="back-link">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M19 12H5M12 19l-7-7 7-7" />
-                        </svg>
-                        Back to Chapters
-                    </Link>
 
                     {/* Hero Content */}
                     <div className="chapter-hero-content">
