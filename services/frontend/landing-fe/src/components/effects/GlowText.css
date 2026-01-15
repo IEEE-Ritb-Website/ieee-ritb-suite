@@ -1,0 +1,24 @@
+/* GlowText Component Styles */
+
+.glow-text {
+  /* Inherit base text styles */
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+.glow-word {
+  display: inline;
+  transition: 
+    color 0.15s ease-out,
+    text-shadow 0.15s ease-out,
+    transform 0.15s ease-out;
+  will-change: color, text-shadow, transform;
+}
+
+/* Ensure smooth rendering */
+.glow-text {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

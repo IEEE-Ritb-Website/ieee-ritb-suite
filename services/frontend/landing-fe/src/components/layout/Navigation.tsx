@@ -1,11 +1,55 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, useScroll, useSpring } from 'framer-motion';
 import './Navigation.css';
+
+// Navigation item type
+interface NavItem {
+  label: string;
+  href: string;
+  isBack?: boolean;
+  isAnchor?: boolean;
+}
+
+// Get navigation items based on current route
+function getNavItems(pathname: string): NavItem[] {
+  // Chapter details page
+  if (pathname.startsWith('/chapters/')) {
+    return [
+      { label: 'Overview', href: '#overview', isAnchor: true },
+      { label: 'About', href: '#about', isAnchor: true },
+      { label: 'Contact', href: '#contact', isAnchor: true },
+    ];
+  }
+
+  // Event details page
+  if (pathname.startsWith('/events/')) {
+    return [
+      { label: 'Overview', href: '#overview', isAnchor: true },
+      { label: 'About', href: '#about', isAnchor: true },
+      { label: 'Timeline', href: '#timeline', isAnchor: true },
+      { label: 'Register', href: '#register', isAnchor: true },
+    ];
+  }
+
+  // Homepage (default)
+  return [
+    { label: 'About', href: '#about', isAnchor: true },
+    { label: 'Features', href: '#features', isAnchor: true },
+    { label: 'Events', href: '#events', isAnchor: true },
+    { label: 'Chapters', href: '#chapters', isAnchor: true },
+    { label: 'Contact', href: '#contact', isAnchor: true },
+  ];
+}
 
 export default function Navigation({ showNavigation }: { showNavigation: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
+  const [activeSection, setActiveSection] = useState('');
+  const location = useLocation();
+
+  // Get navigation items based on current route
+  const navItems = useMemo(() => getNavItems(location.pathname), [location.pathname]);
 
   // Framer Motion Scroll Progress
   const { scrollYProgress } = useScroll();
@@ -36,6 +80,11 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
     return () => window.removeEventListener('scroll', throttledScroll);
   }, []);
 
+  // Reset active section when route changes
+  useEffect(() => {
+    setActiveSection('');
+  }, [location.pathname]);
+
   useEffect(() => {
     const sections = document.querySelectorAll('section[id]');
     const observer = new IntersectionObserver(
@@ -51,7 +100,7 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+  }, [location.pathname]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
@@ -110,10 +159,10 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
         aria-label="Main navigation"
       >
         <div className="nav-container">
-          <a href="#" className="nav-logo" aria-label="IEEE RITB Home">
+          <Link to="/" className="nav-logo" aria-label="IEEE RITB Home">
             <span className="nav-logo-text">IEEE</span>
             <span className="nav-logo-accent">RITB</span>
-          </a>
+          </Link>
 
           <button
             className="nav-toggle"
@@ -129,23 +178,38 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
           </button>
 
           <ul className={`nav-menu ${isMenuOpen ? 'open' : ''}`} role="list">
-            {['about', 'features', 'events', 'chapters', 'contact'].map((item) => (
-              <li key={item}>
-                <a
-                  href={`#${item}`}
-                  className={`nav-link ${activeSection === item ? 'active' : ''}`}
-                  onClick={closeMenu}
-                  aria-current={activeSection === item ? 'page' : undefined}
-                >
-                  {item.charAt(0).toUpperCase() + item.slice(1)}
-                </a>
-              </li>
-            ))}
+            {navItems.map((item) => {
+              const sectionId = item.href.replace('#', '');
+              const isActive = activeSection === sectionId;
+
+              return (
+                <li key={item.href}>
+                  {item.isBack ? (
+                    <Link
+                      to={item.href}
+                      className="nav-link nav-link-back"
+                      onClick={closeMenu}
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={item.href}
+                      className={`nav-link ${isActive ? 'active' : ''}`}
+                      onClick={closeMenu}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      {item.label}
+                    </a>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
 
-        {/* Scroll Progress Bar (1B) */}
-        <motion.div 
+        {/* Scroll Progress Bar */}
+        <motion.div
           className="nav-progress-bar"
           style={{ scaleX }}
         />

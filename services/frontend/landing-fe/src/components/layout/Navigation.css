@@ -171,6 +171,21 @@
   box-shadow: 0 0 8px var(--color-accent-glow);
 }
 
+/* Back link styling (← Home) */
+.nav-link-back {
+  color: var(--color-ieee-primary) !important;
+  font-weight: var(--font-semibold);
+  gap: var(--space-1);
+}
+
+.nav-link-back:hover {
+  background: rgba(77, 127, 255, 0.1);
+}
+
+.nav-link-back::after {
+  display: none;
+}
+
 /* Theme Toggle */
 .theme-toggle {
   background: none;
