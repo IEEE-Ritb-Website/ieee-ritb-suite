@@ -623,6 +623,22 @@
   flex-wrap: wrap;
 }
 
+/* Button Overrides for Chapter Colors */
+.chapter-cta .btn-primary:hover {
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.2),
+    0 12px 24px color-mix(in srgb, var(--chapter-color) 40%, transparent);
+}
+
+.chapter-cta .btn-secondary:hover {
+  border-color: var(--chapter-color);
+  color: var(--chapter-color);
+}
+
+.chapter-cta .btn-secondary:focus-visible {
+  outline-color: var(--chapter-color);
+}
+
 /* Button styles moved to shared buttons.css */
 
 /* ===================================================================

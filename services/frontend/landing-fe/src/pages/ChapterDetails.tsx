@@ -261,7 +261,11 @@ export default function ChapterDetails() {
                 </motion.section>
 
                 {/* ===== CTA SECTION ===== */}
-                <motion.section className="chapter-cta" variants={itemVariants}>
+                <motion.section 
+                    className="chapter-cta" 
+                    variants={itemVariants}
+                    style={{ '--chapter-color': color } as React.CSSProperties}
+                >
                     <div className="chapter-section-container">
                         <div className="cta-content">
                             {/* CTA Glow */}
@@ -271,7 +275,7 @@ export default function ChapterDetails() {
                                 aria-hidden="true"
                             />
 
-                            <h3>Interested in joining {chapter.acronym}?</h3>
+                            <h3 style={{ color }}>Interested in joining {chapter.acronym}?</h3>
                             <p>Connect with us to learn more about our activities and how you can contribute to this vibrant community.</p>
 
                             <div className="cta-buttons">
