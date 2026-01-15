@@ -43,7 +43,7 @@ export default function NotFound() {
             <motion.div
                 className="not-found"
                 variants={containerVariants}
-                initial="hidden"
+                initial={warpComplete ? "visible" : "hidden"}
                 animate={warpComplete ? "visible" : "hidden"}
             >
                 <div className="not-found-content">
