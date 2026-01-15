@@ -131,10 +131,11 @@
 /* ===== Back Link (page-specific positioning) ===== */
 /* Base back-link styles are in shared utilities.css */
 .chapter-details .back-link {
-  align-self: flex-start;
-  position: absolute;
-  top: calc(var(--space-12) + 80px);
+  position: fixed;
+  top: calc(var(--space-8) + 80px);
   left: var(--space-6);
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* ===== Icon with Pulsating Glow Rings ===== */
@@ -735,7 +736,7 @@
   }
 
   .back-link {
-    top: calc(var(--space-8) + 60px);
+    top: calc(var(--space-6) + 60px);
     left: var(--space-4);
   }
 
