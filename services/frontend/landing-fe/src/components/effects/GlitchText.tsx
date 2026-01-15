@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import './GlitchText.css';
 
 /**
  * GlitchText Component
@@ -102,62 +103,24 @@ const GlitchText = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, isActive, glitchDuration, lockInDelay, onComplete]);
 
-  const getStyleClasses = () => {
-    const baseClasses = 'font-mono tracking-wide';
-
-    if (style === 'loading') {
-      return `${baseClasses} text-2xl md:text-3xl font-bold text-[#4d7fff] drop-shadow-[0_0_10px_rgba(77,127,255,0.5)]`;
-    } else {
-      return `${baseClasses} text-5xl md:text-7xl lg:text-9xl font-black text-white drop-shadow-[0_0_20px_rgba(77,127,255,0.8)]`;
-    }
-  };
+  const containerClass = `glitch-text glitch-text--${style} ${className}`;
 
   return (
-    <div
-      className={`${getStyleClasses()} ${className}`}
-      style={{
-        textShadow:
-          style === 'hero'
-            ? '0 0 20px rgba(77, 127, 255, 0.8), 0 0 40px rgba(147, 197, 253, 0.6)'
-            : '0 0 10px rgba(77, 127, 255, 0.5)',
-      }}
-    >
-      {displayText.split('').map((char, index) => (
-        <span
-          key={index}
-          className={`inline-block ${lockedIndices.has(index) ? 'animate-pulse-once' : 'animate-glitch'
-            }`}
-          style={{
-            animationDelay: `${index * 20}ms`,
-            color: lockedIndices.has(index) ? undefined : '#00b4ff',
-          }}
-        >
-          {char === ' ' ? '\u00A0' : char}
-        </span>
-      ))}
+    <div className={containerClass}>
+      {displayText.split('').map((char, index) => {
+        const isLocked = lockedIndices.has(index);
+        const charClass = `glitch-char ${isLocked ? 'glitch-char--locked' : 'glitch-char--glitching'}`;
 
-      <style>{`
-        @keyframes glitch {
-          0%, 100% { transform: translate(0); }
-          20% { transform: translate(-1px, 1px); }
-          40% { transform: translate(1px, -1px); }
-          60% { transform: translate(-1px, -1px); }
-          80% { transform: translate(1px, 1px); }
-        }
-
-        @keyframes pulse-once {
-          0% { opacity: 0.5; transform: scale(1.2); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-
-        .animate-glitch {
-          animation: glitch 0.3s infinite;
-        }
-
-        .animate-pulse-once {
-          animation: pulse-once 0.3s ease-out forwards;
-        }
-      `}</style>
+        return (
+          <span
+            key={index}
+            className={charClass}
+            style={{ animationDelay: `${index * 20}ms` }}
+          >
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        );
+      })}
     </div>
   );
 };
