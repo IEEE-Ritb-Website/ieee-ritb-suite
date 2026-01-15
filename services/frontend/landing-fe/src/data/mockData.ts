@@ -32,7 +32,7 @@ export const EVENTS: IEventDetails[] = [
     {
         id: 'e1',
         title: 'Event X',
-        date: 'TBA',
+        date: '2026-04-20',
         time: 'TBA',
         description: 'Details for Event X coming soon. Stay tuned for updates.',
         longDescription: 'Event X is an upcoming flagship event from IEEE RIT-B. This event will bring together students, industry experts, and innovators to explore cutting-edge technologies. More details will be announced soon, including speakers, workshops, and registration information.',
@@ -54,7 +54,7 @@ export const EVENTS: IEventDetails[] = [
     {
         id: 'e2',
         title: 'Event Y',
-        date: 'TBA',
+        date: '2026-06-30',
         time: 'TBA',
         description: 'Details for Event Y coming soon. Stay tuned for updates.',
         longDescription: 'Event Y promises to be an exciting gathering focused on emerging technologies and student innovation. This collaborative event will feature hands-on sessions and networking opportunities. Stay tuned for the complete agenda and registration details.',
@@ -75,7 +75,7 @@ export const EVENTS: IEventDetails[] = [
     {
         id: 'e3',
         title: 'Event Z',
-        date: 'TBA',
+        date: '2026-11-01',
         time: 'TBA',
         description: 'Details for Event Z coming soon. Stay tuned for updates.',
         longDescription: 'Event Z will showcase the latest advancements in technology and provide a platform for students to present their projects. This event is designed to inspire the next generation of engineers and technologists. Full details coming soon.',
