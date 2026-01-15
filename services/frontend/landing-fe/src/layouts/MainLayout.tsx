@@ -15,6 +15,29 @@ import HeroStarfield, { HeroFallback } from '../components/effects/HeroStarfield
 import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import type { AnimationPhase } from '../components/effects/HeroStarfield';
 
+// Session storage key for tracking animation state
+const ANIMATION_SEEN_KEY = 'ieee-ritb-animation-seen';
+
+/**
+ * Check if this is a fresh page load (needs animation) or internal navigation (skip animation)
+ * Uses sessionStorage so animation only plays once per browser session
+ */
+function hasSeenAnimation(): boolean {
+    try {
+        return sessionStorage.getItem(ANIMATION_SEEN_KEY) === 'true';
+    } catch {
+        return false; // If sessionStorage is unavailable, show animation
+    }
+}
+
+function markAnimationSeen(): void {
+    try {
+        sessionStorage.setItem(ANIMATION_SEEN_KEY, 'true');
+    } catch {
+        // Silently fail if sessionStorage is unavailable
+    }
+}
+
 /**
  * MainLayout - Persistent Shell
  * 
@@ -22,11 +45,17 @@ import type { AnimationPhase } from '../components/effects/HeroStarfield';
  * 1. The WebGL starfield background persists across navigation
  * 2. Navigation and Footer remain mounted
  * 3. Page transitions are animated via AnimatePresence
+ * 4. Loader/warp animation only plays on initial site load (not internal navigation)
  */
 export default function MainLayout() {
-    const [isLoading, setIsLoading] = useState(true);
-    const [showNavigation, setShowNavigation] = useState(false);
-    const [warpComplete, setWarpComplete] = useState(false);
+    // Check if animation was already shown this session
+    const animationAlreadySeen = hasSeenAnimation();
+
+    // If animation was seen, skip loading states
+    const [isLoading, setIsLoading] = useState(!animationAlreadySeen);
+    const [showNavigation, setShowNavigation] = useState(animationAlreadySeen);
+    const [warpComplete, setWarpComplete] = useState(animationAlreadySeen);
+
     const { tier } = usePerformanceMonitor(false);
     const location = useLocation();
 
@@ -82,6 +111,8 @@ export default function MainLayout() {
     const handleWarpComplete = () => {
         setShowNavigation(true);
         setWarpComplete(true);
+        // Mark that user has seen the animation for this session
+        markAnimationSeen();
     };
 
     // Page transition variants
@@ -102,10 +133,13 @@ export default function MainLayout() {
     return (
         <ToastProvider>
             <SEO />
-            <EnhancedLoader
-                isLoading={isLoading}
-                onLoaded={() => setIsLoading(false)}
-            />
+            {/* Only show loader if animation hasn't been seen yet */}
+            {!animationAlreadySeen && (
+                <EnhancedLoader
+                    isLoading={isLoading}
+                    onLoaded={() => setIsLoading(false)}
+                />
+            )}
 
             {/* Persistent WebGL Background */}
             <div className="fixed inset-0 z-[-1]" aria-hidden="true">
@@ -154,3 +188,4 @@ export interface LayoutContext {
     warpComplete: boolean;
     isLoading: boolean;
 }
+
