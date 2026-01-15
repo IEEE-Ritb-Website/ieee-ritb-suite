@@ -49,7 +49,7 @@ export default function Home() {
     return (
         <motion.div
             variants={safeContainerVariants}
-            initial="hidden"
+            initial={warpComplete ? "visible" : "hidden"}
             animate={warpComplete ? "visible" : "hidden"}
         >
             <Hero isLoading={isLoading} />

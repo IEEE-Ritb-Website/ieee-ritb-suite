@@ -120,7 +120,7 @@ export default function EventDetails() {
             <motion.div
                 className="event-details"
                 variants={containerVariants}
-                initial="hidden"
+                initial={warpComplete ? "visible" : "hidden"}
                 animate={warpComplete ? "visible" : "hidden"}
             >
                 {/* Back Link - Fixed Position */}

@@ -119,7 +119,7 @@ export default function ChapterDetails() {
             <motion.div
                 className="chapter-details"
                 variants={containerVariants}
-                initial="hidden"
+                initial={warpComplete ? "visible" : "hidden"}
                 animate={warpComplete ? "visible" : "hidden"}
             >
                 {/* Back Link */}
