@@ -132,7 +132,7 @@ export default function EventDetails() {
                 </Link>
 
                 {/* ===== CINEMATIC HERO ===== */}
-                <motion.section className="event-hero" variants={itemVariants}>
+                <motion.section id="overview" className="event-hero" variants={itemVariants}>
                     {/* Full-bleed Background */}
                     <div className="event-hero-bg">
                         <img
@@ -198,7 +198,7 @@ export default function EventDetails() {
                 </motion.section>
 
                 {/* ===== SPLIT SHOWCASE CONTENT ===== */}
-                <motion.section className="event-showcase" variants={itemVariants}>
+                <motion.section id="about" className="event-showcase" variants={itemVariants}>
                     <div className="showcase-container">
 
                         {/* Metadata Pills Row */}
@@ -247,7 +247,7 @@ export default function EventDetails() {
 
                         {/* Horizontal Timeline Schedule */}
                         {event.schedule && event.schedule.length > 0 && (
-                            <motion.div className="schedule-timeline" variants={itemVariants}>
+                            <motion.div id="timeline" className="schedule-timeline" variants={itemVariants}>
                                 <h3 className="timeline-heading">Event Timeline</h3>
                                 <div className="timeline-track">
                                     {event.schedule.map((item, index) => (
@@ -280,7 +280,7 @@ export default function EventDetails() {
                 </motion.section>
 
                 {/* ===== COUNTDOWN URGENCY CTA ===== */}
-                <motion.section className="event-registration countdown-cta" variants={itemVariants}>
+                <motion.section id="register" className="event-registration countdown-cta" variants={itemVariants}>
                     <div className="countdown-card">
                         {/* Countdown Timer */}
                         {hasCountdown ? (

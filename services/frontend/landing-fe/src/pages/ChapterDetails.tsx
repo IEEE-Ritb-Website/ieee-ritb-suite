@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { useChapter } from '../hooks/useEntityData';
 import { useMotion } from '../hooks/useMotion';
 import ChapterIcon from '../components/ui/ChapterIcon';
+import GlowText from '../components/effects/GlowText';
 import type { IChapterAcronyms } from '@astranova/catalogues';
 import type { LayoutContext } from '../layouts/MainLayout';
 import './ChapterDetails.css';
@@ -130,7 +131,7 @@ export default function ChapterDetails() {
                 </Link>
 
                 {/* ===== CINEMATIC HERO SECTION ===== */}
-                <motion.section className="chapter-hero" variants={itemVariants}>
+                <motion.section id="overview" className="chapter-hero" variants={itemVariants}>
                     {/* Parallax Background Orbs */}
                     <div className="chapter-orbs-container" aria-hidden="true">
                         <div
@@ -251,18 +252,24 @@ export default function ChapterDetails() {
                 </motion.section>
 
                 {/* ===== MISSION SECTION ===== */}
-                <motion.section className="chapter-mission" variants={itemVariants}>
+                <motion.section id="about" className="chapter-mission" variants={itemVariants}>
                     <div className="chapter-section-container">
                         <div className="mission-content">
                             <h2 className="mission-heading" style={{ color }}>About This Chapter</h2>
-                            <p className="mission-text">{chapter.shortDescription}</p>
+                            <GlowText
+                                text={chapter.shortDescription}
+                                color={color}
+                                glowRadius={100}
+                                className="mission-text"
+                            />
                         </div>
                     </div>
                 </motion.section>
 
                 {/* ===== CTA SECTION ===== */}
-                <motion.section 
-                    className="chapter-cta" 
+                <motion.section
+                    id="contact"
+                    className="chapter-cta"
                     variants={itemVariants}
                     style={{ '--chapter-color': color } as React.CSSProperties}
                 >
