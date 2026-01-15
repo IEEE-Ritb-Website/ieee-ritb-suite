@@ -1,0 +1,183 @@
+/* ========================================
+   Shared Button Styles - Foundation Design System
+   Canonical button definitions for consistent styling
+   ======================================== */
+
+/* Primary Button with EM Field Effect */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-7);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: white;
+  background: var(--gradient-ieee);
+  border: none;
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-default);
+  position: relative;
+  overflow: hidden;
+  min-height: var(--min-touch-target);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(77, 127, 255, 0.2);
+}
+
+.btn-primary .btn-icon {
+  transition: transform var(--duration-base) var(--ease-default);
+}
+
+.btn-primary svg {
+  transition: transform var(--duration-base) var(--ease-default);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.2),
+    0 12px 24px var(--color-accent-glow);
+}
+
+.btn-primary:hover .btn-icon,
+.btn-primary:hover svg {
+  transform: translateX(4px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.15),
+    0 4px 8px var(--color-accent-glow);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--color-ieee-vivid);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary,
+  .btn-primary .btn-icon,
+  .btn-primary svg {
+    transition: none;
+  }
+
+  .btn-primary:hover {
+    transform: none;
+  }
+
+  .btn-primary:hover .btn-icon,
+  .btn-primary:hover svg {
+    transform: none;
+  }
+}
+
+/* EM Field Effect */
+.em-field::before,
+.em-field::after {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--duration-moderate) var(--ease-out);
+  pointer-events: none;
+}
+
+.em-field::before {
+  background: radial-gradient(
+    circle at center,
+    transparent 30%,
+    var(--color-ieee-electric) 40%,
+    transparent 45%,
+    var(--color-ieee-primary) 55%,
+    transparent 60%
+  );
+  animation: emPulse 2s var(--ease-in-out) infinite;
+}
+
+.em-field::after {
+  background: radial-gradient(
+    circle at center,
+    var(--color-accent-glow) 0%,
+    transparent 70%
+  );
+}
+
+.em-field:hover::before,
+.em-field:hover::after {
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .em-field::before {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* Secondary Button */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-7);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  background: transparent;
+  border: 2px solid var(--color-border-hover);
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease-default);
+  min-height: var(--min-touch-target);
+  position: relative;
+}
+
+.btn-secondary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent-subtle);
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-default);
+  z-index: -1;
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-ieee-primary);
+  color: var(--color-ieee-primary);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:hover::before {
+  opacity: 1;
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--color-ieee-primary);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-secondary {
+    transition: none;
+  }
+
+  .btn-secondary:hover {
+    transform: none;
+  }
+}

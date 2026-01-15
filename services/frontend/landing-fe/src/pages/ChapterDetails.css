@@ -21,14 +21,7 @@
   color: var(--color-text-muted);
 }
 
-.loader-spinner {
-  width: 48px;
-  height: 48px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-ieee-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
+/* loader-spinner styles moved to shared utilities.css */
 
 /* ===== Error State ===== */
 .chapter-details-error {
@@ -135,41 +128,13 @@
   gap: var(--space-8);
 }
 
-/* ===== Back Link ===== */
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  text-decoration: none;
-  padding: var(--space-2) var(--space-4);
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--color-border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all var(--duration-base) var(--ease-default);
+/* ===== Back Link (page-specific positioning) ===== */
+/* Base back-link styles are in shared utilities.css */
+.chapter-details .back-link {
   align-self: flex-start;
   position: absolute;
   top: calc(var(--space-12) + 80px);
   left: var(--space-6);
-}
-
-.back-link:hover {
-  color: var(--color-text-primary);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--color-border-hover);
-  transform: translateX(-4px);
-}
-
-.back-link svg {
-  transition: transform var(--duration-base) var(--ease-default);
-}
-
-.back-link:hover svg {
-  transform: translateX(-2px);
 }
 
 /* ===== Icon with Pulsating Glow Rings ===== */
@@ -658,87 +623,7 @@
   flex-wrap: wrap;
 }
 
-/* Primary Button */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-4) var(--space-7);
-  font-family: var(--font-primary);
-  font-size: var(--text-base);
-  font-weight: var(--font-semibold);
-  color: white;
-  background: var(--gradient-ieee);
-  border: none;
-  border-radius: 14px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all var(--duration-base) var(--ease-default);
-  position: relative;
-  overflow: hidden;
-  min-height: var(--min-touch-target);
-  box-shadow:
-    0 4px 6px rgba(0, 0, 0, 0.1),
-    0 2px 4px rgba(77, 127, 255, 0.2);
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    0 12px 24px rgba(0, 0, 0, 0.2),
-    0 0 40px var(--color-accent-glow);
-}
-
-.btn-primary svg {
-  transition: transform var(--duration-base) var(--ease-default);
-}
-
-.btn-primary:hover svg {
-  transform: translateX(4px);
-}
-
-/* EM Field Effect */
-.em-field::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
-  background-size: 200% 200%;
-  animation: emShimmer 3s linear infinite;
-  pointer-events: none;
-}
-
-/* Secondary Button */
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-4) var(--space-7);
-  font-family: var(--font-primary);
-  font-size: var(--text-base);
-  font-weight: var(--font-medium);
-  color: var(--color-text-primary);
-  background: transparent;
-  border: 2px solid var(--color-border-hover);
-  border-radius: 14px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all var(--duration-base) var(--ease-default);
-  min-height: var(--min-touch-target);
-}
-
-.btn-secondary:hover {
-  border-color: var(--color-ieee-primary);
-  color: var(--color-ieee-primary);
-  background: var(--color-accent-subtle);
-  transform: translateY(-2px);
-}
+/* Button styles moved to shared buttons.css */
 
 /* ===================================================================
    ANIMATIONS
@@ -878,11 +763,4 @@
   }
 }
 
-/* Glass Panel Utility */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-}
+/* Glass panel styles moved to shared utilities.css */
