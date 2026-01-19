@@ -1,4 +1,14 @@
+/**
+ * Purpose: React Error Boundary for graceful error handling.
+ * Exports: ErrorBoundary (React class component)
+ * Side effects: Logs errors to console via componentDidCatch.
+ *
+ * Wraps child components and displays a fallback UI if a render error occurs.
+ * Supports custom fallback prop or displays default "Component Unavailable" message.
+ */
+
 import { Component, type ReactNode } from 'react';
+
 
 interface Props {
     fallback?: ReactNode;

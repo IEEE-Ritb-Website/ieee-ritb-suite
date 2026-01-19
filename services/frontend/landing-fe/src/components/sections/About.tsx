@@ -1,3 +1,11 @@
+/**
+ * Purpose: About section with animated statistics and organization highlights.
+ * Exports: default About (React component)
+ * Side effects: Uses IntersectionObserver for scroll-triggered number animations.
+ *
+ * Features StatCard (holographic hover effect) and AnimatedNumber sub-components.
+ */
+
 import { useEffect, useRef, useState, useMemo } from 'react';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './About.css';
@@ -31,9 +39,9 @@ function StatCard({ s, safeItemRightVariants }: { s: StatItemData, safeItemRight
   };
 
   return (
-    <motion.div 
+    <motion.div
       ref={cardRef}
-      className="stat-card holographic" 
+      className="stat-card holographic"
       variants={safeItemRightVariants}
       onMouseMove={handleMouseMove}
       whileHover={shouldReduceMotion ? {} : { y: 0, scale: 1.02 }}
@@ -150,7 +158,7 @@ export default function About() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div 
+        <motion.div
           className="section-two-col"
           variants={safeContainerVariants}
           initial="hidden"
@@ -177,26 +185,26 @@ export default function About() {
             </motion.div>
 
             <motion.div className="about-highlights" variants={safeContainerVariants}>
-              {[ 
-                { 
-                  title: 'Student-Led Innovation', 
+              {[
+                {
+                  title: 'Student-Led Innovation',
                   text: 'Empowering students to lead technical initiatives and create real-world impact',
                   icon: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>
                 },
                 {
-                  title: 'Global Recognition', 
+                  title: 'Global Recognition',
                   text: 'Part of IEEE\'s worldwide network with access to exclusive resources',
                   icon: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>
                 },
                 {
-                  title: 'Multidisciplinary Focus', 
+                  title: 'Multidisciplinary Focus',
                   text: `${Chapters.filter(c => c.type === ChapterType.TECH).length} technical chapters covering AI, Robotics, IoT, and emerging fields`,
                   icon: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>
                 }
               ].map((h, i) => (
-                <motion.div 
-                  key={i} 
-                  className="highlight-item" 
+                <motion.div
+                  key={i}
+                  className="highlight-item"
                   variants={safeItemVariants}
                   whileHover={shouldReduceMotion ? {} : { x: 4 }}
                 >
@@ -216,7 +224,7 @@ export default function About() {
 
           <motion.div className="about-stats" variants={safeContainerVariants}>
             <div className="stats-grid">
-              {[ 
+              {[
                 { end: 500, suffix: '+', label: 'Active Members', desc: 'Passionate students driving innovation' },
                 { end: 12, suffix: '', label: 'Technical Chapters', desc: 'Diverse societies and special interest groups' },
                 { end: 100, suffix: '+', label: 'Events Annually', desc: 'Workshops, seminars, and competitions' },

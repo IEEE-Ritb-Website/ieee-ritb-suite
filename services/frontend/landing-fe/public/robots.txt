@@ -1,0 +1,12 @@
+# IEEE RITB Website Robots.txt
+# https://ieee.ritb.in
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://ieee.ritb.in/sitemap.xml
+
+# Disallow admin/internal paths (if any exist in future)
+Disallow: /api/
+Disallow: /_

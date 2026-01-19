@@ -1,4 +1,14 @@
+/**
+ * Purpose: SEO meta tag management using react-helmet-async.
+ * Exports: default SEO (React component)
+ * Side effects: Injects meta tags into document head.
+ *
+ * @example
+ * <SEO title="Events" description="Upcoming IEEE events" />
+ */
+
 import { Helmet } from 'react-helmet-async';
+
 
 interface SEOProps {
   title?: string;

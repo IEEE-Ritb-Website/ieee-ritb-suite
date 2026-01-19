@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext, useLoaderData } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { useEvent } from '../hooks/useEntityData';
 import { useMotion } from '../hooks/useMotion';
+import type { IEventDetails } from '../data/mockData';
 import type { LayoutContext } from '../layouts/MainLayout';
 import './EventDetails.css';
 
@@ -44,13 +44,13 @@ function useCountdown(targetDate: string) {
  * EventDetails Page - Cinematic Poster Reveal + Split Showcase
  */
 export default function EventDetails() {
-    const { eventId } = useParams<{ eventId: string }>();
+    // Data is pre-loaded by router loader - no loading states needed
+    const event = useLoaderData() as IEventDetails;
     const { warpComplete } = useOutletContext<LayoutContext>();
-    const { data: event, loading, error } = useEvent(eventId);
     const { orchestrate, shouldReduceMotion } = useMotion();
 
     // Countdown timer
-    const countdown = useCountdown(event?.date || '');
+    const countdown = useCountdown(event.date);
     const hasCountdown = countdown.days > 0 || countdown.hours > 0 || countdown.mins > 0;
 
     const containerVariants = orchestrate({
@@ -83,32 +83,6 @@ export default function EventDetails() {
             }
         })
     });
-
-    if (loading) {
-        return (
-            <div className="event-details-loading">
-                <div className="loader-spinner" />
-                <p>Loading event details...</p>
-            </div>
-        );
-    }
-
-    if (error || !event) {
-        return (
-            <div className="event-details-error">
-                <Helmet>
-                    <title>Event Not Found | IEEE RITB</title>
-                </Helmet>
-                <div className="error-content glass-panel">
-                    <h1>Event Not Found</h1>
-                    <p>{error || 'The requested event does not exist.'}</p>
-                    <Link to="/#events" className="btn-primary">
-                        ← Back to Home
-                    </Link>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <>

@@ -1,3 +1,12 @@
+/**
+ * Purpose: Events section with expandable chronosphere carousel.
+ * Exports: default Events (React component)
+ * Side effects: None
+ *
+ * Features DecoderText effect on active event titles.
+ * Uses Framer Motion LayoutGroup for smooth slice expansion.
+ */
+
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';

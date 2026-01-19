@@ -1,32 +1,22 @@
-import { lazy, Suspense } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { useOutletContext } from 'react-router-dom';
-import Hero from '../components/sections/Hero';
 import { useMotion } from '../hooks/useMotion';
 import type { LayoutContext } from '../layouts/MainLayout';
 
-// Lazy load sections
-const About = lazy(() => import('../components/sections/About'));
-const Features = lazy(() => import('../components/sections/Features'));
-const Events = lazy(() => import('../components/sections/Events'));
-const Chapters = lazy(() => import('../components/sections/Chapters'));
-const Contact = lazy(() => import('../components/sections/Contact'));
-
-// Branded loading fallback for sections
-const SectionLoader = () => (
-    <div className="w-full h-[400px] flex items-center justify-center opacity-30">
-        <div className="relative w-12 h-12">
-            <div className="absolute inset-0 border-2 border-blue-500/20 rounded-full"></div>
-            <div className="absolute inset-0 border-2 border-t-blue-500 rounded-full animate-spin"></div>
-        </div>
-    </div>
-);
+// Sections
+import Hero from '../components/sections/Hero';
+import About from '../components/sections/About';
+import Features from '../components/sections/Features';
+import Events from '../components/sections/Events';
+import Chapters from '../components/sections/Chapters';
+import Contact from '../components/sections/Contact';
 
 /**
  * Home Page
  * 
- * The landing page content, previously in App.tsx.
+ * The landing page content.
  * Renders all the main sections: Hero, About, Features, Events, Chapters, Contact.
+ * Sections are bundled directly for smoother scrolling experience.
  */
 export default function Home() {
     const { warpComplete, isLoading } = useOutletContext<LayoutContext>();
@@ -53,21 +43,11 @@ export default function Home() {
             animate={warpComplete ? "visible" : "hidden"}
         >
             <Hero isLoading={isLoading} />
-            <Suspense fallback={<SectionLoader />}>
-                <About />
-            </Suspense>
-            <Suspense fallback={<SectionLoader />}>
-                <Features />
-            </Suspense>
-            <Suspense fallback={<SectionLoader />}>
-                <Events />
-            </Suspense>
-            <Suspense fallback={<SectionLoader />}>
-                <Chapters />
-            </Suspense>
-            <Suspense fallback={<SectionLoader />}>
-                <Contact />
-            </Suspense>
+            <About />
+            <Features />
+            <Events />
+            <Chapters />
+            <Contact />
         </motion.div>
     );
 }

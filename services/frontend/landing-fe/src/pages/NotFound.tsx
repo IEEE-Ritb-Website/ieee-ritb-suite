@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
@@ -14,7 +15,20 @@ import './NotFound.css';
  */
 export default function NotFound() {
     const { warpComplete } = useOutletContext<LayoutContext>();
-    const { orchestrate } = useMotion();
+    const { orchestrate, shouldReduceMotion } = useMotion();
+
+    // Re-trigger glitch every 3 seconds for continuous effect
+    const [glitchKey, setGlitchKey] = useState(0);
+
+    useEffect(() => {
+        if (shouldReduceMotion) return;
+
+        const interval = setInterval(() => {
+            setGlitchKey(prev => prev + 1);
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [shouldReduceMotion]);
 
     const containerVariants = orchestrate({
         hidden: { opacity: 0 },
@@ -48,7 +62,7 @@ export default function NotFound() {
             >
                 <div className="not-found-content">
                     <motion.div className="error-code" variants={itemVariants}>
-                        <GlitchText text="404" style="hero" />
+                        <GlitchText key={glitchKey} text="404" style="hero" glitchDuration={1500} />
                     </motion.div>
 
                     <motion.h1 className="not-found-title" variants={itemVariants}>

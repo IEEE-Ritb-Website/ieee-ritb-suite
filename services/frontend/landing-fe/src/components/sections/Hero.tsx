@@ -1,3 +1,12 @@
+/**
+ * Purpose: Hero section of the landing page with animated stats and CTA buttons.
+ * Exports: default Hero (React component)
+ * Side effects: None
+ *
+ * Contains AnimatedNumber (eased counter animation) and StatItem sub-components.
+ * Waits for warp animation to complete before revealing content.
+ */
+
 import './Hero.css';
 import { useEffect, useRef, useState } from 'react';
 import { Chapters } from '@astranova/catalogues';
