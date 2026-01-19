@@ -1,11 +1,10 @@
-import { useParams, Link, useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext, useLoaderData } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { useChapter } from '../hooks/useEntityData';
 import { useMotion } from '../hooks/useMotion';
 import ChapterIcon from '../components/ui/ChapterIcon';
 import GlowText from '../components/effects/GlowText';
-import type { IChapterAcronyms } from '@astranova/catalogues';
+import type { IChapter, IChapterAcronyms } from '@astranova/catalogues';
 import type { LayoutContext } from '../layouts/MainLayout';
 import './ChapterDetails.css';
 
@@ -27,9 +26,9 @@ const chapterColors: Record<string, string> = {
  * - Premium animations and transitions
  */
 export default function ChapterDetails() {
-    const { chapterId } = useParams<{ chapterId: string }>();
+    // Data is pre-loaded by router loader - no loading states needed
+    const chapter = useLoaderData() as IChapter;
     const { warpComplete } = useOutletContext<LayoutContext>();
-    const { data: chapter, loading, error } = useChapter(chapterId);
     const { orchestrate, shouldReduceMotion } = useMotion();
 
     const containerVariants = orchestrate({
@@ -63,33 +62,7 @@ export default function ChapterDetails() {
         })
     });
 
-    const color = chapter ? chapterColors[chapter.acronym] || '#4d7fff' : '#4d7fff';
-
-    if (loading) {
-        return (
-            <div className="chapter-details-loading">
-                <div className="loader-spinner" />
-                <p>Loading chapter details...</p>
-            </div>
-        );
-    }
-
-    if (error || !chapter) {
-        return (
-            <div className="chapter-details-error">
-                <Helmet>
-                    <title>Chapter Not Found | IEEE RITB</title>
-                </Helmet>
-                <div className="error-content glass-panel">
-                    <h1>Chapter Not Found</h1>
-                    <p>{error || 'The requested chapter does not exist.'}</p>
-                    <Link to="/#chapters" className="btn-primary">
-                        ← Back to Home
-                    </Link>
-                </div>
-            </div>
-        );
-    }
+    const color = chapterColors[chapter.acronym] || '#4d7fff';
 
     // Stat card data
     const statCards = [
