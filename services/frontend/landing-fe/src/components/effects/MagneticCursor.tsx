@@ -1,3 +1,13 @@
+/**
+ * Purpose: Custom cursor with smooth magnetic tracking effect.
+ * Exports: default MagneticCursor (React component)
+ * Side effects: Adds global mousemove listener; renders custom cursor elements.
+ *
+ * Features a dot (follows cursor instantly) and ring (follows with lerp delay).
+ * Expands when hovering clickable elements. Disabled on touch devices and
+ * when user prefers reduced motion.
+ */
+
 import { useEffect, useRef, useState } from 'react';
 import { useMotion } from '@/hooks/useMotion';
 import './MagneticCursor.css';
@@ -10,17 +20,17 @@ export default function MagneticCursor({ visible = true }: MagneticCursorProps) 
   const [isPointer, setIsPointer] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
   const { shouldReduceMotion } = useMotion();
-  
+
   const cursorDot = useRef<HTMLDivElement>(null);
   const cursorRing = useRef<HTMLDivElement>(null);
-  
+
   const requestRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0 });
   const posRef = useRef({ x: 0, y: 0 });
   const dotPosRef = useRef({ x: 0, y: 0 });
-  
+
   const LERP_FACTOR = 0.15;
-  
+
   useEffect(() => {
     if (shouldReduceMotion) return;
 
@@ -29,7 +39,7 @@ export default function MagneticCursor({ visible = true }: MagneticCursorProps) 
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
-      
+
       if (isHidden) {
         setIsHidden(false);
         posRef.current = { x: e.clientX, y: e.clientY };
@@ -40,7 +50,7 @@ export default function MagneticCursor({ visible = true }: MagneticCursorProps) 
       if (target.nodeType === Node.TEXT_NODE && target.parentElement) {
         target = target.parentElement;
       }
-      
+
       if (!(target instanceof Element)) return;
 
       const isClickable =

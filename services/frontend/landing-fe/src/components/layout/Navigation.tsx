@@ -1,3 +1,12 @@
+/**
+ * Purpose: Main navigation bar with scroll progress indicator.
+ * Exports: default Navigation (React component)
+ * Side effects: Observes sections for active state; listens for scroll/resize.
+ *
+ * Dynamically adjusts nav items based on current route (home vs detail pages).
+ * Uses IntersectionObserver to highlight the currently visible section.
+ */
+
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, useScroll, useSpring } from 'framer-motion';

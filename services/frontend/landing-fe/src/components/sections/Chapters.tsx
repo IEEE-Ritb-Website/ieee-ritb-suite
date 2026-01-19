@@ -1,3 +1,12 @@
+/**
+ * Purpose: Chapters section displaying IEEE societies with filtering tabs.
+ * Exports: default Chapters (React component)
+ * Side effects: None
+ *
+ * Filters chapters by type (all/tech/non-tech) and links to detail pages.
+ * Uses @astranova/catalogues for chapter data.
+ */
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ParallaxLayer from '../effects/ParallaxLayer';

@@ -1,4 +1,13 @@
+/**
+ * Purpose: Loader component exports for app initialization.
+ * Exports: Loader (simple spinner), default EnhancedLoader (full loading experience)
+ * Side effects: None
+ *
+ * Loader is a legacy fallback; EnhancedLoader is the primary loading screen.
+ */
+
 // Legacy simple loader - kept for fallback
+
 export const Loader = () => {
     return (
         <div className="fixed w-full h-screen flex items-center justify-center z-50">

@@ -1,3 +1,15 @@
+/**
+ * Purpose: WebGL starfield background using Three.js and React Three Fiber.
+ * Exports: default HeroStarfield (React component), HeroFallback, AnimationPhase type
+ * Side effects: Creates WebGL canvas; listens for mousemove for parallax.
+ *
+ * Animation phases: warp (stars streak), slowing (decelerate), stopped (parallax only).
+ * Adapts star count based on device capabilities and performance tier.
+ * Falls back to static gradient when WebGL unavailable or reduced motion enabled.
+ *
+ * TODO: add unit tests covering phase transitions and fallback behavior.
+ */
+
 import { useRef, useMemo, useState, useEffect, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -155,6 +167,8 @@ const StarsField = ({ isLoading, starCount, tier, onPhaseChange, paused = false 
     return () => window.removeEventListener('mousemove', throttledMouseMove);
   }, []);
 
+  // Main animation loop - runs every frame
+  // Handles three phases: warp (initial streak), slowing (decelerate), stopped (parallax only)
   useFrame((_state, delta) => {
     if (paused || isLoading || !pointsRef.current || !linesRef.current) return;
     timeRef.current += delta;
@@ -162,33 +176,42 @@ const StarsField = ({ isLoading, starCount, tier, onPhaseChange, paused = false 
     const positionsArray = pointsRef.current.geometry.attributes.position.array as Float32Array;
     const linePositionsArray = linesRef.current.geometry.attributes.position.array as Float32Array;
 
+    // Phase transition: warp -> slowing after duration elapsed
     if (phase === 'warp' && timeRef.current > ANIMATION_CONFIG.WARP_DURATION) {
       setPhase('slowing');
     }
 
+    // During slowing phase: exponentially decelerate stars and morph lines to points
     if (phase === 'slowing') {
-      speedMultiplier.current *= ANIMATION_CONFIG.SLOWDOWN_RATE;
-      lineToCircleProgress.current = Math.min(lineToCircleProgress.current + delta * 1.5, 1);
+      speedMultiplier.current *= ANIMATION_CONFIG.SLOWDOWN_RATE; // Exponential slowdown
+      lineToCircleProgress.current = Math.min(lineToCircleProgress.current + delta * 1.5, 1); // Line->circle morph
       if (speedMultiplier.current < ANIMATION_CONFIG.SLOWDOWN_THRESHOLD) {
-        setPhase('stopped');
+        setPhase('stopped'); // Transition to idle parallax mode
       }
     }
 
+    // Lerp (linear interpolation) for smooth mouse tracking - 0.08 = smooth follow
     smoothMouseRef.current.x += (mouseRef.current.x - smoothMouseRef.current.x) * 0.08;
     smoothMouseRef.current.y += (mouseRef.current.y - smoothMouseRef.current.y) * 0.08;
 
+    // Convert normalized mouse coords (-1 to 1) to parallax offset
     const parallaxX = smoothMouseRef.current.x * ANIMATION_CONFIG.PARALLAX_MULTIPLIER;
     const parallaxY = smoothMouseRef.current.y * ANIMATION_CONFIG.PARALLAX_MULTIPLIER;
 
+    // Update each star's position based on current phase
     stars.forEach((star, i) => {
       if (phase === 'warp' || phase === 'slowing') {
+        // Move stars toward camera (positive Z) at varying speeds
         const speed = phase === 'warp' ? 1 : speedMultiplier.current;
         star.position.z += delta * ANIMATION_CONFIG.STAR_SPEED * star.speed * speed;
+
+        // Recycle stars that pass camera to create infinite tunnel effect
         if (star.position.z > ANIMATION_CONFIG.Z_NEAR) {
           star.position.z = ANIMATION_CONFIG.Z_FAR;
           star.originalPosition.z = star.position.z;
         }
 
+        // Shrink streak lines as we transition to stopped phase
         const streakLength = ANIMATION_CONFIG.STREAK_LENGTH * (1 - lineToCircleProgress.current);
         linePositionsArray[i * 6] = star.position.x;
         linePositionsArray[i * 6 + 1] = star.position.y;
@@ -197,11 +220,13 @@ const StarsField = ({ isLoading, starCount, tier, onPhaseChange, paused = false 
         linePositionsArray[i * 6 + 4] = star.position.y;
         linePositionsArray[i * 6 + 5] = star.position.z - streakLength;
       } else {
+        // Stopped phase: apply mouse parallax based on star depth (deeper = more movement)
         const parallaxFactor = star.depth * ANIMATION_CONFIG.PARALLAX_DEPTH_FACTOR;
         star.position.x = star.originalPosition.x + parallaxX * parallaxFactor;
         star.position.y = star.originalPosition.y + parallaxY * parallaxFactor;
       }
 
+      // Write final position to buffer
       positionsArray[i * 3] = star.position.x;
       positionsArray[i * 3 + 1] = star.position.y;
       positionsArray[i * 3 + 2] = star.position.z;
@@ -269,7 +294,7 @@ export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfiel
   const { tier } = usePerformanceMonitor(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { margin: "200px" });
-  
+
   const starCount = useMemo(() => {
     const baseCount = getOptimalStarCount() || ANIMATION_CONFIG.STAR_COUNT_FALLBACK;
     // Scale initial star count based on current tier if detected early
@@ -286,11 +311,11 @@ export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfiel
     <div className="hero-starfield" ref={containerRef}>
       <Canvas camera={{ position: [0, 0, 30], fov: 75 }} gl={{ alpha: true, antialias: true }}>
         <Suspense fallback={null}>
-          <StarsField 
-            isLoading={isLoading} 
-            starCount={starCount} 
-            tier={tier} 
-            onPhaseChange={onPhaseChange} 
+          <StarsField
+            isLoading={isLoading}
+            starCount={starCount}
+            tier={tier}
+            onPhaseChange={onPhaseChange}
             paused={!isInView}
           />
         </Suspense>

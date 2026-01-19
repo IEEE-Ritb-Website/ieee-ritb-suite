@@ -1,3 +1,9 @@
+/**
+ * Purpose: Site-wide footer with branding, navigation links, and social icons.
+ * Exports: default Footer (React component)
+ * Side effects: None
+ */
+
 import './Footer.css';
 
 export default function Footer() {

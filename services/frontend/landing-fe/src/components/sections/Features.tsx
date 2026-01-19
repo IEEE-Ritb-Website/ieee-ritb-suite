@@ -1,3 +1,11 @@
+/**
+ * Purpose: Features section showcasing IEEE RITB offerings with 3D tilt cards.
+ * Exports: default Features (React component)
+ * Side effects: None
+ *
+ * Features FeatureCard sub-component with perspective tilt on mouse move.
+ */
+
 import { useRef } from 'react';
 import { Chapters } from '@astranova/catalogues';
 import ParallaxLayer from '../effects/ParallaxLayer';
@@ -130,8 +138,8 @@ const features = [
 
 const headerVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
   }
@@ -139,19 +147,19 @@ const headerVariants: Variants = {
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
-    transition: { 
+    transition: {
       staggerChildren: 0.1,
       delayChildren: 0.2
-    } 
+    }
   }
 };
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
   }
@@ -171,7 +179,7 @@ export default function Features() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div 
+        <motion.div
           className="section-header"
           variants={safeHeaderVariants}
           initial="hidden"
@@ -189,7 +197,7 @@ export default function Features() {
           </p>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="grid-features"
           variants={safeContainerVariants}
           initial="hidden"
@@ -197,10 +205,10 @@ export default function Features() {
           viewport={{ once: true, margin: "-50px" }}
         >
           {features.map((feature, index) => (
-            <FeatureCard 
-              key={index} 
-              feature={feature} 
-              safeItemVariants={safeItemVariants} 
+            <FeatureCard
+              key={index}
+              feature={feature}
+              safeItemVariants={safeItemVariants}
             />
           ))}
         </motion.div>

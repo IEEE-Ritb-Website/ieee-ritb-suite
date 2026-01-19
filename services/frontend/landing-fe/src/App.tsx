@@ -1,3 +1,12 @@
+/**
+ * Purpose: Root component defining application routing structure.
+ * Exports: default App (React component)
+ * Side effects: None
+ *
+ * All routes use lazy loading with Suspense for code splitting.
+ * MainLayout provides the persistent shell (starfield, navigation, footer).
+ */
+
 import { Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import MainLayout from './layouts/MainLayout';

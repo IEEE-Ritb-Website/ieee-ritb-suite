@@ -1,3 +1,12 @@
+/**
+ * Purpose: Application entry point. Mounts the React app with required providers.
+ * Exports: None (side-effect only - renders to DOM)
+ * Side effects:
+ *   - Imports Fontsource fonts (Inter, Space Grotesk, JetBrains Mono)
+ *   - Renders React app to #root element
+ *   - Wraps app in StrictMode, HelmetProvider (SEO), and BrowserRouter
+ */
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'

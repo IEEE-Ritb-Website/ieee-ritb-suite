@@ -1,3 +1,12 @@
+/**
+ * Purpose: Contact section with form submission via EmailJS.
+ * Exports: default Contact (React component)
+ * Side effects: Sends email via EmailJS API on form submission.
+ *
+ * Features terminal-style submission animation and ChannelCard contact links.
+ * Requires VITE_EMAILJS_* environment variables.
+ */
+
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import emailjs from '@emailjs/browser';
@@ -33,9 +42,9 @@ function ChannelCard({ item, safeItemVariants }: { item: ChannelItem, safeItemVa
   const MotionTag = item.href ? motion.a : motion.div;
 
   return (
-    <MotionTag 
+    <MotionTag
       ref={cardRef as React.Ref<HTMLAnchorElement & HTMLDivElement>}
-      href={item.href || undefined} 
+      href={item.href || undefined}
       target={item.href ? "_blank" : undefined}
       rel={item.href ? "noopener noreferrer" : undefined}
       className="channel-card glass-panel"
@@ -108,13 +117,13 @@ function TerminalConsole() {
 
 function TerminalSeal() {
   return (
-    <motion.div 
+    <motion.div
       className="terminal-seal"
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 100 }}
     >
-      <motion.div 
+      <motion.div
         className="seal-inner"
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ repeat: Infinity, duration: 4 }}
@@ -140,7 +149,7 @@ interface SingularityButtonProps {
 
 function SingularityButton({ state, isValid }: SingularityButtonProps) {
   const { shouldReduceMotion } = useMotion();
-  
+
   return (
     <div className="singularity-btn-container">
       <AnimatePresence mode="wait">
@@ -150,8 +159,8 @@ function SingularityButton({ state, isValid }: SingularityButtonProps) {
             type="submit"
             className={`btn-primary magnetic ${isValid ? 'ignited' : 'dormant'}`}
             initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.9 }}
-            animate={{ 
-              opacity: 1, 
+            animate={{
+              opacity: 1,
               scale: 1,
               boxShadow: isValid ? '0 0 25px var(--color-accent-glow)' : '0 0 0px transparent'
             }}
@@ -160,16 +169,16 @@ function SingularityButton({ state, isValid }: SingularityButtonProps) {
             whileTap={isValid && !shouldReduceMotion ? { scale: 0.95 } : {}}
           >
             <span className="btn-text">Send Message</span>
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="20" 
-              height="20" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               style={{ marginLeft: 8 }}
             >
               <line x1="22" y1="2" x2="11" y2="13" />
@@ -186,16 +195,16 @@ function SingularityButton({ state, isValid }: SingularityButtonProps) {
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 } 
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
   }
 };
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
   }
@@ -212,7 +221,7 @@ export default function Contact() {
 
   const safeContainerVariants = orchestrate(containerVariants);
   const safeItemVariants = orchestrate(itemVariants);
-  
+
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (shouldReduceMotion) return;
     const card = e.currentTarget;
@@ -246,7 +255,7 @@ export default function Contact() {
     if (!isFormValid || !formRef.current) return;
 
     setFormState('submitting');
-    
+
     try {
       await emailjs.sendForm(
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
@@ -265,13 +274,13 @@ export default function Contact() {
   return (
     <section className="section section-padding section-bg-surface" id="contact" aria-labelledby="contact-heading">
       <div className="contact-interface-grid" />
-      
+
       <ParallaxLayer speed={0.2} zIndex={-1}>
         <div className="contact-bg-glow" />
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div 
+        <motion.div
           className="section-header"
           variants={safeContainerVariants}
           initial="hidden"
@@ -289,7 +298,7 @@ export default function Contact() {
           </motion.p>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="contact-grid"
           variants={safeContainerVariants}
           initial="hidden"
@@ -299,35 +308,35 @@ export default function Contact() {
           {/* Contact Channels */}
           <motion.div className="contact-channels" variants={safeContainerVariants}>
             {[
-              { 
-                label: 'Email Us', 
-                value: 'ieeeritb@gmail.com', 
-                href: 'mailto:ieeeritb@gmail.com', 
-                icon: <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22,6 12,13 2,6" /> 
+              {
+                label: 'Email Us',
+                value: 'ieeeritb@gmail.com',
+                href: 'mailto:ieeeritb@gmail.com',
+                icon: <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22,6 12,13 2,6" />
               },
-              { 
-                label: 'LinkedIn', 
-                value: 'IEEE RIT-B', 
-                href: 'https://linkedin.com/company/ieee-rit', 
+              {
+                label: 'LinkedIn',
+                value: 'IEEE RIT-B',
+                href: 'https://linkedin.com/company/ieee-rit',
                 icon: <>
                   <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
                   <rect x="2" y="9" width="4" height="12" />
                   <circle cx="4" cy="4" r="2" />
                 </>
               },
-              { 
-                label: 'Visit HQ', 
-                value: 'RIT Campus, Bangalore', 
-                href: 'https://maps.app.goo.gl/pBmSqVvwk5fZBmbz6', 
+              {
+                label: 'Visit HQ',
+                value: 'RIT Campus, Bangalore',
+                href: 'https://maps.app.goo.gl/pBmSqVvwk5fZBmbz6',
                 icon: <>
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </>
               },
-              { 
-                label: 'Instagram', 
-                value: '@ieeeritb', 
-                href: 'https://instagram.com/ieeeritb', 
+              {
+                label: 'Instagram',
+                value: '@ieeeritb',
+                href: 'https://instagram.com/ieeeritb',
                 icon: <>
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
@@ -341,7 +350,7 @@ export default function Contact() {
 
           {/* Contact Form Terminal */}
           <motion.div variants={safeItemVariants} className="w-full">
-            <motion.div 
+            <motion.div
               ref={containerRef}
               className="contact-form-container glass-panel"
               onMouseMove={handleMouseMove}
@@ -351,13 +360,13 @@ export default function Contact() {
               <div className="bracket bracket-tr" />
               <div className="bracket bracket-bl" />
               <div className="bracket bracket-br" />
-              
+
               <AnimatePresence mode="wait">
                 {formState === 'idle' && (
-                  <motion.form 
+                  <motion.form
                     ref={formRef}
                     key="form-idle"
-                    className="contact-form" 
+                    className="contact-form"
                     onSubmit={handleSubmit}
                     onChange={checkValidity}
                     initial={{ opacity: 0 }}
@@ -370,21 +379,21 @@ export default function Contact() {
                         <input type="text" id="user_name" name="user_name" className="form-input" placeholder="Enter your name" required autoComplete="name" />
                       </div>
                     </div>
-                    
+
                     <div className="form-group">
                       <label htmlFor="user_email" className="form-label">Email Address</label>
                       <div className="input-wrapper">
                         <input type="email" id="user_email" name="user_email" className="form-input" placeholder="name@example.com" required autoComplete="email" />
                       </div>
                     </div>
-                    
+
                     <div className="form-group">
                       <label htmlFor="message" className="form-label">Message</label>
                       <div className="input-wrapper">
                         <textarea id="message" name="message" className="form-textarea" placeholder="How can we help you?" required />
                       </div>
                     </div>
-                    
+
                     <SingularityButton state={formState} isValid={isFormValid} />
                   </motion.form>
                 )}
@@ -401,7 +410,7 @@ export default function Contact() {
                 )}
 
                 {formState === 'success' && (
-                  <motion.div 
+                  <motion.div
                     key="form-success"
                     className="transmission-success"
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -413,7 +422,7 @@ export default function Contact() {
                     <p className="success-desc">
                       Your data has been successfully routed to the IEEE RITB core server. A response will be dispatched shortly.
                     </p>
-                    <motion.button 
+                    <motion.button
                       className="terminal-return"
                       onClick={resetForm}
                       whileHover={{ scale: 1.05 }}
