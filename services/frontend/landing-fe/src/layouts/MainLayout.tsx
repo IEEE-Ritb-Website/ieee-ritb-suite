@@ -180,6 +180,7 @@ export default function MainLayout() {
                 <ErrorBoundary fallback={<HeroFallback />}>
                     <HeroStarfield
                         isLoading={isLoading}
+                        initialPhase={animationAlreadySeen ? 'stopped' : 'warp'}
                         onPhaseChange={(phase: AnimationPhase) => {
                             if (phase === 'slowing') {
                                 setTimeout(handleWarpComplete, 300);
