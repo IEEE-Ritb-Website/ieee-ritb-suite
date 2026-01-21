@@ -22,8 +22,8 @@ export default function SEO({
   title = 'IEEE RITB | Advancing Technology for Humanity',
   description = 'IEEE RIT Bangalore Student Branch is a community of thinkers, builders, and leaders shaping the future of technology through innovation and collaboration.',
   keywords = ['IEEE', 'RITB', 'RIT Bangalore', 'Student Branch', 'Technology', 'Engineering', 'Innovation'],
-  image = '/og-image.jpg', // We should ensure this exists or use a placeholder
-  url = 'https://ieee-ritb.org',
+  image = '/ieee_icon.png',
+  url = 'https://ieee.ritb.in',
 }: SEOProps) {
   const siteTitle = title.includes('IEEE RITB') ? title : `${title} | IEEE RITB`;
 
