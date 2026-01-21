@@ -67,17 +67,18 @@ interface StarsFieldProps {
   tier: PerformanceTier;
   onPhaseChange?: (phase: AnimationPhase) => void;
   paused?: boolean;
+  initialPhase?: AnimationPhase;
 }
 
-const StarsField = ({ isLoading, starCount, tier, onPhaseChange, paused = false }: StarsFieldProps) => {
+const StarsField = ({ isLoading, starCount, tier, onPhaseChange, paused = false, initialPhase = 'warp' }: StarsFieldProps) => {
   const pointsRef = useRef<THREE.Points>(null);
   const linesRef = useRef<THREE.LineSegments>(null);
-  const [phase, setPhase] = useState<AnimationPhase>('warp');
+  const [phase, setPhase] = useState<AnimationPhase>(initialPhase);
   const mouseRef = useRef({ x: 0, y: 0 });
   const smoothMouseRef = useRef({ x: 0, y: 0 });
   const timeRef = useRef(0);
   const speedMultiplier = useRef(1);
-  const lineToCircleProgress = useRef(0);
+  const lineToCircleProgress = useRef(initialPhase === 'stopped' ? 1 : 0);
 
   // Dynamic values based on tier
   const shootingStarConfig = useMemo(() => {
@@ -278,6 +279,7 @@ const StarsField = ({ isLoading, starCount, tier, onPhaseChange, paused = false 
 interface HeroStarfieldProps {
   isLoading: boolean;
   onPhaseChange?: (phase: AnimationPhase) => void;
+  initialPhase?: AnimationPhase;
 }
 
 export function HeroFallback() {
@@ -288,7 +290,7 @@ export function HeroFallback() {
   );
 }
 
-export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfieldProps) {
+export default function HeroStarfield({ isLoading, onPhaseChange, initialPhase }: HeroStarfieldProps) {
   const hasReducedMotion = prefersReducedMotion();
   const hasWebGL = hasWebGLSupport();
   const { tier } = usePerformanceMonitor(false);
@@ -317,6 +319,7 @@ export default function HeroStarfield({ isLoading, onPhaseChange }: HeroStarfiel
             tier={tier}
             onPhaseChange={onPhaseChange}
             paused={!isInView}
+            initialPhase={initialPhase}
           />
         </Suspense>
       </Canvas>
