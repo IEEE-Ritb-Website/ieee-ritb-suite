@@ -24,9 +24,9 @@ The **IEEE RIT-B Landing Page** is more than a website; it is an immersive, atmo
 | Route | Page | Description |
 | :--- | :--- | :--- |
 | `/` | **Home** | Main landing page with hero, chapters, events, and contact sections |
-| `/chapters/:slug` | **Chapter Details** | Dynamic chapter pages with data orbs, about section, and contact info |
-| `/events/:slug` | **Event Details** | Event showcase with timeline, registration, and detailed info |
-| `/*` | **404 Not Found** | Cyber-glitch aesthetic error page with terminal UI |
+| `/chapters/:chapterId` | **Chapter Details** | Dynamic chapter pages with data orbs, about section, and contact info |
+| `/events/:eventId` | **Event Details** | Event showcase with timeline, registration, and detailed info |
+| `*` | **404 Not Found** | Cyber-glitch aesthetic error page with terminal UI |
 
 ### 🔀 Smart Navigation System
 - **Context-Aware Links:** Navigation items dynamically adjust based on current route
@@ -191,9 +191,13 @@ pnpm preview
 ## 📁 Project Structure
 
 ```
+public/
+├── robots.txt                       # SEO crawl instructions
+├── sitemap.xml                      # Site structure for indexers
+│
 src/
-├── App.tsx                          # Route definitions
 ├── main.tsx                         # React entry point
+├── router.tsx                       # Router configuration & data loaders
 ├── index.css                        # Global styles & CSS variables
 │
 ├── components/
@@ -233,7 +237,7 @@ src/
 │   │   ├── About.css
 │   │   ├── Chapters.tsx             # Chapter cards grid
 │   │   ├── Chapters.css
-│   │   ├── Contact.tsx              # Contact form section
+│   │   ├── Contact.tsx              # Contact terminal & form with EmailJS
 │   │   ├── Contact.css
 │   │   ├── Events.tsx               # Upcoming events showcase
 │   │   ├── Events.css
