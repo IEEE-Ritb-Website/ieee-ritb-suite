@@ -1,140 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Main Pages -->
-  <url>
-    <loc>https://ieee.ritb.in/</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <!-- Chapter Pages -->
-  <url>
-    <loc>https://ieee.ritb.in/chapters/cs</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/ras</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/cis</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/sc</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/wie</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/mtts</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/pes</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/sps</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/comsoc</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/aps</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/embs</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/ix</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/web</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/crty</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/covr</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/digi</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/doc</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/chapters/prsp</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
 
-  <!-- Event Pages -->
-  <url>
-    <loc>https://ieee.ritb.in/events/e1</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/events/e2</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ieee.ritb.in/events/e3</loc>
-    <lastmod>2026-01-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
+<!-- Main Pages -->
+<url>
+  <loc>https://ieee.ritb.in/</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+
+<!-- Chapter Pages -->
+<url>
+  <loc>https://ieee.ritb.in/chapters/cs</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/ras</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/cis</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/sc</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/wie</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/mtts</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/pes</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/sps</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/comsoc</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/aps</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/embs</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/ix</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/web</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/crty</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/covr</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/digi</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/doc</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/chapters/prsp</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+
+<!-- Event Pages -->
+<url>
+  <loc>https://ieee.ritb.in/events/e1</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.70</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/events/e2</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.70</priority>
+</url>
+<url>
+  <loc>https://ieee.ritb.in/events/e3</loc>
+  <lastmod>2026-01-23T17:02:34+00:00</lastmod>
+  <priority>0.70</priority>
+</url>
+
+
 </urlset>
