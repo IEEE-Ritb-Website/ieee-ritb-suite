@@ -225,10 +225,10 @@ export default function About() {
           <motion.div className="about-stats" variants={safeContainerVariants}>
             <div className="stats-grid">
               {[
-                { end: 500, suffix: '+', label: 'Active Members', desc: 'Passionate students driving innovation' },
+                { end: 300, suffix: '+', label: 'Active Members', desc: 'Passionate students driving innovation' },
                 { end: 12, suffix: '', label: 'Technical Chapters', desc: 'Diverse societies and special interest groups' },
                 { end: 100, suffix: '+', label: 'Events Annually', desc: 'Workshops, seminars, and competitions' },
-                { end: 50, suffix: '+', label: 'Industry Partners', desc: 'Collaborations with leading tech companies' }
+                { end: 10, suffix: '+', label: 'Industry Partners', desc: 'Collaborations with leading tech companies' }
               ].map((s, i) => (
                 <StatCard key={i} s={s} safeItemRightVariants={safeItemRightVariants} />
               ))}

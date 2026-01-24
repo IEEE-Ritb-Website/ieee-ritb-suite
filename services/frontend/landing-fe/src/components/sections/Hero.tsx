@@ -143,7 +143,7 @@ export default function Hero(_props: Props) {
             <div className="stat-divider" aria-hidden="true"></div>
             <StatItem value={300} label="Members" delay={600} shouldStart={contentVisible} />
             <div className="stat-divider" aria-hidden="true"></div>
-            <StatItem value={50} label="Events This Year" delay={800} shouldStart={contentVisible} />
+            <StatItem value={100} label="Events This Year" delay={800} shouldStart={contentVisible} />
           </motion.div>
 
           <motion.div className="hero-cta" variants={safeItemVariants}>
