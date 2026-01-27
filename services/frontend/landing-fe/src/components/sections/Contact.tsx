@@ -4,15 +4,22 @@
  * Side effects: Sends email via EmailJS API on form submission.
  *
  * Features terminal-style submission animation and ChannelCard contact links.
- * Requires VITE_EMAILJS_* environment variables.
+ * Includes 3-layer spam protection: Cloudflare Turnstile, honeypot, and rate limiting.
+ * Requires VITE_EMAILJS_* and VITE_TURNSTILE_SITE_KEY environment variables.
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import { useMotion } from '@/hooks/useMotion';
+import '@/types/turnstile.d.ts';
 import './Contact.css';
+
+// --- Spam Protection Constants ---
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+const RATE_LIMIT_COOLDOWN_SECONDS = 60;
+const RATE_LIMIT_STORAGE_KEY = 'contact_last_submit';
 
 // --- Types ---
 
@@ -215,12 +222,82 @@ const itemVariants: Variants = {
 export default function Contact() {
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [isFormValid, setIsFormValid] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileReady, setTurnstileReady] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const turnstileWidgetRef = useRef<string | null>(null);
   const { orchestrate, shouldReduceMotion } = useMotion();
 
   const safeContainerVariants = orchestrate(containerVariants);
   const safeItemVariants = orchestrate(itemVariants);
+
+  // --- Layer 1: Cloudflare Turnstile ---
+  useEffect(() => {
+    // Skip if no site key configured
+    if (!TURNSTILE_SITE_KEY) {
+      console.warn('Turnstile site key not configured. Spam protection disabled.');
+      setTurnstileReady(true);
+      return;
+    }
+
+    // Define callback for when Turnstile script loads
+    window.onTurnstileLoad = () => {
+      setTurnstileReady(true);
+    };
+
+    // Load Turnstile script
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+      delete window.onTurnstileLoad;
+    };
+  }, []);
+
+  // Render Turnstile widget via ref callback when container mounts
+  const turnstileContainerRef = useCallback((node: HTMLDivElement | null) => {
+    if (!node || !turnstileReady || !TURNSTILE_SITE_KEY || !window.turnstile) return;
+
+    // Only render if we don't already have a widget
+    if (!turnstileWidgetRef.current) {
+      turnstileWidgetRef.current = window.turnstile.render(node, {
+        sitekey: TURNSTILE_SITE_KEY,
+        callback: (token: string) => setTurnstileToken(token),
+        'expired-callback': () => setTurnstileToken(null),
+        'error-callback': () => setTurnstileToken(null),
+        theme: 'dark',
+        size: 'compact',
+      });
+    }
+  }, [turnstileReady]);
+
+  // --- Layer 2: Rate Limiting (localStorage) ---
+  const canSubmitRateLimit = useCallback((): boolean => {
+    const lastSubmit = localStorage.getItem(RATE_LIMIT_STORAGE_KEY);
+    if (!lastSubmit) return true;
+    const elapsed = Date.now() - parseInt(lastSubmit, 10);
+    return elapsed > RATE_LIMIT_COOLDOWN_SECONDS * 1000;
+  }, []);
+
+  const getRemainingCooldown = useCallback((): number => {
+    const lastSubmit = localStorage.getItem(RATE_LIMIT_STORAGE_KEY);
+    if (!lastSubmit) return 0;
+    const elapsed = Date.now() - parseInt(lastSubmit, 10);
+    const remaining = RATE_LIMIT_COOLDOWN_SECONDS * 1000 - elapsed;
+    return Math.max(0, Math.ceil(remaining / 1000));
+  }, []);
+
+  // --- Layer 3: Honeypot Detection ---
+  const isHoneypotFilled = useCallback((): boolean => {
+    if (!formRef.current) return false;
+    const honeypot = formRef.current.querySelector<HTMLInputElement>('input[name="website"]');
+    return honeypot ? honeypot.value.length > 0 : false;
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (shouldReduceMotion) return;
@@ -244,6 +321,9 @@ export default function Contact() {
 
   const resetForm = () => {
     setFormState('idle');
+    setTurnstileToken(null);
+    // Clear widget ref so it can be re-rendered when form remounts
+    turnstileWidgetRef.current = null;
     setTimeout(() => {
       if (formRef.current) formRef.current.reset();
       setIsFormValid(false);
@@ -254,6 +334,27 @@ export default function Contact() {
     e.preventDefault();
     if (!isFormValid || !formRef.current) return;
 
+    // Layer 3: Check honeypot
+    if (isHoneypotFilled()) {
+      console.warn('Honeypot triggered - bot detected');
+      // Silently fail for bots (don't reveal detection)
+      setFormState('success');
+      return;
+    }
+
+    // Layer 2: Check rate limit
+    if (!canSubmitRateLimit()) {
+      const remaining = getRemainingCooldown();
+      alert(`Please wait ${remaining} seconds before sending another message.`);
+      return;
+    }
+
+    // Layer 1: Check Turnstile token (if configured)
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      alert('Please complete the security verification.');
+      return;
+    }
+
     setFormState('submitting');
 
     try {
@@ -263,6 +364,10 @@ export default function Contact() {
         formRef.current,
         import.meta.env.VITE_EMAILJS_PUBLIC_KEY
       );
+
+      // Save submission timestamp for rate limiting
+      localStorage.setItem(RATE_LIMIT_STORAGE_KEY, Date.now().toString());
+
       setFormState('success');
     } catch (error) {
       console.error('EmailJS Error:', error);
@@ -394,7 +499,24 @@ export default function Contact() {
                       </div>
                     </div>
 
-                    <SingularityButton state={formState} isValid={isFormValid} />
+                    {/* Honeypot field - hidden from humans, bots will fill it */}
+                    <div className="form-honeypot" aria-hidden="true">
+                      <label htmlFor="website">Website</label>
+                      <input
+                        type="text"
+                        id="website"
+                        name="website"
+                        tabIndex={-1}
+                        autoComplete="off"
+                      />
+                    </div>
+
+                    {/* Turnstile widget container */}
+                    {TURNSTILE_SITE_KEY && (
+                      <div ref={turnstileContainerRef} className="turnstile-wrapper" />
+                    )}
+
+                    <SingularityButton state={formState} isValid={isFormValid && (!TURNSTILE_SITE_KEY || !!turnstileToken)} />
                   </motion.form>
                 )}
 
