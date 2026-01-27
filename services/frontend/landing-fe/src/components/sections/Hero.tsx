@@ -122,7 +122,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.h1 className="hero-title" id="hero-title" variants={safeItemVariants}>
-            <span className="hero-title-accent">IEEE-RITB</span>
+            <span className="hero-title-accent">IEEE RIT-B</span>
           </motion.h1>
 
           <motion.p className="hero-subtitle" variants={safeItemVariants}>
