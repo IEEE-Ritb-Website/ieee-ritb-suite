@@ -128,7 +128,7 @@ export default function Chapters() {
             <motion.div key={`${chapter.acronym}-${index}`} variants={safeItemVariants}>
               <Link
                 to={`/chapters/${chapter.acronym.toLowerCase()}`}
-                className={`chapter-card magnetic ${activeChapter === index ? 'active' : ''}`}
+                className={`chapter-card ${activeChapter === index ? 'active' : ''}`}
                 onMouseEnter={() => !shouldReduceMotion && setActiveChapter(index)}
                 onMouseLeave={() => setActiveChapter(null)}
                 onFocus={() => setActiveChapter(index)}
@@ -145,7 +145,7 @@ export default function Chapters() {
                 </div>
                 <p className="chapter-description">{chapter.shortDescription.slice(0, 48) + '...'}</p>
                 <div className="chapter-footer">
-                  <span className="chapter-link magnetic" aria-label={`Learn more about ${chapter.name}`}>
+                  <span className="chapter-link" aria-label={`Learn more about ${chapter.name}`}>
                     <span>View Details</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
                   </span>
