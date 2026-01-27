@@ -190,6 +190,24 @@
   z-index: 1;
 }
 
+/* Honeypot field - hidden from humans but accessible to bots */
+.form-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Cloudflare Turnstile widget wrapper */
+.turnstile-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-2);
+}
+
 .input-wrapper {
   position: relative;
   border-radius: 12px;
