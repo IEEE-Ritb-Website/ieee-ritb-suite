@@ -276,6 +276,14 @@ export default function Contact() {
     }
   }, [turnstileReady]);
 
+  // Reset Turnstile widget when form becomes invalid (widget unmounts)
+  useEffect(() => {
+    if (!isFormValid) {
+      turnstileWidgetRef.current = null;
+      setTurnstileToken(null);
+    }
+  }, [isFormValid]);
+
   // --- Layer 2: Rate Limiting (localStorage) ---
   const canSubmitRateLimit = useCallback((): boolean => {
     const lastSubmit = localStorage.getItem(RATE_LIMIT_STORAGE_KEY);
@@ -511,8 +519,8 @@ export default function Contact() {
                       />
                     </div>
 
-                    {/* Turnstile widget container */}
-                    {TURNSTILE_SITE_KEY && (
+                    {/* Turnstile widget container - only show when form is filled */}
+                    {TURNSTILE_SITE_KEY && isFormValid && (
                       <div ref={turnstileContainerRef} className="turnstile-wrapper" />
                     )}
 
