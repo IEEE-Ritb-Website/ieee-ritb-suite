@@ -15,10 +15,6 @@ import { useMotion } from '@/hooks/useMotion';
 import { useOutletContext } from 'react-router-dom';
 import type { LayoutContext } from '@/layouts/MainLayout';
 
-interface Props {
-  isLoading?: boolean; // Optional, kept for backwards compatibility
-}
-
 interface AnimatedNumberProps {
   end: number;
   duration?: number;
@@ -95,7 +91,7 @@ const itemVariants: Variants = {
   }
 };
 
-export default function Hero(_props: Props) {
+export default function Hero() {
   // Get warpComplete from layout context (starfield is in MainLayout)
   const { warpComplete } = useOutletContext<LayoutContext>();
   const { orchestrate, shouldReduceMotion } = useMotion();

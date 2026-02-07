@@ -1,6 +1,5 @@
 import { Link, useOutletContext, useLoaderData } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
 import { useMotion } from '../hooks/useMotion';
 import ChapterIcon from '../components/ui/ChapterIcon';
 import GlowText from '../components/effects/GlowText';
@@ -84,10 +83,8 @@ export default function ChapterDetails() {
 
     return (
         <>
-            <Helmet>
-                <title>{chapter.name} | IEEE RITB</title>
-                <meta name="description" content={chapter.shortDescription} />
-            </Helmet>
+            <title>{chapter.name} | IEEE RITB</title>
+            <meta name="description" content={chapter.shortDescription} />
 
             <motion.div
                 className="chapter-details"
