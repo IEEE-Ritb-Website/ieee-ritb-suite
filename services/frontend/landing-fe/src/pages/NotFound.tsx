@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
 import { useMotion } from '../hooks/useMotion';
 import GlitchText from '../components/effects/GlitchText';
 import type { LayoutContext } from '../layouts/MainLayout';
@@ -49,12 +48,10 @@ export default function NotFound() {
 
     return (
         <>
-            <Helmet>
                 <title>404 - Page Not Found | IEEE RITB</title>
                 <meta name="robots" content="noindex" />
-            </Helmet>
 
-            <motion.div
+      <motion.div
                 className="not-found"
                 variants={containerVariants}
                 initial={warpComplete ? "visible" : "hidden"}
