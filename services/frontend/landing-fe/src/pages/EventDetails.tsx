@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useOutletContext, useLoaderData } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
 import { useMotion } from '../hooks/useMotion';
 import type { IEventDetails } from '../data/mockData';
 import type { LayoutContext } from '../layouts/MainLayout';
@@ -86,10 +85,8 @@ export default function EventDetails() {
 
     return (
         <>
-            <Helmet>
-                <title>{event.title} | IEEE RITB</title>
-                <meta name="description" content={event.description} />
-            </Helmet>
+            <title>{event.title} | IEEE RITB</title>
+            <meta name="description" content={event.description} />
 
             <motion.div
                 className="event-details"

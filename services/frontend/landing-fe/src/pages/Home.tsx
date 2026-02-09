@@ -19,7 +19,7 @@ import Contact from '../components/sections/Contact';
  * Sections are bundled directly for smoother scrolling experience.
  */
 export default function Home() {
-    const { warpComplete, isLoading } = useOutletContext<LayoutContext>();
+    const { warpComplete } = useOutletContext<LayoutContext>();
     const { orchestrate } = useMotion();
 
     // Stagger container for section reveals
@@ -42,7 +42,7 @@ export default function Home() {
             initial={warpComplete ? "visible" : "hidden"}
             animate={warpComplete ? "visible" : "hidden"}
         >
-            <Hero isLoading={isLoading} />
+            <Hero />
             <About />
             <Features />
             <Events />

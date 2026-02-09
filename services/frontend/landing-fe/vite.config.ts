@@ -20,7 +20,7 @@ export default defineConfig({
         manualChunks: {
           'vendor-three': ['three', '@react-three/fiber'],
           'vendor-motion': ['framer-motion'],
-          'vendor-utils': ['lenis', 'react-helmet-async'],
+          'vendor-utils': ['lenis'],
         },
       },
     },
