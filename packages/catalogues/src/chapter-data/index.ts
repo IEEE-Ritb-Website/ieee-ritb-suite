@@ -86,12 +86,6 @@ export const Chapters = [
         shortDescription: "IEEE Power & Energy Society (PES) is a global community of students, engineers, and professionals focused on electric power and energy.",
     },
     {
-        name: "Documentation",
-        acronym: "Doc",
-        type: ChapterType.NON_TECH,
-        shortDescription: "Records and archives club events and meetings. Documents all meetings, decisions, and event details. Prepares reports, summaries, and event recaps. Keeps a record of our club’s achievements and activities.",
-    },
-    {
         name: "Web Resources",
         acronym: "Web",
         type: ChapterType.NON_TECH,

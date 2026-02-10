@@ -20,7 +20,7 @@ const chapterColors: Record<IChapterAcronyms, string> = {
   CS: '#4d7fff', RAS: '#D22B2B', CIS: '#FFEA00', SC: '#ADF802', WIE: '#d946ef',
   MTTS: '#f97316', PES: '#10b981', SPS: '#8b5cf6', ComSoc: '#f59e0b', APS: '#ef4444',
   EMBS: '#6366f1', IX: '#0FFF50', Web: '#D22B2B', CRTY: '#FFEA00', COVR: '#ADF802',
-  DIGI: '#d946ef', Doc: '#f97316', PRSP: '#6366f1',
+  DIGI: '#d946ef', PRSP: '#6366f1',
 };
 
 type TabType = 'all' | ChapterType.TECH | ChapterType.NON_TECH;
