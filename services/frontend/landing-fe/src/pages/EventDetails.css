@@ -299,6 +299,16 @@
   transform: translateY(-2px);
 }
 
+a.meta-pill-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+a.meta-pill-link:hover {
+  border-color: var(--color-ieee-primary);
+}
+
 .meta-pill svg {
   color: var(--color-ieee-primary);
   flex-shrink: 0;

@@ -157,14 +157,14 @@ export default function EventDetails() {
                         {/* Metadata Pills Row */}
                         <motion.div className="meta-pills-row" variants={itemVariants}>
                             {event.venue && (
-                                <div className="meta-pill">
+                                <a href="https://maps.app.goo.gl/pBmSqVvwk5fZBmbz6" target="_blank" rel="noopener noreferrer" className="meta-pill meta-pill-link">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                                         <circle cx="12" cy="10" r="3" />
                                     </svg>
                                     <span className="meta-label">Venue</span>
                                     <span className="meta-value">{event.venue}</span>
-                                </div>
+                                </a>
                             )}
 
                             <div className="meta-pill">
