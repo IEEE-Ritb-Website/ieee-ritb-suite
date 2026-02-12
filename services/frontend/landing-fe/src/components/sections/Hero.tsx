@@ -8,7 +8,7 @@
  */
 
 import './Hero.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Fragment } from 'react';
 import { Chapters } from '@astranova/catalogues';
 import { motion, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
@@ -154,12 +154,18 @@ export default function Hero() {
           <motion.div className="hero-stats" variants={safeItemVariants}>
             {
               HeroStats.map((item, idx) => (
-                <>
-                  <StatItem value={item.stat} label={item.label} isRough={item.isRough} delay={400} shouldStart={contentVisible} />
-                  {idx < HeroStats.length -1 &&
+                <Fragment key={item.label}>
+                  <StatItem
+                    value={item.stat}
+                    label={item.label}
+                    isRough={item.isRough}
+                    delay={400 + (idx * 200)}
+                    shouldStart={contentVisible}
+                  />
+                  {idx < HeroStats.length - 1 &&
                     <div className="stat-divider" aria-hidden="true" />
                   }
-                </>
+                </Fragment>
               ))
             }
           </motion.div>
