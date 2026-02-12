@@ -438,8 +438,8 @@ export default function Contact() {
                 </>
               },
               {
-                label: 'Visit HQ',
-                value: 'RIT Campus, Bangalore',
+                label: 'Visit',
+                value: 'MSRIT Post, M S R Nagar, Mathikere, Bengaluru, Karnataka 560054',
                 href: 'https://maps.app.goo.gl/pBmSqVvwk5fZBmbz6',
                 icon: <>
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
