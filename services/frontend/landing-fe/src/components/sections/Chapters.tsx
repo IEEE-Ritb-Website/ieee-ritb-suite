@@ -156,10 +156,7 @@ export default function Chapters() {
           ))}
         </motion.div>
 
-        <div className="chapters-cta">
-          <p className="cta-text">Interested in starting a new chapter or want to learn more?</p>
-          <a href="#contact" className="btn-outline magnetic">Get in Touch</a>
-        </div>
+
       </div>
     </section>
   );

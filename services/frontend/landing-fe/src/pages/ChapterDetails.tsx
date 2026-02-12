@@ -7,6 +7,21 @@ import type { IChapter, IChapterAcronyms } from '@astranova/catalogues';
 import type { LayoutContext } from '../layouts/MainLayout';
 import './ChapterDetails.css';
 
+// ===== Recruitment Config =====
+// Update these dates each semester. The button will auto-switch.
+const RECRUITMENT_WINDOWS = [
+    { start: new Date('2026-02-16'), end: new Date('2026-02-21') },
+    { start: new Date('2026-03-06'), end: new Date('2026-03-10') },
+    // Add more windows as needed, e.g.:
+    // { start: new Date('2027-01-10'), end: new Date('2027-02-10') },
+];
+const RECRUITMENT_FORM_URL = '#'; // TODO: Replace with Google Form link
+
+const now = new Date();
+const isRecruitmentOpen = RECRUITMENT_WINDOWS.some(
+    w => now >= w.start && now <= w.end
+);
+
 // Chapter colors from the main Chapters section
 const chapterColors: Record<string, string> = {
     CS: '#4d7fff', RAS: '#D22B2B', CIS: '#FFEA00', SC: '#ADF802', WIE: '#d946ef',
@@ -63,11 +78,21 @@ export default function ChapterDetails() {
 
     const color = chapterColors[chapter.acronym] || '#4d7fff';
 
+    // Focus area keywords per chapter
+    const focusAreas: Record<string, string> = {
+        APS: 'Electromagnetics', ComSoc: 'Networking', CIS: 'AI & ML',
+        CS: 'Computing', EMBS: 'Biomedical', IX: 'Competitive Programming',
+        MTTS: 'RF & Microwave', SPS: 'Signal Processing', RAS: 'Robotics',
+        SC: 'Sensors & IoT', WIE: 'Empowerment', PES: 'Power & Energy',
+        Web: 'Web Development', PRSP: 'PR & Sponsorship',
+        CRTY: 'Creative Design', DIGI: 'Visual Design', COVR: 'Media & Coverage',
+    };
+
     // Stat card data
     const statCards = [
         {
             label: 'Domain',
-            value: chapter.type === 'tech' ? 'Technical Society' : 'Operations & Support',
+            value: chapter.type === 'tech' ? 'Tech' : 'Non-Tech',
         },
         {
             label: 'Acronym',
@@ -75,9 +100,8 @@ export default function ChapterDetails() {
             isAccent: true,
         },
         {
-            label: 'Status',
-            value: 'Active',
-            isStatus: true,
+            label: 'Focus',
+            value: focusAreas[chapter.acronym] || 'Engineering',
         },
     ];
 
@@ -188,7 +212,7 @@ export default function ChapterDetails() {
                                 {statCards.map((card, index) => (
                                     <motion.div
                                         key={card.label}
-                                        className={`data-orb ${card.isStatus ? 'data-orb-status' : ''}`}
+                                        className="data-orb"
                                         custom={index}
                                         variants={floatVariants}
                                         style={{ '--orb-color': color } as React.CSSProperties}
@@ -201,16 +225,9 @@ export default function ChapterDetails() {
                                         <div className="orb-inner">
                                             <span
                                                 className={`orb-value ${card.isAccent ? 'orb-value-accent' : ''}`}
-                                                style={card.isStatus ? undefined : { color }}
+                                                style={{ color }}
                                             >
-                                                {card.isStatus ? (
-                                                    <>
-                                                        <span className="orb-status-dot" />
-                                                        {card.value}
-                                                    </>
-                                                ) : (
-                                                    card.value
-                                                )}
+                                                {card.value}
                                             </span>
                                             <span className="orb-label">{card.label}</span>
                                         </div>
@@ -252,20 +269,43 @@ export default function ChapterDetails() {
                                 aria-hidden="true"
                             />
 
-                            <h3 style={{ color }}>Interested in joining {chapter.acronym}?</h3>
-                            <p>Connect with us to learn more about our activities and how you can contribute to this vibrant community.</p>
+                            <h3 style={{ color }}>
+                                {isRecruitmentOpen
+                                    ? `Join ${chapter.acronym} — Applications Open!`
+                                    : `Interested in joining ${chapter.acronym}?`}
+                            </h3>
+                            <p>
+                                {isRecruitmentOpen
+                                    ? 'Recruitment is currently open. Apply now to be part of this vibrant community.'
+                                    : 'Connect with us to learn more about our activities and how you can contribute to this vibrant community.'}
+                            </p>
 
                             <div className="cta-buttons">
-                                <Link
-                                    to="/#contact"
-                                    className="btn-primary"
-                                    style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
-                                >
-                                    <span>Get in Touch</span>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M5 12h14M12 5l7 7-7 7" />
-                                    </svg>
-                                </Link>
+                                {isRecruitmentOpen ? (
+                                    <a
+                                        href={RECRUITMENT_FORM_URL}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="btn-primary"
+                                        style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
+                                    >
+                                        <span>Apply Now</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M5 12h14M12 5l7 7-7 7" />
+                                        </svg>
+                                    </a>
+                                ) : (
+                                    <Link
+                                        to="/#contact"
+                                        className="btn-primary"
+                                        style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
+                                    >
+                                        <span>Get in Touch</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M5 12h14M12 5l7 7-7 7" />
+                                        </svg>
+                                    </Link>
+                                )}
                                 <Link to="/" className="btn-secondary">
                                     Back to Home
                                 </Link>

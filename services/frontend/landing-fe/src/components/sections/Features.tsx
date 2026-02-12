@@ -107,7 +107,7 @@ const features = [
   },
   {
     title: 'Innovation Hub',
-    description: 'State-of-the-art labs and project spaces for prototyping and research initiatives.',
+    description: 'Project spaces for prototyping and research initiatives.',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <polygon points="12 2 2 7 12 12 22 7 12 2" />

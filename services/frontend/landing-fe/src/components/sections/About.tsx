@@ -159,13 +159,14 @@ export default function About() {
 
       <div className="section-container">
         <motion.div
-          className="section-two-col"
+          className="about-layout"
           variants={safeContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          <div className="about-text">
+          {/* ===== INTRO BLOCK ===== */}
+          <div className="about-intro">
             <motion.span className="section-overline" variants={safeItemVariants}>About IEEE RITB</motion.span>
             <motion.h2 id="about-heading" className="section-heading" variants={safeItemVariants}>
               Leading the Future of
@@ -183,45 +184,9 @@ export default function About() {
                 opportunities for growth in emerging technologies.
               </p>
             </motion.div>
-
-            <motion.div className="about-highlights" variants={safeContainerVariants}>
-              {[
-                {
-                  title: 'Student-Led Innovation',
-                  text: 'Empowering students to lead technical initiatives and create real-world impact',
-                  icon: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>
-                },
-                {
-                  title: 'Global Recognition',
-                  text: 'Part of IEEE\'s worldwide network with access to exclusive resources',
-                  icon: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>
-                },
-                {
-                  title: 'Multidisciplinary Focus',
-                  text: `${Chapters.filter(c => c.type === ChapterType.TECH).length} technical chapters covering AI, Robotics, IoT, and emerging fields`,
-                  icon: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>
-                }
-              ].map((h, i) => (
-                <motion.div
-                  key={i}
-                  className="highlight-item"
-                  variants={safeItemVariants}
-                  whileHover={shouldReduceMotion ? {} : { x: 4 }}
-                >
-                  <div className="highlight-icon" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      {h.icon}
-                    </svg>
-                  </div>
-                  <div className="highlight-content">
-                    <h3 className="highlight-title">{h.title}</h3>
-                    <p className="highlight-text">{h.text}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
           </div>
 
+          {/* ===== FULL-WIDTH STATS ROW ===== */}
           <motion.div className="about-stats" variants={safeContainerVariants}>
             <div className="stats-grid">
               {[
@@ -242,6 +207,44 @@ export default function About() {
                 <div className="data-particle" style={{ animationDelay: '1.5s' }} />
               </div>
             </motion.div>
+          </motion.div>
+
+          {/* ===== HIGHLIGHTS ===== */}
+          <motion.div className="about-highlights" variants={safeContainerVariants}>
+            {[
+              {
+                title: 'Student-Led Innovation',
+                text: 'Empowering students to lead technical initiatives and create real-world impact',
+                icon: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>
+              },
+              {
+                title: 'Global Recognition',
+                text: 'Part of IEEE\'s worldwide network with access to exclusive resources',
+                icon: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>
+              },
+              {
+                title: 'Multidisciplinary Focus',
+                text: `${Chapters.filter(c => c.type === ChapterType.TECH).length} technical chapters covering AI, Robotics, IoT, and emerging fields`,
+                icon: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>
+              }
+            ].map((h, i) => (
+              <motion.div
+                key={i}
+                className="highlight-item"
+                variants={safeItemVariants}
+                whileHover={shouldReduceMotion ? {} : { x: 4 }}
+              >
+                <div className="highlight-icon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {h.icon}
+                  </svg>
+                </div>
+                <div className="highlight-content">
+                  <h3 className="highlight-title">{h.title}</h3>
+                  <p className="highlight-text">{h.text}</p>
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
         </motion.div>
       </div>

@@ -8,7 +8,7 @@
  */
 
 import './Hero.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Fragment } from 'react';
 import { Chapters } from '@astranova/catalogues';
 import { motion, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
@@ -57,12 +57,12 @@ function AnimatedNumber({ end, duration = 2000, delay = 0, shouldStart = true }:
   return <span className="stat-number">{count}</span>;
 }
 
-const StatItem = ({ value, label, delay, shouldStart }: { value: number; label: string; delay: number; shouldStart: boolean }) => {
+const StatItem = ({ value, label, delay, shouldStart, isRough }: { value: number; label: string; delay: number; shouldStart: boolean, isRough?: boolean }) => {
   return (
     <div className="stat-item">
       <div className="stat-value">
         <AnimatedNumber end={value} duration={2500} delay={delay} shouldStart={shouldStart} />
-        <span className="stat-plus">+</span>
+        {isRough && <span className="stat-plus">+</span>}
       </div>
       <span className="stat-label">{label}</span>
     </div>
@@ -91,6 +91,23 @@ const itemVariants: Variants = {
   }
 };
 
+const HeroStats = [
+  {
+    label: "Chapters",
+    stat: Chapters.length,
+  },
+  {
+    label: "Members",
+    stat: 300,
+    isRough: true,
+  },
+  {
+    label: "Events Last Year",
+    stat: 100,
+    isRough: true,
+  }
+]
+
 export default function Hero() {
   // Get warpComplete from layout context (starfield is in MainLayout)
   const { warpComplete } = useOutletContext<LayoutContext>();
@@ -118,7 +135,7 @@ export default function Hero() {
             <svg className="overline-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            IEEE RIT Branch
+            IEEE STUDENT BRANCH
           </motion.div>
 
           <motion.h1 className="hero-title" id="hero-title" variants={safeItemVariants}>
@@ -135,11 +152,22 @@ export default function Hero() {
           </motion.p>
 
           <motion.div className="hero-stats" variants={safeItemVariants}>
-            <StatItem value={Chapters.length} label="Chapters" delay={400} shouldStart={contentVisible} />
-            <div className="stat-divider" aria-hidden="true"></div>
-            <StatItem value={300} label="Members" delay={600} shouldStart={contentVisible} />
-            <div className="stat-divider" aria-hidden="true"></div>
-            <StatItem value={100} label="Events This Year" delay={800} shouldStart={contentVisible} />
+            {
+              HeroStats.map((item, idx) => (
+                <Fragment key={item.label}>
+                  <StatItem
+                    value={item.stat}
+                    label={item.label}
+                    isRough={item.isRough}
+                    delay={400 + (idx * 200)}
+                    shouldStart={contentVisible}
+                  />
+                  {idx < HeroStats.length - 1 &&
+                    <div className="stat-divider" aria-hidden="true" />
+                  }
+                </Fragment>
+              ))
+            }
           </motion.div>
 
           <motion.div className="hero-cta" variants={safeItemVariants}>

@@ -1,56 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useOutletContext, useLoaderData } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useMotion } from '../hooks/useMotion';
 import type { IEventDetails } from '../data/mockData';
 import type { LayoutContext } from '../layouts/MainLayout';
 import './EventDetails.css';
 
 /**
- * Countdown Hook - Calculates time until event
- */
-function useCountdown(targetDate: string) {
-    const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
-
-    useEffect(() => {
-        const calculateTimeLeft = () => {
-            // Parse date - for "TBA" or invalid dates, show placeholder
-            const target = new Date(targetDate);
-            const now = new Date();
-
-            if (isNaN(target.getTime()) || target <= now) {
-                return { days: 0, hours: 0, mins: 0, secs: 0 };
-            }
-
-            const diff = target.getTime() - now.getTime();
-            return {
-                days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-                hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-                mins: Math.floor((diff / 1000 / 60) % 60),
-                secs: Math.floor((diff / 1000) % 60),
-            };
-        };
-
-        setTimeLeft(calculateTimeLeft());
-        const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
-        return () => clearInterval(timer);
-    }, [targetDate]);
-
-    return timeLeft;
-}
-
-/**
  * EventDetails Page - Cinematic Poster Reveal + Split Showcase
+ * Adapted for past events with day-tabbed schedule grid.
  */
 export default function EventDetails() {
     // Data is pre-loaded by router loader - no loading states needed
     const event = useLoaderData() as IEventDetails;
     const { warpComplete } = useOutletContext<LayoutContext>();
-    const { orchestrate, shouldReduceMotion } = useMotion();
+    const { orchestrate } = useMotion();
 
-    // Countdown timer
-    const countdown = useCountdown(event.date);
-    const hasCountdown = countdown.days > 0 || countdown.hours > 0 || countdown.mins > 0;
+    // Day tab state for schedule
+    const [activeDay, setActiveDay] = useState(0);
 
     const containerVariants = orchestrate({
         hidden: { opacity: 0 },
@@ -82,6 +49,22 @@ export default function EventDetails() {
             }
         })
     });
+
+    const cardVariants = orchestrate({
+        hidden: { opacity: 0, y: 12, scale: 0.97 },
+        visible: (i: number) => ({
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            transition: {
+                duration: 0.4,
+                delay: i * 0.05,
+                ease: [0.22, 1, 0.36, 1]
+            }
+        })
+    });
+
+    const currentSchedule = event.schedule?.[activeDay];
 
     return (
         <>
@@ -128,28 +111,27 @@ export default function EventDetails() {
                             </motion.span>
 
                             <motion.span
-                                className="event-badge event-date-badge"
+                                className="event-badge event-past-badge"
                                 custom={1}
                                 variants={pillVariants}
                             >
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                    <line x1="16" y1="2" x2="16" y2="6" />
-                                    <line x1="8" y1="2" x2="8" y2="6" />
-                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                    <polyline points="20 6 9 17 4 12" />
                                 </svg>
-                                {event.date}
+                                Past Event
                             </motion.span>
 
                             {event.time && (
                                 <motion.span
-                                    className="event-badge event-time-badge"
+                                    className="event-badge event-date-badge"
                                     custom={2}
                                     variants={pillVariants}
                                 >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <polyline points="12 6 12 12 16 14" />
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                        <line x1="16" y1="2" x2="16" y2="6" />
+                                        <line x1="8" y1="2" x2="8" y2="6" />
+                                        <line x1="3" y1="10" x2="21" y2="10" />
                                     </svg>
                                     {event.time}
                                 </motion.span>
@@ -193,19 +175,8 @@ export default function EventDetails() {
                                     <line x1="3" y1="10" x2="21" y2="10" />
                                 </svg>
                                 <span className="meta-label">Date</span>
-                                <span className="meta-value">{event.date}</span>
+                                <span className="meta-value">{event.time || event.date}</span>
                             </div>
-
-                            {event.time && (
-                                <div className="meta-pill">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <polyline points="12 6 12 12 16 14" />
-                                    </svg>
-                                    <span className="meta-label">Time</span>
-                                    <span className="meta-value">{event.time}</span>
-                                </div>
-                            )}
                         </motion.div>
 
                         {/* Large About Card with Pullquote */}
@@ -216,26 +187,71 @@ export default function EventDetails() {
                             </p>
                         </motion.div>
 
-                        {/* Horizontal Timeline Schedule */}
+                        {/* ===== DAY-TABBED SCHEDULE GRID ===== */}
                         {event.schedule && event.schedule.length > 0 && (
-                            <motion.div id="timeline" className="schedule-timeline" variants={itemVariants}>
-                                <h3 className="timeline-heading">Event Timeline</h3>
-                                <div className="timeline-track">
-                                    {event.schedule.map((item, index) => (
-                                        <div key={index} className="timeline-node">
-                                            <div className="node-marker">
-                                                <span className="node-dot" />
-                                                {index < event.schedule!.length - 1 && (
-                                                    <span className="node-line" />
-                                                )}
-                                            </div>
-                                            <div className="node-content">
-                                                <span className="node-time">{item.time}</span>
-                                                <span className="node-activity">{item.activity}</span>
-                                            </div>
-                                        </div>
+                            <motion.div id="timeline" className="schedule-section" variants={itemVariants}>
+                                <h3 className="schedule-heading">Event Timeline</h3>
+
+                                {/* Day Tabs */}
+                                <div className="schedule-tabs">
+                                    {event.schedule.map((day, index) => (
+                                        <button
+                                            key={index}
+                                            className={`schedule-tab ${activeDay === index ? 'active' : ''}`}
+                                            onClick={() => setActiveDay(index)}
+                                        >
+                                            <span className="tab-label">{day.label}</span>
+                                            <span className="tab-date">{day.day}</span>
+                                            {day.totalEvents > 0 && (
+                                                <span className="tab-count">{day.totalEvents}</span>
+                                            )}
+                                        </button>
                                     ))}
                                 </div>
+
+                                {/* Schedule Grid */}
+                                <AnimatePresence mode="wait">
+                                    {currentSchedule && (
+                                        <motion.div
+                                            key={activeDay}
+                                            className="schedule-grid"
+                                            initial={{ opacity: 0, y: 12 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -8 }}
+                                            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                        >
+                                            {currentSchedule.events.map((evt, index) => (
+                                                <motion.div
+                                                    key={`${activeDay}-${index}`}
+                                                    className="schedule-card"
+                                                    custom={index}
+                                                    variants={cardVariants}
+                                                    initial="hidden"
+                                                    animate="visible"
+                                                >
+                                                    <span className="schedule-card-index">{String(index + 1).padStart(2, '0')}</span>
+                                                    <div className="schedule-card-content">
+                                                        <span className="schedule-card-name">{evt.name}</span>
+                                                        <div className="schedule-card-meta">
+                                                            <span className="schedule-card-time">
+                                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                                    <circle cx="12" cy="12" r="10" />
+                                                                    <polyline points="12 6 12 12 16 14" />
+                                                                </svg>
+                                                                {evt.time}
+                                                            </span>
+                                                            {evt.track && (
+                                                                <span className={`schedule-card-track track-${evt.track.toLowerCase()}`}>
+                                                                    {evt.track}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </motion.div>
                         )}
 
@@ -250,61 +266,21 @@ export default function EventDetails() {
                     </div>
                 </motion.section>
 
-                {/* ===== COUNTDOWN URGENCY CTA ===== */}
-                <motion.section id="register" className="event-registration countdown-cta" variants={itemVariants}>
-                    <div className="countdown-card">
-                        {/* Countdown Timer */}
-                        {hasCountdown ? (
-                            <div className="countdown-section">
-                                <span className="countdown-label">Event starts in</span>
-                                <div className="countdown-digits">
-                                    <div className="countdown-unit">
-                                        <span className="countdown-number">{String(countdown.days).padStart(2, '0')}</span>
-                                        <span className="countdown-text">Days</span>
-                                    </div>
-                                    <span className="countdown-separator">:</span>
-                                    <div className="countdown-unit">
-                                        <span className="countdown-number">{String(countdown.hours).padStart(2, '0')}</span>
-                                        <span className="countdown-text">Hours</span>
-                                    </div>
-                                    <span className="countdown-separator">:</span>
-                                    <div className="countdown-unit">
-                                        <span className="countdown-number">{String(countdown.mins).padStart(2, '0')}</span>
-                                        <span className="countdown-text">Mins</span>
-                                    </div>
-                                    {!shouldReduceMotion && (
-                                        <>
-                                            <span className="countdown-separator">:</span>
-                                            <div className="countdown-unit">
-                                                <span className="countdown-number countdown-secs">{String(countdown.secs).padStart(2, '0')}</span>
-                                                <span className="countdown-text">Secs</span>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="countdown-section">
-                                <span className="countdown-label">Don't miss out!</span>
-                                <p className="countdown-tagline">Secure your spot for this experience</p>
-                            </div>
-                        )}
-
-                        {/* Urgency Indicator */}
-                        <div className="urgency-indicator">
-                            <span className="urgency-dot" />
-                            <span className="urgency-text">Spots filling fast</span>
+                {/* ===== PAST EVENT RECAP CTA ===== */}
+                <motion.section className="event-recap-cta" variants={itemVariants}>
+                    <div className="recap-card">
+                        <div className="recap-content">
+                            <span className="recap-overline">Event Concluded</span>
+                            <p className="recap-text">
+                                This event has concluded. Stay tuned for future events from IEEE RITB.
+                            </p>
                         </div>
-
-                        {/* CTA Button */}
-                        <div className="countdown-actions">
-                            <a href={event.registrationLink || '#'} className="btn-register pulse-glow">
-                                <span>Register Now</span>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        </div>
+                        <Link to="/#events" className="recap-link">
+                            <span>View All Events</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </Link>
                     </div>
                 </motion.section>
             </motion.div>

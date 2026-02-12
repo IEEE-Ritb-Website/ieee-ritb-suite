@@ -29,29 +29,20 @@ interface Event {
 const EVENTS: Event[] = [
   {
     id: 'e1',
-    title: 'Event X',
-    date: 'TBA',
-    description: 'Details for Event X coming soon. Stay tuned for updates.',
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop',
-    category: 'Category A',
+    title: 'RIT Techfest',
+    date: '28th – 29th March 2025',
+    description: 'The flagship technical event by IEEE chapters celebrating innovation, collaboration, and creativity among students, educators, and professionals.',
+    image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1770888778/techfest_eomnmb.png',
+    category: 'Flagship Event',
     link: '#'
   },
   {
     id: 'e2',
-    title: 'Event Y',
-    date: 'TBA',
-    description: 'Details for Event Y coming soon. Stay tuned for updates.',
-    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070&auto=format&fit=crop',
-    category: 'Category B',
-    link: '#'
-  },
-  {
-    id: 'e3',
-    title: 'Event Z',
-    date: 'TBA',
-    description: 'Details for Event Z coming soon. Stay tuned for updates.',
-    image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop',
-    category: 'Category C',
+    title: 'CIS Industry Conclave',
+    date: '5th – 6th December 2025',
+    description: 'A two-day initiative bridging the gap between academia and industry through talks, workshops, and mentoring across Software, Hardware, and General tracks.',
+    image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1770888778/industry_conclave_lzozpd.png',
+    category: 'Conclave',
     link: '#'
   }
 ];
@@ -118,13 +109,13 @@ export default function Events() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
         >
-          <span className="section-overline">Calendar</span>
+          <span className="section-overline">Highlights</span>
           <h2 id="events-heading" className="section-heading">
-            Upcoming
+            Past
             <span className="section-heading-accent"> Events</span>
           </h2>
           <p className="section-description">
-            Don't miss out on the action. Join us for workshops, hackathons, and tech talks.
+            A look back at our events
           </p>
         </motion.div>
 

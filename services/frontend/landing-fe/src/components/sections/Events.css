@@ -200,10 +200,13 @@
   
   .slice-vertical-label {
     writing-mode: horizontal-tb;
-    transform: none;
+    transform: translateY(-50%);
     left: var(--space-6);
+    right: var(--space-6);
     bottom: auto;
     top: 50%;
-    transform: translateY(-50%);
+    font-size: var(--text-xs);
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

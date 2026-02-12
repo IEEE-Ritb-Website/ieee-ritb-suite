@@ -25,11 +25,23 @@
   left: 5%;
 }
 
+/* About Layout - Stacked sections */
+.about-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.about-intro {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
 .about-description {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  margin-bottom: var(--space-8);
 }
 
 .about-description p {
@@ -41,9 +53,15 @@
 
 /* Highlights */
 .about-highlights {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--space-5);
+}
+
+@media (min-width: 768px) {
+  .about-highlights {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .highlight-item {
@@ -107,11 +125,17 @@
   z-index: var(--z-content);
 }
 
+@media (min-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 .stat-card {
   background: var(--color-elevated);
   border: 1px solid var(--color-border);
   border-radius: 16px;
-  padding: var(--space-6);
+  padding: var(--space-5);
   text-align: center;
   transition: border-color var(--duration-moderate) var(--ease-default),
               background-color var(--duration-moderate) var(--ease-default),
@@ -181,7 +205,7 @@
 
 .animated-number {
   font-family: 'JetBrains Mono', var(--font-fallback-mono);
-  font-size: var(--text-5xl);
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: var(--font-black);
   background: var(--gradient-ieee);
   -webkit-background-clip: text;
@@ -284,30 +308,10 @@
   }
 }
 
-/* Intermediate viewport adjustments (tablet landscape / small desktop) */
-@media (min-width: 1024px) and (max-width: 1200px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-  }
-
-  .stat-card {
-    padding: var(--space-5);
-  }
-
-  .animated-number {
-    font-size: var(--text-4xl);
-  }
-}
-
 /* Mobile adjustments */
 @media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .animated-number {
-    font-size: var(--text-4xl);
+  .stat-card {
+    padding: var(--space-4);
   }
 
   .highlight-item:hover {

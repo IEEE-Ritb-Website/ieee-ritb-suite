@@ -84,8 +84,8 @@ export default function Footer() {
                   ieeeritb@gmail.com
                 </a>
               </li>
-              <li>RIT Bangalore Campus</li>
-              <li>Bangalore, Karnataka</li>
+              <li>MSRIT Post, M S R Nagar, Mathikere, Bengaluru, Karnataka 560054</li>
+
             </ul>
           </div>
         </div>
