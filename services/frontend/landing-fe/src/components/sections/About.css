@@ -125,9 +125,15 @@
   z-index: var(--z-content);
 }
 
+.stats-grid .stat-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  max-width: 50%;
+  justify-self: center;
+}
+
 @media (min-width: 1024px) {
   .stats-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
