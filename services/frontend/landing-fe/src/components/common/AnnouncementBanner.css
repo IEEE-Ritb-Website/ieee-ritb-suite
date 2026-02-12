@@ -124,15 +124,30 @@
 /* Mobile */
 @media (max-width: 768px) {
   .announcement-banner-inner {
-    padding: 10px var(--space-12) 10px var(--space-4);
+    padding: 10px 40px 10px 12px;
   }
 
   .announcement-banner-text {
-    font-size: var(--text-xs);
+    font-size: 11px;
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .announcement-banner-cta {
+    padding: 5px 16px;
+    font-size: 10px;
   }
 
   .announcement-banner-close {
-    right: var(--space-2);
+    right: 8px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .announcement-banner-close svg {
+    width: 12px;
+    height: 12px;
   }
 }
 
