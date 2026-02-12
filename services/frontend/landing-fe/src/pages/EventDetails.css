@@ -21,8 +21,6 @@
   color: var(--color-text-muted);
 }
 
-/* loader-spinner styles moved to shared utilities.css */
-
 /* ===== Error State ===== */
 .event-details-error {
   min-height: 100vh;
@@ -102,7 +100,6 @@
 }
 
 /* ===== Back Link (page-specific positioning) ===== */
-/* Base back-link styles are in shared utilities.css */
 .event-details .back-link {
   position: fixed;
   top: calc(var(--space-8) + 80px);
@@ -166,6 +163,21 @@
   letter-spacing: var(--tracking-wider);
   font-size: var(--text-xs);
   font-weight: var(--font-bold);
+}
+
+.event-details .event-past-badge {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.25);
+  color: #4ade80;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.event-details .event-past-badge svg {
+  opacity: 1;
+  color: #4ade80;
 }
 
 .event-details .event-date-badge,
@@ -336,6 +348,7 @@
   color: var(--color-text-secondary);
   max-width: 700px;
   margin: 0 auto;
+  white-space: pre-line;
 }
 
 @media (min-width: 768px) {
@@ -344,12 +357,15 @@
   }
 }
 
-/* ===== Horizontal Timeline Schedule ===== */
-.schedule-timeline {
+/* ===================================================================
+   DAY-TABBED SCHEDULE GRID
+   =================================================================== */
+
+.schedule-section {
   padding: var(--space-6) 0;
 }
 
-.timeline-heading {
+.schedule-heading {
   font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: var(--font-bold);
@@ -358,117 +374,210 @@
   margin-bottom: var(--space-6);
 }
 
-.timeline-track {
+/* --- Day Tabs --- */
+.schedule-tabs {
   display: flex;
-  flex-direction: column;
-  gap: 0;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
 }
 
-@media (min-width: 768px) {
-  .timeline-track {
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 0;
-  }
-}
-
-.timeline-node {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: var(--space-4);
-  padding: var(--space-4) 0;
-}
-
-@media (min-width: 768px) {
-  .timeline-node {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    flex: 1;
-    max-width: 200px;
-    padding: 0;
-  }
-}
-
-.node-marker {
+.schedule-tab {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 2px;
+  padding: var(--space-3) var(--space-6);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
   position: relative;
+  min-width: 120px;
+  font-family: inherit;
+  color: inherit;
 }
 
-@media (min-width: 768px) {
-  .node-marker {
-    flex-direction: row;
-    width: 100%;
-    justify-content: center;
-  }
+.schedule-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--color-border-hover);
 }
 
-.node-dot {
-  width: 12px;
-  height: 12px;
-  background: var(--color-ieee-primary);
-  border-radius: 50%;
-  flex-shrink: 0;
-  box-shadow: 0 0 12px var(--color-accent-glow);
-  z-index: 1;
+.schedule-tab.active {
+  background: rgba(77, 127, 255, 0.1);
+  border-color: var(--color-ieee-primary);
+  box-shadow: 0 0 20px rgba(77, 127, 255, 0.1);
 }
 
-.node-line {
-  width: 2px;
-  height: 100%;
-  min-height: 30px;
-  background: linear-gradient(
-    to bottom,
-    var(--color-ieee-primary),
-    var(--color-border)
-  );
-}
-
-@media (min-width: 768px) {
-  .node-line {
-    width: 100%;
-    height: 2px;
-    min-height: auto;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translateY(-50%);
-    background: linear-gradient(
-      to right,
-      var(--color-ieee-primary),
-      var(--color-border)
-    );
-    z-index: 0;
-  }
-}
-
-.node-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-@media (min-width: 768px) {
-  .node-content {
-    margin-top: var(--space-4);
-  }
-}
-
-.node-time {
-  font-family: var(--font-mono);
+.tab-label {
   font-size: var(--text-sm);
   font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+}
+
+.schedule-tab.active .tab-label {
   color: var(--color-ieee-electric);
 }
 
-.node-activity {
+.tab-date {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.tab-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-ieee-primary);
+  color: white;
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  border-radius: 50%;
+  opacity: 0.7;
+  box-shadow: 0 2px 8px rgba(77, 127, 255, 0.3);
+}
+
+.schedule-tab.active .tab-count {
+  opacity: 1;
+}
+
+/* --- Schedule Grid --- */
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 560px) {
+  .schedule-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* --- Schedule Card --- */
+.schedule-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.schedule-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(77, 127, 255, 0.03) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.schedule-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.schedule-card:hover::before {
+  opacity: 1;
+}
+
+.schedule-card-index {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  color: var(--color-ieee-primary);
+  opacity: 0.4;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.schedule-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.schedule-card-name {
   font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  line-height: var(--leading-snug);
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.schedule-card-time {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.schedule-card-time svg {
+  color: var(--color-ieee-primary);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.schedule-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.schedule-card-track {
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.track-software {
+  background: rgba(77, 127, 255, 0.12);
+  color: rgba(120, 160, 255, 0.9);
+  border: 1px solid rgba(77, 127, 255, 0.2);
+}
+
+.track-hardware {
+  background: rgba(245, 158, 11, 0.12);
+  color: rgba(251, 191, 36, 0.9);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.track-general {
+  background: rgba(34, 197, 94, 0.12);
+  color: rgba(74, 222, 128, 0.9);
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 /* ===== Floating Tags ===== */
@@ -514,322 +623,70 @@
 }
 
 /* ===================================================================
-   REGISTRATION CTA
+   PAST EVENT RECAP CTA
    =================================================================== */
 
-.event-registration {
-  padding: var(--space-section-y) var(--space-6);
-}
-
-.registration-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--space-6);
-  max-width: 800px;
-  margin: 0 auto;
-  padding: var(--space-10);
-  background: linear-gradient(
-    135deg,
-    rgba(77, 127, 255, 0.1) 0%,
-    rgba(0, 180, 255, 0.05) 50%,
-    rgba(139, 92, 246, 0.08) 100%
-  );
-  border: 1px solid rgba(77, 127, 255, 0.2);
-  border-radius: 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* CTA Background Glow */
-.registration-card::before {
-  content: '';
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(
-    circle,
-    rgba(77, 127, 255, 0.2) 0%,
-    transparent 70%
-  );
-  top: -150px;
-  right: -100px;
-  pointer-events: none;
-}
-
-@media (min-width: 768px) {
-  .registration-card {
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: left;
-  }
-}
-
-.registration-content h2 {
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
-  margin-bottom: var(--space-3);
-  background: var(--gradient-ieee);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.registration-content p {
-  color: var(--color-text-secondary);
-  font-size: var(--text-base);
-  max-width: 400px;
-}
-
-.registration-actions {
-  display: flex;
-  gap: var(--space-4);
-  flex-shrink: 0;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-@media (min-width: 768px) {
-  .registration-actions {
-    justify-content: flex-end;
-  }
-}
-
-/* Button styles moved to shared buttons.css */
-
-/* Glass panel styles moved to shared utilities.css */
-
-/* ===================================================================
-   COUNTDOWN URGENCY CTA
-   =================================================================== */
-
-.countdown-cta {
+.event-recap-cta {
   padding: var(--space-9) var(--space-6);
 }
 
-.countdown-card {
+.recap-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--space-6);
-  max-width: 700px;
+  gap: var(--space-5);
+  max-width: 600px;
   margin: 0 auto;
-  padding: var(--space-10) var(--space-8);
-  background: linear-gradient(
-    135deg,
-    rgba(10, 12, 25, 0.95) 0%,
-    rgba(5, 6, 15, 0.98) 100%
-  );
+  padding: var(--space-8) var(--space-6);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--color-border);
-  border-radius: 24px;
+  border-radius: 16px;
   position: relative;
-  overflow: hidden;
 }
 
-/* Subtle gradient glow behind card */
-.countdown-card::before {
-  content: '';
-  position: absolute;
-  inset: -50%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(77, 127, 255, 0.08) 0%,
-    transparent 60%
-  );
-  pointer-events: none;
-}
-
-/* Countdown Section */
-.countdown-section {
-  position: relative;
-  z-index: 1;
-}
-
-.countdown-label {
-  display: block;
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+.recap-overline {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
-  margin-bottom: var(--space-4);
 }
 
-.countdown-tagline {
-  font-size: var(--text-lg);
+.recap-text {
+  font-size: var(--text-sm);
   color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
   margin: 0;
 }
 
-/* Countdown Digits */
-.countdown-digits {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-}
-
-.countdown-unit {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-1);
-}
-
-.countdown-number {
-  font-family: var(--font-mono);
-  font-size: clamp(2rem, 8vw, 3.5rem);
-  font-weight: var(--font-black);
-  line-height: 1;
-  color: var(--color-text-primary);
-  background: linear-gradient(
-    135deg,
-    var(--color-text-primary) 0%,
-    var(--color-ieee-electric) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.countdown-secs {
-  animation: digitPulse 1s ease-in-out infinite;
-}
-
-.countdown-text {
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
-}
-
-.countdown-separator {
-  font-family: var(--font-mono);
-  font-size: clamp(1.5rem, 6vw, 2.5rem);
-  font-weight: var(--font-bold);
-  color: var(--color-ieee-primary);
-  opacity: 0.5;
-  margin-top: -20px;
-}
-
-/* Urgency Indicator */
-.urgency-indicator {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 100px;
-}
-
-.urgency-dot {
-  width: 8px;
-  height: 8px;
-  background: #ef4444;
-  border-radius: 50%;
-  animation: urgencyPulse 1.5s ease-in-out infinite;
-}
-
-.urgency-text {
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
-  color: #ef4444;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
-}
-
-/* CTA Actions */
-.countdown-actions {
-  position: relative;
-  z-index: 1;
-}
-
-/* Pulsing Register Button */
-.btn-register {
+.recap-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-5) var(--space-8);
-  font-family: var(--font-primary);
-  font-size: var(--text-lg);
-  font-weight: var(--font-bold);
-  color: white;
-  background: var(--gradient-ieee);
-  border: none;
-  border-radius: 16px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-ieee-primary);
   text-decoration: none;
-  cursor: pointer;
-  transition: all var(--duration-base) var(--ease-default);
-  position: relative;
-  overflow: hidden;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.2),
-    0 0 30px var(--color-accent-glow);
+  border: 1px solid rgba(77, 127, 255, 0.3);
+  border-radius: 10px;
+  transition: all 0.3s ease;
 }
 
-.btn-register:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.3),
-    0 0 50px var(--color-accent-glow);
+.recap-link:hover {
+  background: rgba(77, 127, 255, 0.1);
+  border-color: var(--color-ieee-primary);
+  transform: translateY(-2px);
 }
 
-.btn-register svg {
-  transition: transform var(--duration-base) var(--ease-default);
+.recap-link svg {
+  transition: transform 0.2s ease;
 }
 
-.btn-register:hover svg {
+.recap-link:hover svg {
   transform: translateX(4px);
-}
-
-/* Pulsing Glow Effect */
-.pulse-glow::after {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: inherit;
-  background: var(--gradient-ieee);
-  opacity: 0.4;
-  filter: blur(15px);
-  animation: pulseGlow 2s ease-in-out infinite;
-  z-index: -1;
-}
-
-/* Countdown Animations */
-@keyframes digitPulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-@keyframes urgencyPulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.3);
-    opacity: 0.6;
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-  }
 }
 
 /* ===================================================================
@@ -851,31 +708,18 @@
   }
 }
 
-@keyframes emShimmer {
-  0% {
-    background-position: 200% 0%;
-  }
-  100% {
-    background-position: -200% 0%;
-  }
-}
-
 /* ===================================================================
    REDUCED MOTION
    =================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .event-title,
-  .em-field::before {
+  .event-title {
     animation: none;
   }
 
-  .poster-frame:hover,
-  .info-card:hover,
-  .btn-primary:hover,
-  .btn-secondary:hover,
-  .back-link:hover,
-  .event-badge:hover {
+  .event-badge:hover,
+  .schedule-card:hover,
+  .recap-link:hover {
     transform: none;
   }
 }
@@ -907,11 +751,12 @@
     padding: var(--space-1) var(--space-3);
   }
 
-  .info-card {
-    padding: var(--space-5);
+  .schedule-tabs {
+    gap: var(--space-2);
   }
 
-  .registration-card {
-    padding: var(--space-7);
+  .schedule-tab {
+    padding: var(--space-2) var(--space-4);
+    min-width: 100px;
   }
 }
