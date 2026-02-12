@@ -203,7 +203,7 @@ export default function EventDetails() {
                                             <span className="tab-label">{day.label}</span>
                                             <span className="tab-date">{day.day}</span>
                                             {day.totalEvents > 0 && (
-                                                <span className="tab-count">{day.totalEvents}</span>
+                                                <span className="schedule-tab-count">{day.totalEvents}</span>
                                             )}
                                         </button>
                                     ))}

@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import ParallaxLayer from '../effects/ParallaxLayer';
+import { initMagneticElements } from '../../utils/smoothScroll';
 import './Events.css';
 
 // --- Types ---
@@ -91,6 +92,14 @@ export default function Events() {
 
   // Auto-rotate if user hasn't interacted? 
   // Maybe too distracting for this design. keeping it manual for now.
+
+  // Re-initialize magnetic effect on mount (needed after navigation unmount/remount)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      initMagneticElements();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <section className="section section-padding section-bg-base" id="events" aria-labelledby="events-heading">
