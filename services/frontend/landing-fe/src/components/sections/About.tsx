@@ -175,8 +175,8 @@ export default function About() {
             </motion.h2>
             <motion.div className="about-description" variants={safeItemVariants}>
               <p>
-                IEEE RIT-B is the premier student branch at RIT Bangalore, fostering innovation
-                and technical excellence since our inception. We are part of the world's largest
+                IEEE RIT-B is one of the premier student branches in the IEEE Bangalore Section,
+                fostering innovation and technical excellence since our inception. We are part of the world's largest
                 technical professional organization dedicated to advancing technology for humanity.
               </p>
               <p>
