@@ -109,7 +109,15 @@
   font-weight: var(--font-bold);
   margin-bottom: var(--space-2);
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-2);
+}
+
+.footer-logo-img {
+  height: 60px;
+  width: auto;
+  filter: brightness(0) invert(1);
 }
 
 .footer-logo-text {

@@ -78,16 +78,6 @@ export default function ChapterDetails() {
 
     const color = chapterColors[chapter.acronym] || '#4d7fff';
 
-    // Focus area keywords per chapter
-    const focusAreas: Record<string, string> = {
-        APS: 'Electromagnetics', ComSoc: 'Networking', CIS: 'AI & ML',
-        CS: 'Computing', EMBS: 'Biomedical', IX: 'Competitive Programming',
-        MTTS: 'RF & Microwave', SPS: 'Signal Processing', RAS: 'Robotics',
-        SC: 'Sensors & IoT', WIE: 'Empowerment', PES: 'Power & Energy',
-        Web: 'Web Development', PRSP: 'PR & Sponsorship',
-        CRTY: 'Creative Design', DIGI: 'Visual Design', COVR: 'Media & Coverage',
-    };
-
     // Stat card data
     const statCards = [
         {
@@ -98,10 +88,6 @@ export default function ChapterDetails() {
             label: 'Acronym',
             value: chapter.acronym,
             isAccent: true,
-        },
-        {
-            label: 'Focus',
-            value: focusAreas[chapter.acronym] || 'Engineering',
         },
     ];
 
@@ -195,10 +181,6 @@ export default function ChapterDetails() {
                             </span>
 
                             <h1 className="chapter-title">{chapter.name}</h1>
-
-                            <span className="chapter-acronym-large" style={{ color }}>
-                                {chapter.acronym}
-                            </span>
                         </motion.div>
                     </div>
                 </motion.section>

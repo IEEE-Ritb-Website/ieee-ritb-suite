@@ -10,6 +10,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, useScroll, useSpring } from 'framer-motion';
+import AnnouncementBanner from '../common/AnnouncementBanner';
 import './Navigation.css';
 
 // Navigation item type
@@ -51,7 +52,7 @@ function getNavItems(pathname: string): NavItem[] {
   ];
 }
 
-export default function Navigation({ showNavigation }: { showNavigation: boolean }) {
+export default function Navigation({ showNavigation, warpComplete }: { showNavigation: boolean; warpComplete?: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
@@ -168,8 +169,11 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
       >
         <div className="nav-container">
           <Link to="/" className="nav-logo" aria-label="IEEE RITB Home">
-            <span className="nav-logo-text">IEEE</span>
-            <span className="nav-logo-accent">RITB</span>
+            <img
+              src="/ieee_transparent_logo.png"
+              alt="IEEE RITB"
+              className="nav-logo-img"
+            />
           </Link>
 
           <button
@@ -216,11 +220,12 @@ export default function Navigation({ showNavigation }: { showNavigation: boolean
           </ul>
         </div>
 
-        {/* Scroll Progress Bar */}
         <motion.div
           className="nav-progress-bar"
           style={{ scaleX }}
         />
+
+        <AnnouncementBanner show={warpComplete} />
       </nav>
     </>
   );

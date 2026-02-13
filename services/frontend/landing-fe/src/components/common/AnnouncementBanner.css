@@ -1,0 +1,162 @@
+/* ===== Announcement Banner - Gradient Alert Strip ===== */
+
+.announcement-banner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    #4d7fff 0%,
+    #00b4ff 40%,
+    #4d7fff 70%,
+    #6c63ff 100%
+  );
+  background-size: 200% 100%;
+  animation: bannerShimmer 6s ease-in-out infinite;
+  overflow: hidden;
+}
+
+.announcement-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: bannerGlint 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.announcement-banner-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: 10px var(--space-6);
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.announcement-banner-text {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: white;
+  text-align: center;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.announcement-banner-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 14px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 100px;
+  color: white;
+  font-weight: var(--font-bold);
+  font-size: var(--text-xs);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.announcement-banner-cta:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.announcement-banner-close {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.announcement-banner-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Animations */
+@keyframes bannerShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes bannerGlint {
+  0%, 100% { background-position: -100% 0%; }
+  50% { background-position: 200% 0%; }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .announcement-banner-inner {
+    padding: 10px 40px 10px 12px;
+  }
+
+  .announcement-banner-text {
+    font-size: 11px;
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .announcement-banner-cta {
+    padding: 5px 16px;
+    font-size: 10px;
+  }
+
+  .announcement-banner-close {
+    right: 8px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .announcement-banner-close svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .announcement-banner {
+    animation: none;
+  }
+
+  .announcement-banner::before {
+    animation: none;
+  }
+}

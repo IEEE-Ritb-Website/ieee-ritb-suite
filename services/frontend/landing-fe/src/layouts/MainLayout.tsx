@@ -195,7 +195,7 @@ export default function MainLayout() {
             <a href="#main-content" className="skip-nav">Skip to main content</a>
             <a href="#nav" className="skip-nav">Skip to navigation</a>
 
-            <Navigation showNavigation={showNavigation} />
+            <Navigation showNavigation={showNavigation} warpComplete={warpComplete} />
 
             <main id="main-content" role="main" data-perf-tier={tier}>
                 <AnimatePresence mode="wait">

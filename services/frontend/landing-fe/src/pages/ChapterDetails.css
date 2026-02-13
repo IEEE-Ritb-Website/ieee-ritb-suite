@@ -334,16 +334,16 @@
 /* Data Orbs Grid */
 .data-orbs-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-6);
   justify-items: center;
-  max-width: 700px;
+  max-width: 500px;
   margin: 0 auto;
 }
 
 @media (min-width: 768px) {
   .data-orbs-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-10);
   }
 }

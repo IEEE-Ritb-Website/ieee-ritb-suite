@@ -48,7 +48,7 @@ export const EVENTS: IEventDetails[] = [
         longDescription: 'RIT Techfest is the flagship technical event hosted by the IEEE chapters to encourage and celebrate technical innovation, collaboration, and creativity among students, educators, and professionals. This event serves as a platform for participants to showcase their technical expertise, delve into emerging technologies, and gain invaluable insights.\n\nSpanning two days, RIT Techfest is a celebration of technological advancement, featuring a variety of engaging activities, including innovative competitions, insightful seminars, and hands-on workshops. These activities are designed to provide attendees with practical exposure, industry-relevant knowledge, and opportunities to expand their professional network.',
         image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1770888778/techfest_eomnmb.png',
         category: 'Flagship Event',
-        venue: 'RIT Bangalore Campus',
+        venue: 'RIT Campus',
         schedule: [
             {
                 day: '28 March',
@@ -95,7 +95,7 @@ export const EVENTS: IEventDetails[] = [
         longDescription: 'In today\'s tech ecosystem, a significant gap persists between academic theory and the practical demands of the industry. The IEEE CIS Industry Conclave is a forward-thinking two-day initiative designed to bridge this divide, creating a dynamic platform for students, faculty, and industry leaders to connect and collaborate.\n\nTo cater to a wide range of interests, the conclave is structured across three core tracks: Software Track, Hardware Track, and General Track.\n\nAcross these tracks, participants engage in a vibrant mix of technical talks, hands-on workshops, panel discussions, and one-on-one mentoring. Sessions cover future-focused themes such as Generative AI, Responsible AI, Automation, and AI for Social Good, while also emphasizing career readiness, leadership, and technical storytelling. Each day culminates in a flagship event, inspiring students across Bangalore to push the boundaries of their capabilities and prepare for their future careers.',
         image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1770888778/industry_conclave_lzozpd.png',
         category: 'Conclave',
-        venue: 'RIT Bangalore Campus',
+        venue: 'RIT Campus',
         schedule: [
             {
                 day: '5 December',

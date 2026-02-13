@@ -34,7 +34,7 @@ export function initSmoothScroll() {
       e.preventDefault();
       const href = (anchor as HTMLAnchorElement).getAttribute('href');
       if (!href || href === '#') return;
-      
+
       const targetId = href.substring(1);
       const targetElement = document.getElementById(targetId);
 
@@ -124,11 +124,12 @@ export function initMagneticElements() {
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   if (isTouchDevice) return;
 
-  const magneticElements = document.querySelectorAll('.magnetic');
+  const magneticElements = document.querySelectorAll('.magnetic:not([data-magnetic-init])');
   const lerp = (a: number, b: number, n: number) => (1 - n) * a + n * b;
 
   magneticElements.forEach((element) => {
     const el = element as HTMLElement;
+    el.setAttribute('data-magnetic-init', 'true');
     const target = { x: 0, y: 0 };
     const current = { x: 0, y: 0 };
     let rafId: number | null = null;

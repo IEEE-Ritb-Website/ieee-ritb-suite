@@ -299,6 +299,16 @@
   transform: translateY(-2px);
 }
 
+a.meta-pill-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+a.meta-pill-link:hover {
+  border-color: var(--color-ieee-primary);
+}
+
 .meta-pill svg {
   color: var(--color-ieee-primary);
   flex-shrink: 0;
@@ -426,7 +436,7 @@
   color: var(--color-text-muted);
 }
 
-.tab-count {
+.schedule-tab-count {
   position: absolute;
   top: -6px;
   right: -6px;
@@ -444,7 +454,7 @@
   box-shadow: 0 2px 8px rgba(77, 127, 255, 0.3);
 }
 
-.schedule-tab.active .tab-count {
+.schedule-tab.active .schedule-tab-count {
   opacity: 1;
 }
 

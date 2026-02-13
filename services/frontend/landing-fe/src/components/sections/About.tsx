@@ -132,12 +132,13 @@ const itemVariants: Variants = {
   }
 };
 
-const itemRightVariants: Variants = {
-  hidden: { opacity: 0, x: 30 },
+const statCardVariants: Variants = {
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
   visible: {
     opacity: 1,
-    x: 0,
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
   }
 };
 
@@ -145,7 +146,7 @@ export default function About() {
   const { orchestrate, shouldReduceMotion } = useMotion();
   const safeContainerVariants = useMemo(() => orchestrate(containerVariants), [orchestrate]);
   const safeItemVariants = useMemo(() => orchestrate(itemVariants), [orchestrate]);
-  const safeItemRightVariants = useMemo(() => orchestrate(itemRightVariants), [orchestrate]);
+  const safeStatCardVariants = useMemo(() => orchestrate(statCardVariants), [orchestrate]);
 
   return (
     <section className="section section-padding section-bg-base" id="about" aria-labelledby="about-heading">
@@ -174,8 +175,8 @@ export default function About() {
             </motion.h2>
             <motion.div className="about-description" variants={safeItemVariants}>
               <p>
-                IEEE RIT-B is the premier student branch at RIT Bangalore, fostering innovation
-                and technical excellence since our inception. We are part of the world's largest
+                IEEE RIT-B is one of the premier student branches in the IEEE Bangalore Section,
+                fostering innovation and technical excellence since our inception. We are part of the world's largest
                 technical professional organization dedicated to advancing technology for humanity.
               </p>
               <p>
@@ -191,15 +192,14 @@ export default function About() {
             <div className="stats-grid">
               {[
                 { end: 300, suffix: '+', label: 'Active Members', desc: 'Passionate students driving innovation' },
-                { end: 12, suffix: '', label: 'Technical Chapters', desc: 'Diverse societies and special interest groups' },
-                { end: 100, suffix: '+', label: 'Events Annually', desc: 'Workshops, seminars, and competitions' },
-                { end: 10, suffix: '+', label: 'Industry Partners', desc: 'Collaborations with leading tech companies' }
+                { end: Chapters.length, suffix: '', label: 'Chapters', desc: 'Diverse societies and special interest groups' },
+                { end: 100, suffix: '+', label: 'Events Last Term', desc: 'Workshops, seminars, and competitions' },
               ].map((s, i) => (
-                <StatCard key={i} s={s} safeItemRightVariants={safeItemRightVariants} />
+                <StatCard key={i} s={s} safeItemRightVariants={safeStatCardVariants} />
               ))}
             </div>
 
-            <motion.div className="stats-visual" aria-hidden="true" variants={safeItemRightVariants}>
+            <motion.div className="stats-visual" aria-hidden="true" variants={safeStatCardVariants}>
               <div className="data-flow-container">
                 <div className="data-particle" style={{ animationDelay: '0s' }} />
                 <div className="data-particle" style={{ animationDelay: '0.5s' }} />
