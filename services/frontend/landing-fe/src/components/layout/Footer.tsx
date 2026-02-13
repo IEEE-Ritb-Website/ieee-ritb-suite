@@ -16,6 +16,11 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="footer-section">
             <div className="footer-brand">
+              <img
+                src="/ieee_transparent_logo.png"
+                alt=""
+                className="footer-logo-img"
+              />
               <span className="footer-logo-text">IEEE</span>
               <span className="footer-logo-accent">RITB</span>
             </div>

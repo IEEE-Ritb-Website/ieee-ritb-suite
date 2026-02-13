@@ -169,8 +169,11 @@ export default function Navigation({ showNavigation, warpComplete }: { showNavig
       >
         <div className="nav-container">
           <Link to="/" className="nav-logo" aria-label="IEEE RITB Home">
-            <span className="nav-logo-text">IEEE</span>
-            <span className="nav-logo-accent">RITB</span>
+            <img
+              src="/ieee_transparent_logo.png"
+              alt="IEEE RITB"
+              className="nav-logo-img"
+            />
           </Link>
 
           <button
