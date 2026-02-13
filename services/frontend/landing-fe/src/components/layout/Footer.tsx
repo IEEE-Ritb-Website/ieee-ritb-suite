@@ -21,8 +21,10 @@ export default function Footer() {
                 alt=""
                 className="footer-logo-img"
               />
-              <span className="footer-logo-text">IEEE</span>
-              <span className="footer-logo-accent">RITB</span>
+              <div className="footer-brand-text">
+                <span className="footer-logo-text">IEEE </span>
+                <span className="footer-logo-accent">RIT-B</span>
+              </div>
             </div>
             <p className="footer-tagline">
               Advancing Technology for Humanity
