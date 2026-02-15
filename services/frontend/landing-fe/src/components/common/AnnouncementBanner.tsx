@@ -23,7 +23,7 @@ const BANNER_CONFIG = {
     ctaText: 'Apply Now →',
 
     /** Google Form URL for the CTA */
-    ctaUrl: 'https://forms.gle/PLACEHOLDER_FORM_URL',
+    ctaUrl: 'https://forms.gle/semhFBRSfw8h4hYR7',
 
     /** Banner becomes visible on this date (inclusive) — ISO format */
     startDate: '2026-02-16T00:00:00+05:30',
