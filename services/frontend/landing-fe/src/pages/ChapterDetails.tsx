@@ -10,12 +10,12 @@ import './ChapterDetails.css';
 // ===== Recruitment Config =====
 // Update these dates each semester. The button will auto-switch.
 const RECRUITMENT_WINDOWS = [
-    { start: new Date('2026-02-16'), end: new Date('2026-02-21') },
-    { start: new Date('2026-03-06'), end: new Date('2026-03-10') },
+    { start: new Date('2026-02-16T00:00:00'), end: new Date('2026-02-21T23:59:59') },
+    { start: new Date('2026-03-06T00:00:00'), end: new Date('2026-03-10T23:59:59') },
     // Add more windows as needed, e.g.:
-    // { start: new Date('2027-01-10'), end: new Date('2027-02-10') },
+    // { start: new Date('2027-01-10T00:00:00'), end: new Date('2027-02-10T23:59:59') },
 ];
-const RECRUITMENT_FORM_URL = '#'; // TODO: Replace with Google Form link
+const RECRUITMENT_FORM_URL = 'https://forms.gle/semhFBRSfw8h4hYR7'; // TODO: Replace with Google Form link
 
 const now = new Date();
 const isRecruitmentOpen = RECRUITMENT_WINDOWS.some(
