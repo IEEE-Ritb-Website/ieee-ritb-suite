@@ -22,6 +22,9 @@ export default function SEO({
   url = 'https://ieee.ritb.in',
 }: SEOProps) {
   const siteTitle = title.includes('IEEE RITB') ? title : `${title} | IEEE RITB`;
+  const currentUrl = typeof window !== 'undefined'
+    ? window.location.origin + window.location.pathname
+    : url;
 
   return (
     <>
@@ -29,23 +32,15 @@ export default function SEO({
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords.join(', ')} />
       <meta name="author" content="IEEE RITB" />
-      <link rel="canonical" href={url} />
+      <link rel="canonical" href={currentUrl} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content="website" />
-      <meta property="og:url" content={url} />
+      <meta property="og:url" content={currentUrl} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
       <meta property="og:site_name" content="IEEE RIT Bangalore Student Branch" />
-
-      {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@ieeeritb" />
-      <meta name="twitter:creator" content="@ieeeritb" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
 
       {/* Theme Color */}
       <meta name="theme-color" content="#05060f" />
