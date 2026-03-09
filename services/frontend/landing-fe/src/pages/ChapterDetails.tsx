@@ -5,22 +5,8 @@ import ChapterIcon from '../components/ui/ChapterIcon';
 import GlowText from '../components/effects/GlowText';
 import type { IChapter, IChapterAcronyms } from '@astranova/catalogues';
 import type { LayoutContext } from '../layouts/MainLayout';
+import { RECRUITMENT_CONFIG, isRecruitmentOpen } from '@/data/recruitment';
 import './ChapterDetails.css';
-
-// ===== Recruitment Config =====
-// Update these dates each semester. The button will auto-switch.
-const RECRUITMENT_WINDOWS = [
-    { start: new Date('2026-02-16T00:00:00'), end: new Date('2026-02-21T23:59:59') },
-    { start: new Date('2026-03-06T00:00:00'), end: new Date('2026-03-10T23:59:59') },
-    // Add more windows as needed, e.g.:
-    // { start: new Date('2027-01-10T00:00:00'), end: new Date('2027-02-10T23:59:59') },
-];
-const RECRUITMENT_FORM_URL = 'https://forms.gle/semhFBRSfw8h4hYR7'; // TODO: Replace with Google Form link
-
-const now = new Date();
-const isRecruitmentOpen = RECRUITMENT_WINDOWS.some(
-    w => now >= w.start && now <= w.end
-);
 
 // Chapter colors from the main Chapters section
 const chapterColors: Record<string, string> = {
@@ -252,20 +238,20 @@ export default function ChapterDetails() {
                             />
 
                             <h3 style={{ color }}>
-                                {isRecruitmentOpen
+                                {isRecruitmentOpen()
                                     ? `Join ${chapter.acronym} — Applications Open!`
                                     : `Interested in joining ${chapter.acronym}?`}
                             </h3>
                             <p>
-                                {isRecruitmentOpen
+                                {isRecruitmentOpen()
                                     ? 'Recruitment is currently open. Apply now to be part of this vibrant community.'
                                     : 'Connect with us to learn more about our activities and how you can contribute to this vibrant community.'}
                             </p>
 
                             <div className="cta-buttons">
-                                {isRecruitmentOpen ? (
+                                {isRecruitmentOpen() ? (
                                     <a
-                                        href={RECRUITMENT_FORM_URL}
+                                        href={RECRUITMENT_CONFIG.formUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="btn-primary"

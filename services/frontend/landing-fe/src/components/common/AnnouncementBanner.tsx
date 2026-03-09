@@ -10,28 +10,8 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { RECRUITMENT_CONFIG, isRecruitmentOpen } from '@/data/recruitment';
 import './AnnouncementBanner.css';
-
-// ============================================================
-// BANNER CONFIGURATION — Update these values as needed
-// ============================================================
-const BANNER_CONFIG = {
-    /** Banner text displayed to users */
-    message: '🚀 Recruitments are now open! Join IEEE RITB and be part of something extraordinary.',
-
-    /** CTA button text */
-    ctaText: 'Apply Now →',
-
-    /** Google Form URL for the CTA */
-    ctaUrl: 'https://forms.gle/semhFBRSfw8h4hYR7',
-
-    /** Banner becomes visible on this date (inclusive) — ISO format */
-    startDate: '2026-02-16T00:00:00+05:30',
-
-    /** Banner hides after this date — ISO format */
-    endDate: '2026-02-21T23:59:59+05:30',
-};
-// ============================================================
 
 const DISMISS_KEY = 'ieee-ritb-banner-dismissed';
 
@@ -43,20 +23,13 @@ function isDismissed(): boolean {
     }
 }
 
-function isWithinSchedule(): boolean {
-    const now = new Date();
-    const start = new Date(BANNER_CONFIG.startDate);
-    const end = new Date(BANNER_CONFIG.endDate);
-    return now >= start && now <= end;
-}
-
 interface AnnouncementBannerProps {
     show?: boolean;
 }
 
 export default function AnnouncementBanner({ show = true }: AnnouncementBannerProps) {
     const [dismissed, setDismissed] = useState(isDismissed);
-    const isActive = show && isWithinSchedule() && !dismissed;
+    const isActive = show && isRecruitmentOpen() && !dismissed;
 
 
     const handleDismiss = () => {
@@ -81,14 +54,14 @@ export default function AnnouncementBanner({ show = true }: AnnouncementBannerPr
                 >
                     <div className="announcement-banner-inner">
                         <p className="announcement-banner-text">
-                            {BANNER_CONFIG.message}
+                            {RECRUITMENT_CONFIG.banner.message}
                             <a
-                                href={BANNER_CONFIG.ctaUrl}
+                                href={RECRUITMENT_CONFIG.formUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="announcement-banner-cta"
                             >
-                                {BANNER_CONFIG.ctaText}
+                                {RECRUITMENT_CONFIG.banner.ctaText}
                             </a>
                         </p>
 
