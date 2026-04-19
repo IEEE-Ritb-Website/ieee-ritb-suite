@@ -71,13 +71,17 @@ export const auth = betterAuth({
     ],
     user: {
         additionalFields: {
+            username: {
+                type: "string",
+                required: false, // Set to false if some users might not have it yet
+            },
             department: {
                 type: "string",
                 required: false,
             },
             usn: {
                 type: "string",
-                required: true,
+                required: false,
             },
             role: {
                 type: "string",
@@ -85,12 +89,52 @@ export const auth = betterAuth({
             },
             membershipId: {
                 type: "string",
-                required: true,
+                required: false,
             },
             // TODO: Implement user positions
             positions: {
                 type: "json",
                 defaultValue: [],
+            },
+            tagline: {
+                type: "string",
+                required: false,
+            },
+            bio: {
+                type: "string",
+                required: false,
+            },
+            github: {
+                type: "string",
+                required: false,
+            },
+            linkedin: {
+                type: "string",
+                required: false,
+            },
+            website: {
+                type: "string",
+                required: false,
+            },
+            leetcode: {
+                type: "string",
+                required: false,
+            },
+            devpost: {
+                type: "string",
+                required: false,
+            },
+            chapters: {
+                type: "string[]",
+                required: false,
+            },
+            batch: {
+                type: "string",
+                required: false,
+            },
+            year: {
+                type: "string",
+                required: false,
             }
         }
     },
