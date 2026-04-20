@@ -102,9 +102,7 @@ export default function Footer() {
             &copy; {currentYear} IEEE RIT-B Student Branch. All rights reserved.
           </p>
           <div className="footer-legal">
-            <a href="#privacy">Privacy Policy</a>
-            <span className="footer-divider" aria-hidden="true">•</span>
-            <a href="#terms">Terms of Service</a>
+            <a href="https://drive.google.com/file/d/11rujlXhkrZ_KhNRvwpMudVXXGLEXJiW8/" target="_blank" rel="noopener noreferrer">Code of Conduct</a>
           </div>
         </div>
       </div>

@@ -46,7 +46,7 @@ export const EVENTS: IEventDetails[] = [
         time: '11th April 2026',
         description: 'A focused, high-octane showcase of engineering prowess featuring the ultimate stealth challenge, iSpy, and the arena-combat excitement of Robosoccer.',
         longDescription: 'IEEE Techfest 2026 takes a refined, focused approach to technological competition. This year, we narrowed our vision to deliver two of the most intense and meticulously crafted engineering challenges ever seen on the RIT campus: iSpy and Robosoccer.\n\nIn iSpy, participants navigated a complex web of cybersecurity, logic puzzles, and stealth operations, pushing their problem-solving skills to the absolute limit. Following this, the arena roared to life with Robosoccer, where custom-built automatons clashed in a high-stakes display of mechanical design, control systems, and strategic programming. By focusing our efforts on these two flagship competitions, Techfest 2026 provided an unparalleled, deeply immersive experience for every engineer involved.',
-        image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+        image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1776687579/ispy_x_robosoccer_ennnnu.png',
         category: 'Flagship Event',
         venue: 'RIT Campus',
         schedule: [

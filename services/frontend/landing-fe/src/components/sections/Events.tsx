@@ -33,7 +33,7 @@ const EVENTS: Event[] = [
     title: 'IEEE Techfest 2026',
     date: '11th April 2026',
     description: 'A focused, high-octane showcase of engineering prowess featuring the ultimate stealth challenge, iSpy, and the arena-combat excitement of Robosoccer.',
-    image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+    image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1776687579/ispy_x_robosoccer_ennnnu.png',
     category: 'Flagship Event',
     link: '#'
   },
