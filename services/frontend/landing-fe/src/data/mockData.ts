@@ -40,51 +40,27 @@ export interface IEventDetails {
 
 export const EVENTS: IEventDetails[] = [
     {
-        id: 'e1',
-        title: 'RIT Techfest',
-        date: '2025-03-28',
-        time: '28th – 29th March 2025',
-        description: 'The flagship technical event by IEEE chapters celebrating innovation, collaboration, and creativity among students, educators, and professionals.',
-        longDescription: 'RIT Techfest is the flagship technical event hosted by the IEEE chapters to encourage and celebrate technical innovation, collaboration, and creativity among students, educators, and professionals. This event serves as a platform for participants to showcase their technical expertise, delve into emerging technologies, and gain invaluable insights.\n\nSpanning two days, RIT Techfest is a celebration of technological advancement, featuring a variety of engaging activities, including innovative competitions, insightful seminars, and hands-on workshops. These activities are designed to provide attendees with practical exposure, industry-relevant knowledge, and opportunities to expand their professional network.',
-        image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1770888778/techfest_eomnmb.png',
+        id: 'e3',
+        title: 'IEEE Techfest 2026',
+        date: '2026-04-11',
+        time: '11th April 2026',
+        description: 'A focused, high-octane showcase of engineering prowess featuring the ultimate stealth challenge, iSpy, and the arena-combat excitement of Robosoccer.',
+        longDescription: 'IEEE Techfest 2026 takes a refined, focused approach to technological competition. This year, we narrowed our vision to deliver two of the most intense and meticulously crafted engineering challenges ever seen on the RIT campus: iSpy and Robosoccer.\n\nIn iSpy, participants navigated a complex web of cybersecurity, logic puzzles, and stealth operations, pushing their problem-solving skills to the absolute limit. Following this, the arena roared to life with Robosoccer, where custom-built automatons clashed in a high-stakes display of mechanical design, control systems, and strategic programming. By focusing our efforts on these two flagship competitions, Techfest 2026 provided an unparalleled, deeply immersive experience for every engineer involved.',
+        image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1776687579/ispy_x_robosoccer_ennnnu.png',
         category: 'Flagship Event',
         venue: 'RIT Campus',
         schedule: [
             {
-                day: '28 March',
+                day: '11 April',
                 label: 'Day 1',
-                totalEvents: 8,
+                totalEvents: 2,
                 events: [
-                    { name: 'Inauguration', time: '9:00 a.m. – 10:00 a.m.' },
-                    { name: 'Technovision', time: '10:00 a.m. – 4:30 p.m.' },
-                    { name: 'Network Quiz', time: '10:00 a.m. – 1:30 p.m.' },
-                    { name: 'Platform 2.0', time: '10:00 a.m. – 1:30 p.m.' },
-                    { name: 'Sensor Bot', time: '10:00 a.m. – 1:30 p.m.' },
-                    { name: 'Squid Game (Xtreme)', time: '10:00 a.m. – 1:30 p.m.' },
-                    { name: 'ISpy', time: '2:00 p.m. – 6:00 p.m.' },
-                    { name: 'Tech Escape Room', time: '10:00 a.m. – 1:30 p.m.' }
-                ]
-            },
-            {
-                day: '29 March',
-                label: 'Day 2',
-                totalEvents: 11,
-                events: [
-                    { name: 'Tech Relay', time: '9:00 a.m. – 6:00 p.m.' },
-                    { name: 'Murder Mystery', time: '9:00 a.m. – 3:00 p.m.' },
-                    { name: 'CivilScope', time: '2:00 p.m. – 5:00 p.m.' },
-                    { name: 'Codepoly', time: '9:00 a.m. – 3:00 p.m.' },
-                    { name: 'Antenna Align', time: '10:00 a.m. – 1:30 p.m.' },
-                    { name: 'Aerovision', time: '10:00 a.m. – 1:30 p.m.' },
-                    { name: 'Website Reconst', time: '2:00 p.m. – 5:00 p.m.' },
-                    { name: 'Tech Conundrum', time: '2:00 p.m. – 5:00 p.m.' },
-                    { name: 'MathMatrix', time: '2:00 p.m. – 5:00 p.m.' },
-                    { name: 'ChemQuest', time: '10:00 a.m. – 1:30 p.m.' },
-                    { name: 'IntelliLibrary', time: '10:00 a.m. – 1:30 p.m.' }
+                    { name: 'iSpy', time: '9:00 a.m. – 1:00 p.m.' },
+                    { name: 'Robosoccer', time: '1:00 p.m. – 5:00 p.m.' },
                 ]
             }
         ],
-        tags: ['Technology', 'Innovation', 'Competitions', 'Workshops']
+        tags: ['Technology', 'Innovation', 'Competitions']
     },
     {
         id: 'e2',
@@ -128,6 +104,53 @@ export const EVENTS: IEventDetails[] = [
             }
         ],
         tags: ['AI', 'Industry', 'Mentoring', 'Workshops', 'Networking']
+    },
+    {
+        id: 'e1',
+        title: 'RIT Techfest 2025',
+        date: '2025-03-28',
+        time: '28th – 29th March 2025',
+        description: 'The flagship technical event by IEEE chapters celebrating innovation, collaboration, and creativity among students, educators, and professionals.',
+        longDescription: 'RIT Techfest is the flagship technical event hosted by the IEEE chapters to encourage and celebrate technical innovation, collaboration, and creativity among students, educators, and professionals. This event serves as a platform for participants to showcase their technical expertise, delve into emerging technologies, and gain invaluable insights.\n\nSpanning two days, RIT Techfest is a celebration of technological advancement, featuring a variety of engaging activities, including innovative competitions, insightful seminars, and hands-on workshops. These activities are designed to provide attendees with practical exposure, industry-relevant knowledge, and opportunities to expand their professional network.',
+        image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1770888778/techfest_eomnmb.png',
+        category: 'Flagship Event',
+        venue: 'RIT Campus',
+        schedule: [
+            {
+                day: '28 March',
+                label: 'Day 1',
+                totalEvents: 8,
+                events: [
+                    { name: 'Inauguration', time: '9:00 a.m. – 10:00 a.m.' },
+                    { name: 'Technovision', time: '10:00 a.m. – 4:30 p.m.' },
+                    { name: 'Network Quiz', time: '10:00 a.m. – 1:30 p.m.' },
+                    { name: 'Platform 2.0', time: '10:00 a.m. – 1:30 p.m.' },
+                    { name: 'Sensor Bot', time: '10:00 a.m. – 1:30 p.m.' },
+                    { name: 'Squid Game (Xtreme)', time: '10:00 a.m. – 1:30 p.m.' },
+                    { name: 'ISpy', time: '2:00 p.m. – 6:00 p.m.' },
+                    { name: 'Tech Escape Room', time: '10:00 a.m. – 1:30 p.m.' }
+                ]
+            },
+            {
+                day: '29 March',
+                label: 'Day 2',
+                totalEvents: 11,
+                events: [
+                    { name: 'Tech Relay', time: '9:00 a.m. – 6:00 p.m.' },
+                    { name: 'Murder Mystery', time: '9:00 a.m. – 3:00 p.m.' },
+                    { name: 'CivilScope', time: '2:00 p.m. – 5:00 p.m.' },
+                    { name: 'Codepoly', time: '9:00 a.m. – 3:00 p.m.' },
+                    { name: 'Antenna Align', time: '10:00 a.m. – 1:30 p.m.' },
+                    { name: 'Aerovision', time: '10:00 a.m. – 1:30 p.m.' },
+                    { name: 'Website Reconst', time: '2:00 p.m. – 5:00 p.m.' },
+                    { name: 'Tech Conundrum', time: '2:00 p.m. – 5:00 p.m.' },
+                    { name: 'MathMatrix', time: '2:00 p.m. – 5:00 p.m.' },
+                    { name: 'ChemQuest', time: '10:00 a.m. – 1:30 p.m.' },
+                    { name: 'IntelliLibrary', time: '10:00 a.m. – 1:30 p.m.' }
+                ]
+            }
+        ],
+        tags: ['Technology', 'Innovation', 'Competitions', 'Workshops']
     }
 ];
 

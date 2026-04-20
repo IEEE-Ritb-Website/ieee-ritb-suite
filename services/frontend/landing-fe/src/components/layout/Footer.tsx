@@ -97,14 +97,32 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Commitment Block */}
+        <div className="footer-commitment">
+          <div className="commitment-content">
+            <svg className="commitment-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <div className="commitment-text">
+              <span className="commitment-heading">Community First</span>
+              <p>We are committed to an inclusive, harassment-free experience for everyone.</p>
+            </div>
+          </div>
+          <a href="https://drive.google.com/file/d/11rujlXhkrZ_KhNRvwpMudVXXGLEXJiW8/" target="_blank" rel="noopener noreferrer" className="commitment-action">
+            <span>Code of Conduct</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+
         <div className="footer-bottom">
           <p className="footer-copyright">
             &copy; {currentYear} IEEE RIT-B Student Branch. All rights reserved.
           </p>
           <div className="footer-legal">
-            <a href="#privacy">Privacy Policy</a>
-            <span className="footer-divider" aria-hidden="true">•</span>
-            <a href="#terms">Terms of Service</a>
+            <a href="https://drive.google.com/file/d/11rujlXhkrZ_KhNRvwpMudVXXGLEXJiW8/" target="_blank" rel="noopener noreferrer">Code of Conduct</a>
           </div>
         </div>
       </div>

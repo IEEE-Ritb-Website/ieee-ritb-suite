@@ -62,6 +62,12 @@ export const Chapters = [
         shortDescription: "The IEEE Signal Processing Society Student Chapter is a vibrant community dedicated to the fascinating field of signal processing. We aim to inspire innovation, foster technical growth, and provide practical experiences through workshops, projects, and industry collaborations. With a focus on both theoretical learning and hands-on applications, we create an environment where students can explore cutting-edge techniques",
     },
     {
+        name: "Technology and Engineering Management Society",
+        acronym: "TEMS",
+        type: ChapterType.TECH,
+        shortDescription: "TEMS (Technology and Engineering Management Society) is an IEEE society focused on the essential skills for leading and managing the transition of technology from initial concept to successful market implementation.",
+    },
+    {
         name: "Robotics and Automation Society",
         acronym: "RAS",
         type: ChapterType.TECH,
