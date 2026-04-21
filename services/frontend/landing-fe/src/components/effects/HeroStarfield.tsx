@@ -17,7 +17,8 @@ import ShootingStars from './ShootingStars';
 import { getOptimalStarCount, prefersReducedMotion } from '@/utils/deviceDetection';
 import { hasWebGLSupport } from '@/utils/webglSupport';
 import { throttle } from '@/utils/throttle';
-import { usePerformanceMonitor, type PerformanceTier } from '@/hooks/usePerformanceMonitor';
+import { type PerformanceTier } from '@/hooks/usePerformanceMonitor';
+import { usePerformance } from '@/contexts/PerformanceContext';
 import { useInView } from 'framer-motion';
 import './HeroStarfield.css';
 
@@ -293,13 +294,14 @@ export function HeroFallback() {
 export default function HeroStarfield({ isLoading, onPhaseChange, initialPhase }: HeroStarfieldProps) {
   const hasReducedMotion = prefersReducedMotion();
   const hasWebGL = hasWebGLSupport();
-  const { tier } = usePerformanceMonitor(false);
+  const { tier } = usePerformance();
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { margin: "200px" });
 
   const starCount = useMemo(() => {
     const baseCount = getOptimalStarCount() || ANIMATION_CONFIG.STAR_COUNT_FALLBACK;
     // Scale initial star count based on current tier if detected early
+    if (tier === 'LOW') return Math.floor(baseCount * 0.15);
     if (tier === 'PERFORMANCE') return Math.floor(baseCount * 0.4);
     if (tier === 'BALANCED') return Math.floor(baseCount * 0.7);
     return baseCount;
@@ -311,7 +313,16 @@ export default function HeroStarfield({ isLoading, onPhaseChange, initialPhase }
 
   return (
     <div className="hero-starfield" ref={containerRef}>
-      <Canvas camera={{ position: [0, 0, 30], fov: 75 }} gl={{ alpha: true, antialias: true }}>
+      <Canvas 
+        camera={{ position: [0, 0, 30], fov: 75 }} 
+        gl={{ 
+          alpha: true, 
+          antialias: tier === 'ULTRA',
+          powerPreference: 'low-power'
+        }}
+        dpr={tier === 'LOW' ? 1 : tier === 'PERFORMANCE' ? [1, 1.25] : [1, 1.5]}
+        frameloop={tier === 'LOW' ? 'demand' : 'always'}
+      >
         <Suspense fallback={null}>
           <StarsField
             isLoading={isLoading}

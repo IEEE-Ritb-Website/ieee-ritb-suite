@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { m, useScroll, useSpring, useTransform } from 'framer-motion';
 import './BackToTop.css';
 
 export default function BackToTop() {
@@ -72,7 +72,7 @@ export default function BackToTop() {
           strokeWidth="2"
           opacity="0.2"
         />
-        <motion.circle
+        <m.circle
           className="progress-ring-fill"
           cx="28"
           cy="28"

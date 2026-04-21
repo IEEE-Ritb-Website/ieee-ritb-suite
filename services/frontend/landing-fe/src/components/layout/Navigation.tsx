@@ -7,9 +7,8 @@
  * Uses IntersectionObserver to highlight the currently visible section.
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, useScroll, useSpring } from 'framer-motion';
 import AnnouncementBanner from '../common/AnnouncementBanner';
 import './Navigation.css';
 
@@ -61,32 +60,32 @@ export default function Navigation({ showNavigation, warpComplete }: { showNavig
   // Get navigation items based on current route
   const navItems = useMemo(() => getNavItems(location.pathname), [location.pathname]);
 
-  // Framer Motion Scroll Progress
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 50,
-  });
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      setIsScrolled(scrollY > 50);
-    };
-
     let ticking = false;
-    const throttledScroll = () => {
+    const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          handleScroll();
+          const scrollY = window.scrollY;
+          setIsScrolled(scrollY > 50);
+
+          if (progressBarRef.current) {
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? Math.min(Math.max(scrollY / docHeight, 0), 1) : 0;
+            progressBarRef.current.style.transform = `scaleX(${progress})`;
+          }
           ticking = false;
         });
         ticking = true;
       }
     };
 
-    window.addEventListener('scroll', throttledScroll);
-    return () => window.removeEventListener('scroll', throttledScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Initial check
+    handleScroll();
+    
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Reset active section when route changes
@@ -95,7 +94,15 @@ export default function Navigation({ showNavigation, warpComplete }: { showNavig
   }, [location.pathname]);
 
   useEffect(() => {
-    const sections = document.querySelectorAll('section[id]');
+    const sectionIds = navItems
+      .filter(item => item.isAnchor)
+      .map(item => item.href.replace('#', ''));
+      
+    if (sectionIds.length === 0) return;
+
+    const sections = Array.from(document.querySelectorAll('section[id]'))
+      .filter(section => sectionIds.includes(section.id));
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -109,7 +116,7 @@ export default function Navigation({ showNavigation, warpComplete }: { showNavig
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, [location.pathname]);
+  }, [navItems]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
@@ -220,9 +227,10 @@ export default function Navigation({ showNavigation, warpComplete }: { showNavig
           </ul>
         </div>
 
-        <motion.div
+        <div
+          ref={progressBarRef}
           className="nav-progress-bar"
-          style={{ scaleX }}
+          style={{ transform: 'scaleX(0)', transformOrigin: 'left' }}
         />
 
         <AnnouncementBanner show={warpComplete} />

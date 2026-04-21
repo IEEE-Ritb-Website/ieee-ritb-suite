@@ -12,22 +12,29 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { GlobalLoader } from "@/components/common/GlobalLoader"
+import { PerformanceProvider } from "./contexts/PerformanceContext"
+import { LazyMotion, domAnimation } from "framer-motion"
 
 // Fontsource managed fonts
-import "@fontsource/inter/400.css"
-import "@fontsource/inter/700.css"
-import "@fontsource/space-grotesk/600.css"
-import "@fontsource/space-grotesk/700.css"
-import "@fontsource/jetbrains-mono/400.css"
-import "@fontsource/jetbrains-mono/500.css"
+import "@fontsource/inter/latin-400.css"
+import "@fontsource/inter/latin-700.css"
+import "@fontsource/space-grotesk/latin-600.css"
+import "@fontsource/space-grotesk/latin-700.css"
+import "@fontsource/jetbrains-mono/latin-400.css"
+import "@fontsource/jetbrains-mono/latin-500.css"
 
 import './styles/fonts.css'
 import './index.css'
+import './styles/perf-overrides.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-      <Suspense fallback={<GlobalLoader />}>
-        <RouterProvider router={router} />
-      </Suspense>
+      <PerformanceProvider>
+        <LazyMotion features={domAnimation} strict>
+          <Suspense fallback={<GlobalLoader />}>
+            <RouterProvider router={router} />
+          </Suspense>
+        </LazyMotion>
+      </PerformanceProvider>
   </StrictMode>,
 )

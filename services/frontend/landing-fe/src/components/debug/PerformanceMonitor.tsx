@@ -1,13 +1,18 @@
-import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
-import { motion, AnimatePresence } from 'framer-motion';
+import { usePerformance } from '@/contexts/PerformanceContext';
+import { m, AnimatePresence } from 'framer-motion';
 
 export default function PerformanceMonitor() {
-  const { fps, tier } = usePerformanceMonitor();
+  const { fps, tier } = usePerformance();
+
+  if (!import.meta.env.DEV && new URLSearchParams(window.location.search).get('perf') !== '1') {
+    return null;
+  }
 
   const getStatusColor = () => {
     if (tier === 'ULTRA') return '#10b981'; // Emerald
     if (tier === 'BALANCED') return '#f59e0b'; // Amber
-    return '#ef4444'; // Crimson
+    if (tier === 'PERFORMANCE') return '#f43f5e'; // Rose
+    return '#9f1239'; // Crimson for LOW
   };
 
   return (
@@ -31,7 +36,7 @@ export default function PerformanceMonitor() {
         
         <AnimatePresence>
           {tier !== 'ULTRA' && (
-            <motion.div 
+            <m.div 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
@@ -40,7 +45,7 @@ export default function PerformanceMonitor() {
               <span className="font-mono text-[9px] tracking-tight text-white/20 uppercase">
                 {tier} MODE
               </span>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>

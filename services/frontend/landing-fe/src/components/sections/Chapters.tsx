@@ -7,21 +7,15 @@
  * Uses @astranova/catalogues for chapter data.
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import ChapterIcon from '../ui/ChapterIcon';
 import './Chapters.css';
-import { Chapters as IEEEChapters, ChapterType, type IChapterAcronyms } from "@astranova/catalogues";
-import { motion, type Variants } from 'framer-motion';
+import { Chapters as IEEEChapters, ChapterType } from "@astranova/catalogues";
+import { m, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
 
-const chapterColors: Record<IChapterAcronyms, string> = {
-  CS: '#4d7fff', RAS: '#D22B2B', CIS: '#FFEA00', SC: '#ADF802', WIE: '#d946ef',
-  MTTS: '#f97316', PES: '#10b981', SPS: '#8b5cf6', ComSoc: '#f59e0b', APS: '#ef4444',
-  EMBS: '#6366f1', IX: '#0FFF50', Web: '#D22B2B', CRTY: '#FFEA00', COVR: '#ADF802',
-  DIGI: '#d946ef', PRSP: '#6366f1', TEMS: '#00ccff',
-};
 
 type TabType = 'all' | ChapterType.TECH | ChapterType.NON_TECH;
 
@@ -60,14 +54,14 @@ export default function Chapters() {
   const safeContainerVariants = orchestrate(containerVariants);
   const safeItemVariants = orchestrate(itemVariants);
 
-  const chapters = IEEEChapters.map((ch) => ({
-    ...ch,
-    color: chapterColors[ch.acronym],
-  }));
-
-  const filteredChapters = chapters.filter(ch => activeTab === 'all' || ch.type === activeTab);
-  const techCount = chapters.filter(ch => ch.type === ChapterType.TECH).length;
-  const nonTechCount = chapters.filter(ch => ch.type === ChapterType.NON_TECH).length;
+  const { chapters, filteredChapters, techCount, nonTechCount } = useMemo(() => {
+    return {
+      chapters: IEEEChapters,
+      filteredChapters: IEEEChapters.filter(ch => activeTab === 'all' || ch.type === activeTab),
+      techCount: IEEEChapters.filter(ch => ch.type === ChapterType.TECH).length,
+      nonTechCount: IEEEChapters.filter(ch => ch.type === ChapterType.NON_TECH).length,
+    };
+  }, [activeTab]);
 
   return (
     <section className="section section-padding section-bg-surface" id="chapters" aria-labelledby="chapters-heading">
@@ -79,7 +73,7 @@ export default function Chapters() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div
+        <m.div
           className="section-header"
           variants={safeHeaderVariants}
           initial="hidden"
@@ -94,7 +88,7 @@ export default function Chapters() {
           <p className="section-description">
             Join any of our {chapters.length} diverse technical societies and special interest groups.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Tabs */}
         <div className="chapters-tabs" role="tablist">
@@ -116,7 +110,7 @@ export default function Chapters() {
           ))}
         </div>
 
-        <motion.div
+        <m.div
           className="grid-chapters"
           variants={safeContainerVariants}
           initial="hidden"
@@ -125,7 +119,7 @@ export default function Chapters() {
           key={activeTab}
         >
           {filteredChapters.map((chapter, index) => (
-            <motion.div key={`${chapter.acronym}-${index}`} variants={safeItemVariants}>
+            <m.div key={`${chapter.acronym}-${index}`} variants={safeItemVariants}>
               <Link
                 to={`/chapters/${chapter.acronym.toLowerCase()}`}
                 className={`chapter-card ${activeChapter === index ? 'active' : ''}`}
@@ -152,9 +146,9 @@ export default function Chapters() {
                 </div>
                 <div className="chapter-border" style={{ borderColor: chapter.color }} />
               </Link>
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
 
 
       </div>

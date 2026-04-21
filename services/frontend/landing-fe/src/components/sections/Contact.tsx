@@ -9,10 +9,18 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { m, AnimatePresence, type Variants } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import { useMotion } from '@/hooks/useMotion';
+import { 
+  EmailIcon, 
+  LinkedInIcon, 
+  LocationIcon, 
+  InstagramIcon, 
+  SendIcon, 
+  CheckIcon 
+} from '../ui/icons';
 import '@/types/turnstile.d.ts';
 import './Contact.css';
 
@@ -46,7 +54,7 @@ function ChannelCard({ item, safeItemVariants }: { item: ChannelItem, safeItemVa
     card.style.setProperty('--mouse-y', `${y}%`);
   };
 
-  const MotionTag = item.href ? motion.a : motion.div;
+  const MotionTag = item.href ? m.a : m.div;
 
   return (
     <MotionTag
@@ -65,9 +73,7 @@ function ChannelCard({ item, safeItemVariants }: { item: ChannelItem, safeItemVa
       <div className="bracket bracket-bl" />
       <div className="bracket bracket-br" />
       <div className="channel-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          {item.icon}
-        </svg>
+        {item.icon}
       </div>
       <div className="channel-info">
         <span className="channel-label">{item.label}</span>
@@ -124,26 +130,22 @@ function TerminalConsole() {
 
 function TerminalSeal() {
   return (
-    <motion.div
+    <m.div
       className="terminal-seal"
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 100 }}
     >
-      <motion.div
+      <m.div
         className="seal-inner"
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ repeat: Infinity, duration: 4 }}
       >
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          <path d="M12 8v4" />
-          <path d="M12 16h.01" />
-        </svg>
-      </motion.div>
+        <CheckIcon className="w-12 h-12" />
+      </m.div>
       <div className="seal-text" style={{ top: -20 }}>Secure</div>
       <div className="seal-text" style={{ bottom: -20 }}>Verified</div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -161,7 +163,7 @@ function SingularityButton({ state, isValid }: SingularityButtonProps) {
     <div className="singularity-btn-container">
       <AnimatePresence mode="wait">
         {state === 'idle' && (
-          <motion.button
+          <m.button
             key="idle"
             type="submit"
             className={`btn-primary magnetic ${isValid ? 'ignited' : 'dormant'}`}
@@ -176,22 +178,8 @@ function SingularityButton({ state, isValid }: SingularityButtonProps) {
             whileTap={isValid && !shouldReduceMotion ? { scale: 0.95 } : {}}
           >
             <span className="btn-text">Send Message</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ marginLeft: 8 }}
-            >
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
-          </motion.button>
+            <SendIcon style={{ marginLeft: 8 }} />
+          </m.button>
         )}
       </AnimatePresence>
     </div>
@@ -254,7 +242,7 @@ export default function Contact() {
     document.head.appendChild(script);
 
     return () => {
-      document.head.removeChild(script);
+      script.parentNode?.removeChild(script);
       delete window.onTurnstileLoad;
     };
   }, []);
@@ -393,25 +381,25 @@ export default function Contact() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div
+        <m.div
           className="section-header"
           variants={safeContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          <motion.span className="section-overline" variants={safeItemVariants}>Contact Us</motion.span>
-          <motion.h2 id="contact-heading" className="section-heading" variants={safeItemVariants}>
+          <m.span className="section-overline" variants={safeItemVariants}>Contact Us</m.span>
+          <m.h2 id="contact-heading" className="section-heading" variants={safeItemVariants}>
             Get in
             <span className="section-heading-accent"> Touch</span>
-          </motion.h2>
-          <motion.p className="section-description" variants={safeItemVariants}>
+          </m.h2>
+          <m.p className="section-description" variants={safeItemVariants}>
             Whether you're a student looking to join, a company interested in partnership,
             or just curious about our work, we're ready to connect.
-          </motion.p>
-        </motion.div>
+          </m.p>
+        </m.div>
 
-        <motion.div
+        <m.div
           className="contact-grid"
           variants={safeContainerVariants}
           initial="hidden"
@@ -419,51 +407,40 @@ export default function Contact() {
           viewport={{ once: true, margin: "-100px" }}
         >
           {/* Contact Channels */}
-          <motion.div className="contact-channels" variants={safeContainerVariants}>
+          <m.div className="contact-channels" variants={safeContainerVariants}>
             {[
               {
                 label: 'Email Us',
                 value: 'ieeeritb@gmail.com',
                 href: 'mailto:ieeeritb@gmail.com',
-                icon: <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22,6 12,13 2,6" />
+                icon: <EmailIcon />
               },
               {
                 label: 'LinkedIn',
                 value: 'IEEE RIT-B',
                 href: 'https://linkedin.com/company/ieee-rit',
-                icon: <>
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                  <rect x="2" y="9" width="4" height="12" />
-                  <circle cx="4" cy="4" r="2" />
-                </>
+                icon: <LinkedInIcon />
               },
               {
                 label: 'Visit',
                 value: 'MSRIT Post, M S R Nagar, Mathikere, Bengaluru, Karnataka 560054',
                 href: 'https://maps.app.goo.gl/pBmSqVvwk5fZBmbz6',
-                icon: <>
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </>
+                icon: <LocationIcon />
               },
               {
                 label: 'Instagram',
                 value: '@ieeeritb',
                 href: 'https://instagram.com/ieeeritb',
-                icon: <>
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                </>
+                icon: <InstagramIcon />
               }
             ].map((item, i) => (
               <ChannelCard key={i} item={item} safeItemVariants={safeItemVariants} />
             ))}
-          </motion.div>
+          </m.div>
 
           {/* Contact Form Terminal */}
-          <motion.div variants={safeItemVariants} className="w-full">
-            <motion.div
+          <m.div variants={safeItemVariants} className="w-full">
+            <m.div
               ref={containerRef}
               className="contact-form-container glass-panel"
               onMouseMove={handleMouseMove}
@@ -476,7 +453,7 @@ export default function Contact() {
 
               <AnimatePresence mode="wait">
                 {formState === 'idle' && (
-                  <motion.form
+                  <m.form
                     ref={formRef}
                     key="form-idle"
                     className="contact-form"
@@ -525,22 +502,22 @@ export default function Contact() {
                     )}
 
                     <SingularityButton state={formState} isValid={isFormValid && (!TURNSTILE_SITE_KEY || !!turnstileToken)} />
-                  </motion.form>
+                  </m.form>
                 )}
 
                 {formState === 'submitting' && (
-                  <motion.div
+                  <m.div
                     key="form-submitting"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
                     <TerminalConsole />
-                  </motion.div>
+                  </m.div>
                 )}
 
                 {formState === 'success' && (
-                  <motion.div
+                  <m.div
                     key="form-success"
                     className="transmission-success"
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -552,20 +529,20 @@ export default function Contact() {
                     <p className="success-desc">
                       Your data has been successfully routed to the IEEE RITB core server. A response will be dispatched shortly.
                     </p>
-                    <motion.button
+                    <m.button
                       className="terminal-return"
                       onClick={resetForm}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       RETURN TO TERMINAL
-                    </motion.button>
-                  </motion.div>
+                    </m.button>
+                  </m.div>
                 )}
               </AnimatePresence>
-            </motion.div>
-          </motion.div>
-        </motion.div>
+            </m.div>
+          </m.div>
+        </m.div>
       </div>
     </section>
   );

@@ -1,19 +1,26 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { useEffect, useState, useLayoutEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState, lazy, Suspense } from 'react';
+import { AnimatePresence, m } from 'framer-motion';
 import Navigation from '../components/layout/Navigation';
 import Footer from '../components/layout/Footer';
 import MagneticCursor from '../components/effects/MagneticCursor';
 import BackToTop from '../components/ui/BackToTop';
-import EnhancedLoader from '../components/common/loading';
 import SEO from '../components/common/SEO';
-import { usePerformanceMonitor } from '../hooks/usePerformanceMonitor';
+import { usePerformance } from '../contexts/PerformanceContext';
 import PerformanceMonitor from '../components/debug/PerformanceMonitor';
 import { ToastProvider } from '../contexts/ToastContext';
 import { initSmoothScroll, initParallax, initMagneticElements } from '../utils/smoothScroll';
-import HeroStarfield, { HeroFallback } from '../components/effects/HeroStarfield';
 import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import type { AnimationPhase } from '../components/effects/HeroStarfield';
+
+const EnhancedLoader = lazy(() => import('../components/common/loading'));
+const HeroStarfield = lazy(() => import('../components/effects/HeroStarfield'));
+
+const HeroFallback = () => (
+    <div className="hero-starfield hero-starfield-static">
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-black to-indigo-950/20" aria-hidden="true" />
+    </div>
+);
 
 // Session storage key for tracking animation state
 const ANIMATION_SEEN_KEY = 'ieee-ritb-animation-seen';
@@ -46,8 +53,7 @@ function isPageReload(): boolean {
         if (navEntries.length > 0) {
             return navEntries[0].type === 'reload';
         }
-        // Fallback for older browsers
-        return performance.navigation?.type === 1;
+        return false;
     } catch {
         return false;
     }
@@ -85,21 +91,35 @@ export default function MainLayout() {
     const [isLoading, setIsLoading] = useState(!animationAlreadySeen);
     const [showNavigation, setShowNavigation] = useState(animationAlreadySeen);
     const [warpComplete, setWarpComplete] = useState(animationAlreadySeen);
+    const [isAppReady, setIsAppReady] = useState(false);
 
-    const { tier } = usePerformanceMonitor(false);
+    useEffect(() => {
+        let mounted = true;
+        const checkReadiness = async () => {
+            if (document.readyState !== 'complete') {
+                await new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
+            }
+            if ('fonts' in document) {
+                await document.fonts.ready;
+            }
+            if (mounted) setIsAppReady(true);
+        };
+        checkReadiness();
+        return () => { mounted = false; };
+    }, []);
+
+    const { tier } = usePerformance();
     const location = useLocation();
 
-    // Scroll to top on route change
-    useLayoutEffect(() => {
-        // Reset scroll position for both native and Lenis smooth scroll
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
+    // Set performance tier attribute globally
+    useEffect(() => {
+        document.body.setAttribute('data-perf-tier', tier.toLowerCase());
+        return () => {
+            document.body.removeAttribute('data-perf-tier');
+        };
+    }, [tier]);
 
-        // Also reset any wrapper that Lenis might be using
-        const wrapper = document.querySelector('[data-lenis-wrapper]') as HTMLElement;
-        if (wrapper) wrapper.scrollTop = 0;
-    }, [location.pathname]);
+
 
     // Scroll Reset Logic: Land on Hero every refresh
     useEffect(() => {
@@ -125,7 +145,7 @@ export default function MainLayout() {
     useEffect(() => {
         const lenis = initSmoothScroll();
         const parallaxCleanup = setTimeout(() => {
-            initParallax();
+            initParallax(lenis);
         }, 100);
         const magneticCleanup = setTimeout(() => {
             initMagneticElements();
@@ -145,8 +165,8 @@ export default function MainLayout() {
         markAnimationSeen();
     };
 
-    // Page transition variants - instant if animation already seen
-    const pageVariants = animationAlreadySeen ? {
+    // Page transition variants - instant if animation already seen or on LOW tier
+    const pageVariants = (animationAlreadySeen || tier === 'LOW') ? {
         initial: { opacity: 1, y: 0 },
         animate: { opacity: 1, y: 0, transition: { duration: 0 } },
         exit: { opacity: 1, y: 0, transition: { duration: 0 } }
@@ -169,24 +189,29 @@ export default function MainLayout() {
             <SEO />
             {/* Only show loader if animation hasn't been seen yet */}
             {!animationAlreadySeen && (
-                <EnhancedLoader
-                    isLoading={isLoading}
-                    onLoaded={() => setIsLoading(false)}
-                />
+                <Suspense fallback={null}>
+                    <EnhancedLoader
+                        isLoading={isLoading}
+                        isReady={isAppReady}
+                        onLoaded={() => setIsLoading(false)}
+                    />
+                </Suspense>
             )}
 
             {/* Persistent WebGL Background */}
             <div className="fixed inset-0 z-[-1]" aria-hidden="true">
                 <ErrorBoundary fallback={<HeroFallback />}>
-                    <HeroStarfield
-                        isLoading={isLoading}
-                        initialPhase={animationAlreadySeen ? 'stopped' : 'warp'}
-                        onPhaseChange={(phase: AnimationPhase) => {
-                            if (phase === 'slowing') {
-                                setTimeout(handleWarpComplete, 300);
-                            }
-                        }}
-                    />
+                    <Suspense fallback={<HeroFallback />}>
+                        <HeroStarfield
+                            isLoading={isLoading}
+                            initialPhase={animationAlreadySeen ? 'stopped' : 'warp'}
+                            onPhaseChange={(phase: AnimationPhase) => {
+                                if (phase === 'slowing') {
+                                    setTimeout(handleWarpComplete, 300);
+                                }
+                            }}
+                        />
+                    </Suspense>
                 </ErrorBoundary>
             </div>
 
@@ -199,7 +224,7 @@ export default function MainLayout() {
 
             <main id="main-content" role="main" data-perf-tier={tier}>
                 <AnimatePresence mode="wait">
-                    <motion.div
+                    <m.div
                         key={location.pathname}
                         variants={pageVariants}
                         initial="initial"
@@ -207,7 +232,7 @@ export default function MainLayout() {
                         exit="exit"
                     >
                         <Outlet context={{ warpComplete, isLoading }} />
-                    </motion.div>
+                    </m.div>
                 </AnimatePresence>
             </main>
 

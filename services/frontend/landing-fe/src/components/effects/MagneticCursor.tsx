@@ -10,6 +10,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useMotion } from '@/hooks/useMotion';
+import { usePerformance } from '@/contexts/PerformanceContext';
 import './MagneticCursor.css';
 
 interface MagneticCursorProps {
@@ -20,6 +21,7 @@ export default function MagneticCursor({ visible = true }: MagneticCursorProps) 
   const [isPointer, setIsPointer] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
   const { shouldReduceMotion } = useMotion();
+  const { tier } = usePerformance();
 
   const cursorDot = useRef<HTMLDivElement>(null);
   const cursorRing = useRef<HTMLDivElement>(null);
@@ -95,7 +97,7 @@ export default function MagneticCursor({ visible = true }: MagneticCursorProps) 
     };
   }, [isHidden, shouldReduceMotion]);
 
-  if (shouldReduceMotion) return null;
+  if (shouldReduceMotion || tier === 'LOW') return null;
 
   return (
     <div className={`magnetic-cursor ${isPointer ? 'pointer' : ''} ${isHidden || !visible ? 'hidden' : ''}`}>

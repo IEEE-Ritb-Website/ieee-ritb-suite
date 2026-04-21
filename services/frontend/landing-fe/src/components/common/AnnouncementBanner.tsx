@@ -9,7 +9,7 @@
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { RECRUITMENT_CONFIG, isRecruitmentOpen } from '@/data/recruitment';
 import './AnnouncementBanner.css';
 
@@ -44,7 +44,7 @@ export default function AnnouncementBanner({ show = true }: AnnouncementBannerPr
     return (
         <AnimatePresence>
             {isActive && (
-                <motion.div
+                <m.div
                     className="announcement-banner"
                     role="alert"
                     initial={{ y: '0%', opacity: 0 }}
@@ -76,7 +76,7 @@ export default function AnnouncementBanner({ show = true }: AnnouncementBannerPr
                             </svg>
                         </button>
                     </div>
-                </motion.div>
+                </m.div>
             )}
         </AnimatePresence>
     );

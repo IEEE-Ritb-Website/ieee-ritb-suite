@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useOutletContext, useLoaderData } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { useMotion } from '../hooks/useMotion';
 import type { IEventDetails } from '../data/mockData';
 import type { LayoutContext } from '../layouts/MainLayout';
+import SEO from '../components/common/SEO';
 import './EventDetails.css';
 
 /**
@@ -68,10 +69,30 @@ export default function EventDetails() {
 
     return (
         <>
-            <title>{event.title} | IEEE RITB</title>
-            <meta name="description" content={event.description} />
+            <SEO 
+                title={event.title} 
+                description={event.description} 
+                image={event.image}
+                url={`https://ieee.ritb.in/events/${event.id}`}
+                jsonLd={{
+                    "@context": "https://schema.org",
+                    "@type": "Event",
+                    "name": event.title,
+                    "description": event.description,
+                    "image": event.image,
+                    "startDate": event.date,
+                    "location": {
+                        "@type": "Place",
+                        "name": event.venue || "RIT Bangalore",
+                        "address": {
+                            "@type": "PostalAddress",
+                            "addressLocality": "Bangalore"
+                        }
+                    }
+                }}
+            />
 
-            <motion.div
+            <m.div
                 className="event-details"
                 variants={containerVariants}
                 initial={warpComplete ? "visible" : "hidden"}
@@ -86,7 +107,7 @@ export default function EventDetails() {
                 </Link>
 
                 {/* ===== CINEMATIC HERO ===== */}
-                <motion.section id="overview" className="event-hero" variants={itemVariants}>
+                <m.section id="overview" className="event-hero" variants={itemVariants}>
                     {/* Full-bleed Background */}
                     <div className="event-hero-bg">
                         <img
@@ -101,16 +122,16 @@ export default function EventDetails() {
                     {/* Hero Content */}
                     <div className="event-hero-content">
                         {/* Floating Info Pills */}
-                        <motion.div className="event-badges" variants={itemVariants}>
-                            <motion.span
+                        <m.div className="event-badges" variants={itemVariants}>
+                            <m.span
                                 className="event-badge event-category-badge"
                                 custom={0}
                                 variants={pillVariants}
                             >
                                 {event.category}
-                            </motion.span>
+                            </m.span>
 
-                            <motion.span
+                            <m.span
                                 className="event-badge event-past-badge"
                                 custom={1}
                                 variants={pillVariants}
@@ -119,10 +140,10 @@ export default function EventDetails() {
                                     <polyline points="20 6 9 17 4 12" />
                                 </svg>
                                 Past Event
-                            </motion.span>
+                            </m.span>
 
                             {event.time && (
-                                <motion.span
+                                <m.span
                                     className="event-badge event-date-badge"
                                     custom={2}
                                     variants={pillVariants}
@@ -134,28 +155,28 @@ export default function EventDetails() {
                                         <line x1="3" y1="10" x2="21" y2="10" />
                                     </svg>
                                     {event.time}
-                                </motion.span>
+                                </m.span>
                             )}
-                        </motion.div>
+                        </m.div>
 
                         {/* Event Title */}
-                        <motion.h1 className="event-title" variants={itemVariants}>
+                        <m.h1 className="event-title" variants={itemVariants}>
                             {event.title}
-                        </motion.h1>
+                        </m.h1>
 
                         {/* Short Tagline */}
-                        <motion.p className="event-tagline" variants={itemVariants}>
+                        <m.p className="event-tagline" variants={itemVariants}>
                             {event.description}
-                        </motion.p>
+                        </m.p>
                     </div>
-                </motion.section>
+                </m.section>
 
                 {/* ===== SPLIT SHOWCASE CONTENT ===== */}
-                <motion.section id="about" className="event-showcase" variants={itemVariants}>
+                <m.section id="about" className="event-showcase" variants={itemVariants}>
                     <div className="showcase-container">
 
                         {/* Metadata Pills Row */}
-                        <motion.div className="meta-pills-row" variants={itemVariants}>
+                        <m.div className="meta-pills-row" variants={itemVariants}>
                             {event.venue && (
                                 <a href="https://maps.app.goo.gl/pBmSqVvwk5fZBmbz6" target="_blank" rel="noopener noreferrer" className="meta-pill meta-pill-link">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -177,19 +198,19 @@ export default function EventDetails() {
                                 <span className="meta-label">Date</span>
                                 <span className="meta-value">{event.time || event.date}</span>
                             </div>
-                        </motion.div>
+                        </m.div>
 
                         {/* Large About Card with Pullquote */}
-                        <motion.div className="about-showcase" variants={itemVariants}>
+                        <m.div className="about-showcase" variants={itemVariants}>
                             <div className="about-accent" aria-hidden="true">"</div>
                             <p className="about-text">
                                 {event.longDescription || event.description}
                             </p>
-                        </motion.div>
+                        </m.div>
 
                         {/* ===== DAY-TABBED SCHEDULE GRID ===== */}
                         {event.schedule && event.schedule.length > 0 && (
-                            <motion.div id="timeline" className="schedule-section" variants={itemVariants}>
+                            <m.div id="timeline" className="schedule-section" variants={itemVariants}>
                                 <h3 className="schedule-heading">Event Timeline</h3>
 
                                 {/* Day Tabs */}
@@ -212,7 +233,7 @@ export default function EventDetails() {
                                 {/* Schedule Grid */}
                                 <AnimatePresence mode="wait">
                                     {currentSchedule && (
-                                        <motion.div
+                                        <m.div
                                             key={activeDay}
                                             className="schedule-grid"
                                             initial={{ opacity: 0, y: 12 }}
@@ -221,7 +242,7 @@ export default function EventDetails() {
                                             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                                         >
                                             {currentSchedule.events.map((evt, index) => (
-                                                <motion.div
+                                                <m.div
                                                     key={`${activeDay}-${index}`}
                                                     className="schedule-card"
                                                     custom={index}
@@ -247,27 +268,27 @@ export default function EventDetails() {
                                                             )}
                                                         </div>
                                                     </div>
-                                                </motion.div>
+                                                </m.div>
                                             ))}
-                                        </motion.div>
+                                        </m.div>
                                     )}
                                 </AnimatePresence>
-                            </motion.div>
+                            </m.div>
                         )}
 
                         {/* Floating Tags */}
                         {event.tags && event.tags.length > 0 && (
-                            <motion.div className="tags-float" variants={itemVariants}>
+                            <m.div className="tags-float" variants={itemVariants}>
                                 {event.tags.map((tag, index) => (
                                     <span key={index} className="tag-chip">{tag}</span>
                                 ))}
-                            </motion.div>
+                            </m.div>
                         )}
                     </div>
-                </motion.section>
+                </m.section>
 
                 {/* ===== PAST EVENT RECAP CTA ===== */}
-                <motion.section className="event-recap-cta" variants={itemVariants}>
+                <m.section className="event-recap-cta" variants={itemVariants}>
                     <div className="recap-card">
                         <div className="recap-content">
                             <span className="recap-overline">Event Concluded</span>
@@ -282,8 +303,8 @@ export default function EventDetails() {
                             </svg>
                         </Link>
                     </div>
-                </motion.section>
-            </motion.div>
+                </m.section>
+            </m.div>
         </>
     );
 }

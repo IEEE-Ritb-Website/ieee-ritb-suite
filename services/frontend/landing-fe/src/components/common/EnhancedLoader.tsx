@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import GlitchText from '../effects/GlitchText';
 import TerminalText from '../effects/TerminalText';
 import { useMotion } from '@/hooks/useMotion';
@@ -35,7 +35,7 @@ const LOADING_STAGES: LoadingStage[] = [
   {
     name: 'Initializing quantum field...',
     progress: [0, 20],
-    duration: 400,
+    duration: 300,
     messages: [
       { text: 'SYSTEM: Booting IEEE Portal...', delay: 0, type: 'system' },
       { text: 'GPU: WebGL 2.0 detected ✓', delay: 100, type: 'gpu' },
@@ -44,7 +44,7 @@ const LOADING_STAGES: LoadingStage[] = [
   {
     name: 'Loading star catalog...',
     progress: [20, 45],
-    duration: 500,
+    duration: 400,
     messages: [
       { text: 'STARS: Generating entities...', delay: 0, type: 'system' },
       { text: 'Adaptive quality: Optimizing for device...', delay: 150, type: 'info' },
@@ -53,43 +53,47 @@ const LOADING_STAGES: LoadingStage[] = [
   {
     name: 'Rendering nebula clouds...',
     progress: [45, 65],
-    duration: 400,
+    duration: 300,
     messages: [
       { text: 'SHADER: Compiling programs...', delay: 0, type: 'system' },
-      { text: 'SHADER: Compilation complete ✓', delay: 200, type: 'success' },
+      { text: 'SHADER: Compilation complete ✓', delay: 150, type: 'success' },
     ],
   },
   {
     name: 'Calculating trajectories...',
     progress: [65, 85],
-    duration: 350,
+    duration: 250,
     messages: [
       { text: 'PHYSICS: Initializing particle systems...', delay: 0, type: 'system' },
-      { text: 'COLLISION: Detection enabled ✓', delay: 150, type: 'success' },
+      { text: 'COLLISION: Detection enabled ✓', delay: 100, type: 'success' },
     ],
   },
   {
     name: 'Finalizing scene...',
     progress: [85, 100],
-    duration: 300,
+    duration: 250,
     messages: [
       { text: 'RENDER: Final optimizations...', delay: 0, type: 'system' },
-      { text: 'STATUS: Ready ✓', delay: 150, type: 'success' },
+      { text: 'STATUS: Ready ✓', delay: 100, type: 'success' },
     ],
   },
 ];
 
 interface EnhancedLoaderProps {
   isLoading: boolean;
+  isReady?: boolean;
   onLoaded: () => void;
 }
 
-export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => {
+export const EnhancedLoader = ({ isLoading, isReady = true, onLoaded }: EnhancedLoaderProps) => {
   const [progress, setProgress] = useState(0);
   const [currentStage, setCurrentStage] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [allMessages, setAllMessages] = useState<LoadingMessage[]>([]);
   const { shouldReduceMotion } = useMotion();
+
+  const totalElapsed = useRef(0);
+  const stageIndex = useRef(0);
 
   useEffect(() => {
     if (shouldReduceMotion) {
@@ -98,25 +102,25 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
       return;
     }
 
-    let totalElapsed = 0;
-    let stageIndex = 0;
+    totalElapsed.current = 0;
+    stageIndex.current = 0;
 
     const advanceStage = () => {
-      if (stageIndex >= LOADING_STAGES.length) {
+      if (stageIndex.current >= LOADING_STAGES.length) {
         setIsComplete(true);
         return;
       }
 
-      const stage = LOADING_STAGES[stageIndex];
+      const stage = LOADING_STAGES[stageIndex.current];
       const [startProgress, endProgress] = stage.progress;
       const progressRange = endProgress - startProgress;
 
-      setCurrentStage(stageIndex);
+      setCurrentStage(stageIndex.current);
 
       // Add stage messages to terminal
       const stageMessages = stage.messages.map(msg => ({
         ...msg,
-        delay: totalElapsed + (msg.delay || 0),
+        delay: totalElapsed.current + (msg.delay || 0),
       }));
 
       setAllMessages(prev => [...prev, ...stageMessages]);
@@ -131,8 +135,8 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
 
         if (stageElapsed >= stage.duration) {
           clearInterval(progressInterval);
-          stageIndex++;
-          totalElapsed += stage.duration;
+          stageIndex.current++;
+          totalElapsed.current += stage.duration;
           advanceStage();
         }
       }, 16); // ~60fps
@@ -140,11 +144,14 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
       return () => clearInterval(progressInterval);
     };
 
-    advanceStage();
+    const cleanup = advanceStage();
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [shouldReduceMotion]);
 
   useEffect(() => {
-    if (isComplete) {
+    if (isComplete && isReady) {
       // Delay hiding the loader to allow for outro animations
       const timer = setTimeout(() => {
         onLoaded();
@@ -152,7 +159,7 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
 
       return () => clearTimeout(timer);
     }
-  }, [isComplete, onLoaded]);
+  }, [isComplete, isReady, onLoaded]);
 
   return (
     <div
@@ -277,9 +284,11 @@ export const EnhancedLoader = ({ isLoading, onLoaded }: EnhancedLoaderProps) => 
         </div>
 
         {/* Loading indicator text */}
-        {!isComplete && (
+        {(!isComplete || !isReady) && (
           <div className="text-[#6b8cff]/60 text-xs font-mono animate-pulse">
-            Please wait while we prepare your experience...
+            {!isComplete 
+              ? 'Please wait while we prepare your experience...'
+              : 'Awaiting network confirmation...'}
           </div>
         )}
       </div>

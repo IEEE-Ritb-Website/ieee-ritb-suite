@@ -1,11 +1,12 @@
 import { Link, useOutletContext, useLoaderData } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useMotion } from '../hooks/useMotion';
 import ChapterIcon from '../components/ui/ChapterIcon';
 import GlowText from '../components/effects/GlowText';
 import type { IChapter, IChapterAcronyms } from '@astranova/catalogues';
 import type { LayoutContext } from '../layouts/MainLayout';
 import { RECRUITMENT_CONFIG, isRecruitmentOpen } from '@/data/recruitment';
+import SEO from '../components/common/SEO';
 import './ChapterDetails.css';
 
 // Chapter colors from the main Chapters section
@@ -79,10 +80,13 @@ export default function ChapterDetails() {
 
     return (
         <>
-            <title>{chapter.name} | IEEE RITB</title>
-            <meta name="description" content={chapter.shortDescription} />
+            <SEO 
+                title={chapter.name} 
+                description={chapter.shortDescription} 
+                url={`https://ieee.ritb.in/chapters/${chapter.acronym.toLowerCase()}`}
+            />
 
-            <motion.div
+            <m.div
                 className="chapter-details"
                 variants={containerVariants}
                 initial={warpComplete ? "visible" : "hidden"}
@@ -97,7 +101,7 @@ export default function ChapterDetails() {
                 </Link>
 
                 {/* ===== CINEMATIC HERO SECTION ===== */}
-                <motion.section id="overview" className="chapter-hero" variants={itemVariants}>
+                <m.section id="overview" className="chapter-hero" variants={itemVariants}>
                     {/* Parallax Background Orbs */}
                     <div className="chapter-orbs-container" aria-hidden="true">
                         <div
@@ -123,7 +127,7 @@ export default function ChapterDetails() {
                     {/* Hero Content */}
                     <div className="chapter-hero-content">
                         {/* Icon with Pulsating Glow Rings */}
-                        <motion.div className="chapter-icon-container" variants={itemVariants}>
+                        <m.div className="chapter-icon-container" variants={itemVariants}>
                             {/* Glow Rings */}
                             {!shouldReduceMotion && (
                                 <>
@@ -155,10 +159,10 @@ export default function ChapterDetails() {
                             >
                                 <ChapterIcon acronym={chapter.acronym as IChapterAcronyms} size={80} />
                             </div>
-                        </motion.div>
+                        </m.div>
 
                         {/* Text Content */}
-                        <motion.div className="chapter-hero-text" variants={itemVariants}>
+                        <m.div className="chapter-hero-text" variants={itemVariants}>
                             <span
                                 className="chapter-type-badge"
                                 style={{ borderColor: `${color}60`, color }}
@@ -167,18 +171,18 @@ export default function ChapterDetails() {
                             </span>
 
                             <h1 className="chapter-title">{chapter.name}</h1>
-                        </motion.div>
+                        </m.div>
                     </div>
-                </motion.section>
+                </m.section>
 
                 {/* ===== DATA ORBS STATS ===== */}
-                <motion.section className="chapter-overview" variants={itemVariants}>
+                <m.section className="chapter-overview" variants={itemVariants}>
                     <div className="chapter-section-container">
                         <div className="data-orbs-container">
                             {/* Data Orbs */}
                             <div className="data-orbs-grid">
                                 {statCards.map((card, index) => (
-                                    <motion.div
+                                    <m.div
                                         key={card.label}
                                         className="data-orb"
                                         custom={index}
@@ -199,15 +203,15 @@ export default function ChapterDetails() {
                                             </span>
                                             <span className="orb-label">{card.label}</span>
                                         </div>
-                                    </motion.div>
+                                    </m.div>
                                 ))}
                             </div>
                         </div>
                     </div>
-                </motion.section>
+                </m.section>
 
                 {/* ===== MISSION SECTION ===== */}
-                <motion.section id="about" className="chapter-mission" variants={itemVariants}>
+                <m.section id="about" className="chapter-mission" variants={itemVariants}>
                     <div className="chapter-section-container">
                         <div className="mission-content">
                             <h2 className="mission-heading" style={{ color }}>About This Chapter</h2>
@@ -219,10 +223,10 @@ export default function ChapterDetails() {
                             />
                         </div>
                     </div>
-                </motion.section>
+                </m.section>
 
                 {/* ===== CTA SECTION ===== */}
-                <motion.section
+                <m.section
                     id="contact"
                     className="chapter-cta"
                     variants={itemVariants}
@@ -280,8 +284,8 @@ export default function ChapterDetails() {
                             </div>
                         </div>
                     </div>
-                </motion.section>
-            </motion.div>
+                </m.section>
+            </m.div>
         </>
     );
 }

@@ -11,6 +11,11 @@
     <meta name="author" content="IEEE RITB" />
     <meta name="robots" content="index, follow" />
 
+    <!-- Preconnects -->
+    <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin />
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api.emailjs.com" />
+
     <!-- Theme Color -->
     <meta name="theme-color" content="#4d7fff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#05060f" media="(prefers-color-scheme: dark)" />
@@ -29,6 +34,29 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/ieee_icon.png" />
+
+    <!-- Static JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "IEEE RIT-B",
+      "url": "https://ieee.ritb.in",
+      "logo": "https://ieee.ritb.in/ieee_icon.png",
+      "sameAs": [
+        "https://linkedin.com/company/ieee-rit",
+        "https://instagram.com/ieeeritb"
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "IEEE RIT-B",
+      "url": "https://ieee.ritb.in"
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

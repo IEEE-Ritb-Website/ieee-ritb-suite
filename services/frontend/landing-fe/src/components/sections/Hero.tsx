@@ -10,7 +10,7 @@
 import './Hero.css';
 import { useEffect, useRef, useState, Fragment } from 'react';
 import { Chapters } from '@astranova/catalogues';
-import { motion, type Variants } from 'framer-motion';
+import { m, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
 import { useOutletContext } from 'react-router-dom';
 import type { LayoutContext } from '@/layouts/MainLayout';
@@ -123,7 +123,7 @@ export default function Hero() {
     <section className="hero" id="home" aria-labelledby="hero-title">
       {/* Starfield is now rendered in MainLayout for persistence */}
 
-      <motion.div
+      <m.div
         className="hero-content"
         variants={safeContainerVariants}
         initial={shouldReduceMotion ? "visible" : "hidden"}
@@ -131,27 +131,27 @@ export default function Hero() {
         style={{ pointerEvents: contentVisible ? 'auto' : 'none' }}
       >
         <div className="hero-text">
-          <motion.div className="hero-overline" variants={safeItemVariants}>
+          <m.div className="hero-overline" variants={safeItemVariants}>
             <svg className="overline-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             IEEE STUDENT BRANCH
-          </motion.div>
+          </m.div>
 
-          <motion.h1 className="hero-title" id="hero-title" variants={safeItemVariants}>
+          <m.h1 className="hero-title" id="hero-title" variants={safeItemVariants}>
             <span className="hero-title-accent">IEEE RIT-B</span>
-          </motion.h1>
+          </m.h1>
 
-          <motion.p className="hero-subtitle" variants={safeItemVariants}>
+          <m.p className="hero-subtitle" variants={safeItemVariants}>
             Welcome to the hub of innovation at Ramaiah Institute of Technology.
             We are a community of thinkers, builders, and leaders shaping the future of technology.
-          </motion.p>
+          </m.p>
 
-          <motion.p className="hero-subtitle-accent" variants={safeItemVariants}>
+          <m.p className="hero-subtitle-accent" variants={safeItemVariants}>
             Powered by students, driven by passion.
-          </motion.p>
+          </m.p>
 
-          <motion.div className="hero-stats" variants={safeItemVariants}>
+          <m.div className="hero-stats" variants={safeItemVariants}>
             {
               HeroStats.map((item, idx) => (
                 <Fragment key={item.label}>
@@ -168,9 +168,9 @@ export default function Hero() {
                 </Fragment>
               ))
             }
-          </motion.div>
+          </m.div>
 
-          <motion.div className="hero-cta" variants={safeItemVariants}>
+          <m.div className="hero-cta" variants={safeItemVariants}>
             <a href="#chapters" className="btn-primary em-field">
               <span>Explore Chapters</span>
               <svg className="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -178,9 +178,9 @@ export default function Hero() {
               </svg>
             </a>
             <a href="#about" className="btn-secondary">Learn More</a>
-          </motion.div>
+          </m.div>
         </div>
-      </motion.div>
+      </m.div>
     </section>
   );
 }
