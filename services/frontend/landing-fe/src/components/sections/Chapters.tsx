@@ -7,7 +7,7 @@
  * Uses @astranova/catalogues for chapter data.
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import ChapterIcon from '../ui/ChapterIcon';
@@ -60,14 +60,18 @@ export default function Chapters() {
   const safeContainerVariants = orchestrate(containerVariants);
   const safeItemVariants = orchestrate(itemVariants);
 
-  const chapters = IEEEChapters.map((ch) => ({
-    ...ch,
-    color: chapterColors[ch.acronym],
-  }));
-
-  const filteredChapters = chapters.filter(ch => activeTab === 'all' || ch.type === activeTab);
-  const techCount = chapters.filter(ch => ch.type === ChapterType.TECH).length;
-  const nonTechCount = chapters.filter(ch => ch.type === ChapterType.NON_TECH).length;
+  const { chapters, filteredChapters, techCount, nonTechCount } = useMemo(() => {
+    const mapped = IEEEChapters.map((ch) => ({
+      ...ch,
+      color: chapterColors[ch.acronym],
+    }));
+    return {
+      chapters: mapped,
+      filteredChapters: mapped.filter(ch => activeTab === 'all' || ch.type === activeTab),
+      techCount: mapped.filter(ch => ch.type === ChapterType.TECH).length,
+      nonTechCount: mapped.filter(ch => ch.type === ChapterType.NON_TECH).length,
+    };
+  }, [activeTab]);
 
   return (
     <section className="section section-padding section-bg-surface" id="chapters" aria-labelledby="chapters-heading">

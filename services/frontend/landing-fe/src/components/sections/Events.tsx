@@ -33,7 +33,7 @@ const EVENTS: Event[] = [
     title: 'IEEE Techfest 2026',
     date: '11th April 2026',
     description: 'A focused, high-octane showcase of engineering prowess featuring the ultimate stealth challenge, iSpy, and the arena-combat excitement of Robosoccer.',
-    image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1776687579/ispy_x_robosoccer_ennnnu.png',
+    image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/f_auto,q_auto,w_1200/v1776687579/ispy_x_robosoccer_ennnnu.png',
     category: 'Flagship Event',
     link: '#'
   },
@@ -42,7 +42,7 @@ const EVENTS: Event[] = [
     title: 'CIS Industry Conclave',
     date: '5th – 6th December 2025',
     description: 'A two-day initiative bridging the gap between academia and industry through talks, workshops, and mentoring across Software, Hardware, and General tracks.',
-    image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1770888778/industry_conclave_lzozpd.png',
+    image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/f_auto,q_auto,w_1200/v1770888778/industry_conclave_lzozpd.png',
     category: 'Conclave',
     link: '#'
   },
@@ -51,7 +51,7 @@ const EVENTS: Event[] = [
     title: 'RIT Techfest 2025',
     date: '28th – 29th March 2025',
     description: 'The flagship technical event by IEEE chapters celebrating innovation, collaboration, and creativity among students, educators, and professionals.',
-    image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/v1770888778/techfest_eomnmb.png',
+    image: 'https://res.cloudinary.com/ddrv7lqrg/image/upload/f_auto,q_auto,w_1200/v1770888778/techfest_eomnmb.png',
     category: 'Flagship Event',
     link: '#'
   }
@@ -162,7 +162,7 @@ export default function Events() {
                 >
                   {/* Background Image */}
                   <div className="slice-bg">
-                    <img src={event.image} alt="" className="slice-bg-img" loading="lazy" />
+                    <img src={event.image} alt="" className="slice-bg-img" loading="lazy" decoding="async" fetchPriority="low" width={1200} height={800} />
                     <div className="slice-overlay" />
                   </div>
 
