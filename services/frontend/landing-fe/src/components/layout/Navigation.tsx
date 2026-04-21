@@ -94,7 +94,15 @@ export default function Navigation({ showNavigation, warpComplete }: { showNavig
   }, [location.pathname]);
 
   useEffect(() => {
-    const sections = document.querySelectorAll('section[id]');
+    const sectionIds = navItems
+      .filter(item => item.isAnchor)
+      .map(item => item.href.replace('#', ''));
+      
+    if (sectionIds.length === 0) return;
+
+    const sections = Array.from(document.querySelectorAll('section[id]'))
+      .filter(section => sectionIds.includes(section.id));
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -108,7 +116,7 @@ export default function Navigation({ showNavigation, warpComplete }: { showNavig
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, [location.pathname]);
+  }, [navItems]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
