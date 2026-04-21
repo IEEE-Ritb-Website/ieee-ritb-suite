@@ -1,19 +1,26 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { useEffect, useState, useLayoutEffect } from 'react';
+import { useEffect, useState, useLayoutEffect, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Navigation from '../components/layout/Navigation';
 import Footer from '../components/layout/Footer';
 import MagneticCursor from '../components/effects/MagneticCursor';
 import BackToTop from '../components/ui/BackToTop';
-import EnhancedLoader from '../components/common/loading';
 import SEO from '../components/common/SEO';
 import { usePerformance } from '../contexts/PerformanceContext';
 import PerformanceMonitor from '../components/debug/PerformanceMonitor';
 import { ToastProvider } from '../contexts/ToastContext';
 import { initSmoothScroll, initParallax, initMagneticElements } from '../utils/smoothScroll';
-import HeroStarfield, { HeroFallback } from '../components/effects/HeroStarfield';
 import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import type { AnimationPhase } from '../components/effects/HeroStarfield';
+
+const EnhancedLoader = lazy(() => import('../components/common/loading'));
+const HeroStarfield = lazy(() => import('../components/effects/HeroStarfield'));
+
+const HeroFallback = () => (
+    <div className="hero-starfield hero-starfield-static">
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/20 via-black to-indigo-950/20" aria-hidden="true" />
+    </div>
+);
 
 // Session storage key for tracking animation state
 const ANIMATION_SEEN_KEY = 'ieee-ritb-animation-seen';
@@ -169,24 +176,28 @@ export default function MainLayout() {
             <SEO />
             {/* Only show loader if animation hasn't been seen yet */}
             {!animationAlreadySeen && (
-                <EnhancedLoader
-                    isLoading={isLoading}
-                    onLoaded={() => setIsLoading(false)}
-                />
+                <Suspense fallback={null}>
+                    <EnhancedLoader
+                        isLoading={isLoading}
+                        onLoaded={() => setIsLoading(false)}
+                    />
+                </Suspense>
             )}
 
             {/* Persistent WebGL Background */}
             <div className="fixed inset-0 z-[-1]" aria-hidden="true">
                 <ErrorBoundary fallback={<HeroFallback />}>
-                    <HeroStarfield
-                        isLoading={isLoading}
-                        initialPhase={animationAlreadySeen ? 'stopped' : 'warp'}
-                        onPhaseChange={(phase: AnimationPhase) => {
-                            if (phase === 'slowing') {
-                                setTimeout(handleWarpComplete, 300);
-                            }
-                        }}
-                    />
+                    <Suspense fallback={<HeroFallback />}>
+                        <HeroStarfield
+                            isLoading={isLoading}
+                            initialPhase={animationAlreadySeen ? 'stopped' : 'warp'}
+                            onPhaseChange={(phase: AnimationPhase) => {
+                                if (phase === 'slowing') {
+                                    setTimeout(handleWarpComplete, 300);
+                                }
+                            }}
+                        />
+                    </Suspense>
                 </ErrorBoundary>
             </div>
 
