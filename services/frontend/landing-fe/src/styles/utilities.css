@@ -5,11 +5,32 @@
 
 /* ===== Glass Panel ===== */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--color-border);
+  background: rgba(10, 11, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--duration-moderate) ease;
+}
+
+.glass-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+    rgba(77, 127, 255, 0.08) 0%, 
+    transparent 50%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-moderate) ease;
+}
+
+.glass-panel:hover::after {
+  opacity: 1;
 }
 
 /* ===== Loading Spinner ===== */
