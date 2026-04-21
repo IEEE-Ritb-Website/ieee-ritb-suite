@@ -112,6 +112,14 @@ export default function MainLayout() {
     const { tier } = usePerformance();
     const location = useLocation();
 
+    // Set performance tier attribute globally
+    useEffect(() => {
+        document.body.setAttribute('data-perf-tier', tier.toLowerCase());
+        return () => {
+            document.body.removeAttribute('data-perf-tier');
+        };
+    }, [tier]);
+
     // Scroll to top on route change
     useLayoutEffect(() => {
         // Reset scroll position for both native and Lenis smooth scroll

@@ -25,6 +25,7 @@ import "@fontsource/jetbrains-mono/latin-500.css"
 
 import './styles/fonts.css'
 import './index.css'
+import './styles/perf-overrides.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

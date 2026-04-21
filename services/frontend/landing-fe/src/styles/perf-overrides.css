@@ -1,0 +1,29 @@
+/* Kill the single biggest offender: blur compositing over moving WebGL */
+[data-perf-tier="low"] .glass-panel,
+[data-perf-tier="low"] .nav.scrolled,
+[data-perf-tier="low"] .contact-form-container,
+[data-perf-tier="low"] .backdrop-blur-xl,
+[data-perf-tier="low"] .backdrop-blur-lg,
+[data-perf-tier="low"] .backdrop-blur-md,
+[data-perf-tier="low"] .backdrop-blur-sm,
+[data-perf-tier="low"] .backdrop-blur {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: rgba(10, 12, 24, 0.95) !important; /* solid fallback preserves contrast */
+}
+
+/* Disable parallax transforms and magnetic drift on LOW */
+[data-perf-tier="low"] [data-parallax],
+[data-perf-tier="low"] .magnetic {
+  transform: none !important;
+}
+
+/* Collapse long-running animations on LOW (scanlines, grid scroll, em-pulses) */
+[data-perf-tier="low"] .grid-background,
+[data-perf-tier="low"] .scanlines,
+[data-perf-tier="low"] .em-pulse-ring,
+[data-perf-tier="low"] .animate-shimmer,
+[data-perf-tier="low"] .animate-slide,
+[data-perf-tier="low"] .hero-starfield-static > div {
+  animation: none !important;
+}

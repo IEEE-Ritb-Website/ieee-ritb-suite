@@ -1,6 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 
-export type PerformanceTier = 'ULTRA' | 'BALANCED' | 'PERFORMANCE';
+export type PerformanceTier = 'ULTRA' | 'BALANCED' | 'PERFORMANCE' | 'LOW';
+
+const getInitialTier = (): PerformanceTier => {
+  try {
+    const saved = localStorage.getItem('perfMode');
+    if (saved === 'low') return 'LOW';
+    if (typeof navigator !== 'undefined') {
+      const cores = navigator.hardwareConcurrency || 4;
+      // @ts-ignore
+      const memory = navigator.deviceMemory || 4; 
+      if (cores <= 4 && memory <= 4) return 'LOW';
+    }
+  } catch (e) {}
+  return 'ULTRA';
+};
 
 /**
  * usePerformanceMonitor Hook
@@ -10,7 +24,7 @@ export type PerformanceTier = 'ULTRA' | 'BALANCED' | 'PERFORMANCE';
  * @param includeFps Whether to update the fps state (causes re-renders every second)
  */
 export function usePerformanceMonitor(includeFps = true) {
-  const [tier, setTier] = useState<PerformanceTier>('ULTRA');
+  const [tier, setTier] = useState<PerformanceTier>(getInitialTier);
   const [fps, setFps] = useState(60);
   
   // Internal tracking
@@ -44,7 +58,9 @@ export function usePerformanceMonitor(includeFps = true) {
         const avgFps = fpsHistory.current.reduce((a, b) => a + b, 0) / fpsHistory.current.length;
 
         if (fpsHistory.current.length >= 30) { // Need at least 0.5s of data
-          if (avgFps < 40) {
+          if (avgFps < 30) {
+            setTier(prev => prev !== 'LOW' ? 'LOW' : prev);
+          } else if (avgFps < 40) {
             setTier(prev => prev !== 'PERFORMANCE' ? 'PERFORMANCE' : prev);
           } else if (avgFps < 52) {
             setTier(prev => prev !== 'BALANCED' ? 'BALANCED' : prev);

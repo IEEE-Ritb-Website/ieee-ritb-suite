@@ -7,7 +7,8 @@ export default function PerformanceMonitor() {
   const getStatusColor = () => {
     if (tier === 'ULTRA') return '#10b981'; // Emerald
     if (tier === 'BALANCED') return '#f59e0b'; // Amber
-    return '#ef4444'; // Crimson
+    if (tier === 'PERFORMANCE') return '#f43f5e'; // Rose
+    return '#9f1239'; // Crimson for LOW
   };
 
   return (
