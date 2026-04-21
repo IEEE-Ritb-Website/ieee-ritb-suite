@@ -92,6 +92,22 @@ export default function MainLayout() {
     const [isLoading, setIsLoading] = useState(!animationAlreadySeen);
     const [showNavigation, setShowNavigation] = useState(animationAlreadySeen);
     const [warpComplete, setWarpComplete] = useState(animationAlreadySeen);
+    const [isAppReady, setIsAppReady] = useState(false);
+
+    useEffect(() => {
+        let mounted = true;
+        const checkReadiness = async () => {
+            if (document.readyState !== 'complete') {
+                await new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
+            }
+            if ('fonts' in document) {
+                await document.fonts.ready;
+            }
+            if (mounted) setIsAppReady(true);
+        };
+        checkReadiness();
+        return () => { mounted = false; };
+    }, []);
 
     const { tier } = usePerformance();
     const location = useLocation();
@@ -179,6 +195,7 @@ export default function MainLayout() {
                 <Suspense fallback={null}>
                     <EnhancedLoader
                         isLoading={isLoading}
+                        isReady={isAppReady}
                         onLoaded={() => setIsLoading(false)}
                     />
                 </Suspense>
