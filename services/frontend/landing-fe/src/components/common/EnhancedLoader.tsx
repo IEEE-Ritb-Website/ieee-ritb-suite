@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import GlitchText from '../effects/GlitchText';
 import TerminalText from '../effects/TerminalText';
 import { useMotion } from '@/hooks/useMotion';
@@ -92,6 +92,9 @@ export const EnhancedLoader = ({ isLoading, isReady = true, onLoaded }: Enhanced
   const [allMessages, setAllMessages] = useState<LoadingMessage[]>([]);
   const { shouldReduceMotion } = useMotion();
 
+  const totalElapsed = useRef(0);
+  const stageIndex = useRef(0);
+
   useEffect(() => {
     if (shouldReduceMotion) {
       setProgress(100);
@@ -99,25 +102,25 @@ export const EnhancedLoader = ({ isLoading, isReady = true, onLoaded }: Enhanced
       return;
     }
 
-    let totalElapsed = 0;
-    let stageIndex = 0;
+    totalElapsed.current = 0;
+    stageIndex.current = 0;
 
     const advanceStage = () => {
-      if (stageIndex >= LOADING_STAGES.length) {
+      if (stageIndex.current >= LOADING_STAGES.length) {
         setIsComplete(true);
         return;
       }
 
-      const stage = LOADING_STAGES[stageIndex];
+      const stage = LOADING_STAGES[stageIndex.current];
       const [startProgress, endProgress] = stage.progress;
       const progressRange = endProgress - startProgress;
 
-      setCurrentStage(stageIndex);
+      setCurrentStage(stageIndex.current);
 
       // Add stage messages to terminal
       const stageMessages = stage.messages.map(msg => ({
         ...msg,
-        delay: totalElapsed + (msg.delay || 0),
+        delay: totalElapsed.current + (msg.delay || 0),
       }));
 
       setAllMessages(prev => [...prev, ...stageMessages]);
@@ -132,8 +135,8 @@ export const EnhancedLoader = ({ isLoading, isReady = true, onLoaded }: Enhanced
 
         if (stageElapsed >= stage.duration) {
           clearInterval(progressInterval);
-          stageIndex++;
-          totalElapsed += stage.duration;
+          stageIndex.current++;
+          totalElapsed.current += stage.duration;
           advanceStage();
         }
       }, 16); // ~60fps
@@ -141,7 +144,10 @@ export const EnhancedLoader = ({ isLoading, isReady = true, onLoaded }: Enhanced
       return () => clearInterval(progressInterval);
     };
 
-    advanceStage();
+    const cleanup = advanceStage();
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [shouldReduceMotion]);
 
   useEffect(() => {

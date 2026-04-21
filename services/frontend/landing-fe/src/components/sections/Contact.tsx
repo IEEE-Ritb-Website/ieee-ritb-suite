@@ -242,7 +242,7 @@ export default function Contact() {
     document.head.appendChild(script);
 
     return () => {
-      document.head.removeChild(script);
+      script.parentNode?.removeChild(script);
       delete window.onTurnstileLoad;
     };
   }, []);
