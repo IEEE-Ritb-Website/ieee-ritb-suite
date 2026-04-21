@@ -13,6 +13,14 @@ import { m, AnimatePresence, type Variants } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import { useMotion } from '@/hooks/useMotion';
+import { 
+  EmailIcon, 
+  LinkedInIcon, 
+  LocationIcon, 
+  InstagramIcon, 
+  SendIcon, 
+  CheckIcon 
+} from '../ui/icons';
 import '@/types/turnstile.d.ts';
 import './Contact.css';
 
@@ -65,9 +73,7 @@ function ChannelCard({ item, safeItemVariants }: { item: ChannelItem, safeItemVa
       <div className="bracket bracket-bl" />
       <div className="bracket bracket-br" />
       <div className="channel-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          {item.icon}
-        </svg>
+        {item.icon}
       </div>
       <div className="channel-info">
         <span className="channel-label">{item.label}</span>
@@ -135,11 +141,7 @@ function TerminalSeal() {
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ repeat: Infinity, duration: 4 }}
       >
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          <path d="M12 8v4" />
-          <path d="M12 16h.01" />
-        </svg>
+        <CheckIcon className="w-12 h-12" />
       </m.div>
       <div className="seal-text" style={{ top: -20 }}>Secure</div>
       <div className="seal-text" style={{ bottom: -20 }}>Verified</div>
@@ -176,21 +178,7 @@ function SingularityButton({ state, isValid }: SingularityButtonProps) {
             whileTap={isValid && !shouldReduceMotion ? { scale: 0.95 } : {}}
           >
             <span className="btn-text">Send Message</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ marginLeft: 8 }}
-            >
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
+            <SendIcon style={{ marginLeft: 8 }} />
           </m.button>
         )}
       </AnimatePresence>
@@ -425,36 +413,25 @@ export default function Contact() {
                 label: 'Email Us',
                 value: 'ieeeritb@gmail.com',
                 href: 'mailto:ieeeritb@gmail.com',
-                icon: <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22,6 12,13 2,6" />
+                icon: <EmailIcon />
               },
               {
                 label: 'LinkedIn',
                 value: 'IEEE RIT-B',
                 href: 'https://linkedin.com/company/ieee-rit',
-                icon: <>
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                  <rect x="2" y="9" width="4" height="12" />
-                  <circle cx="4" cy="4" r="2" />
-                </>
+                icon: <LinkedInIcon />
               },
               {
                 label: 'Visit',
                 value: 'MSRIT Post, M S R Nagar, Mathikere, Bengaluru, Karnataka 560054',
                 href: 'https://maps.app.goo.gl/pBmSqVvwk5fZBmbz6',
-                icon: <>
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </>
+                icon: <LocationIcon />
               },
               {
                 label: 'Instagram',
                 value: '@ieeeritb',
                 href: 'https://instagram.com/ieeeritb',
-                icon: <>
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                </>
+                icon: <InstagramIcon />
               }
             ].map((item, i) => (
               <ChannelCard key={i} item={item} safeItemVariants={safeItemVariants} />

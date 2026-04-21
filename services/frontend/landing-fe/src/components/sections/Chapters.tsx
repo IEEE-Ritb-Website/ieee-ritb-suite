@@ -12,16 +12,10 @@ import { Link } from 'react-router-dom';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import ChapterIcon from '../ui/ChapterIcon';
 import './Chapters.css';
-import { Chapters as IEEEChapters, ChapterType, type IChapterAcronyms } from "@astranova/catalogues";
+import { Chapters as IEEEChapters, ChapterType } from "@astranova/catalogues";
 import { m, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
 
-const chapterColors: Record<IChapterAcronyms, string> = {
-  CS: '#4d7fff', RAS: '#D22B2B', CIS: '#FFEA00', SC: '#ADF802', WIE: '#d946ef',
-  MTTS: '#f97316', PES: '#10b981', SPS: '#8b5cf6', ComSoc: '#f59e0b', APS: '#ef4444',
-  EMBS: '#6366f1', IX: '#0FFF50', Web: '#D22B2B', CRTY: '#FFEA00', COVR: '#ADF802',
-  DIGI: '#d946ef', PRSP: '#6366f1', TEMS: '#00ccff',
-};
 
 type TabType = 'all' | ChapterType.TECH | ChapterType.NON_TECH;
 
@@ -61,15 +55,11 @@ export default function Chapters() {
   const safeItemVariants = orchestrate(itemVariants);
 
   const { chapters, filteredChapters, techCount, nonTechCount } = useMemo(() => {
-    const mapped = IEEEChapters.map((ch) => ({
-      ...ch,
-      color: chapterColors[ch.acronym],
-    }));
     return {
-      chapters: mapped,
-      filteredChapters: mapped.filter(ch => activeTab === 'all' || ch.type === activeTab),
-      techCount: mapped.filter(ch => ch.type === ChapterType.TECH).length,
-      nonTechCount: mapped.filter(ch => ch.type === ChapterType.NON_TECH).length,
+      chapters: IEEEChapters,
+      filteredChapters: IEEEChapters.filter(ch => activeTab === 'all' || ch.type === activeTab),
+      techCount: IEEEChapters.filter(ch => ch.type === ChapterType.TECH).length,
+      nonTechCount: IEEEChapters.filter(ch => ch.type === ChapterType.NON_TECH).length,
     };
   }, [activeTab]);
 
