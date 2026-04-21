@@ -12,6 +12,7 @@ interface SEOProps {
   keywords?: string[];
   image?: string;
   url?: string;
+  jsonLd?: Record<string, any>;
 }
 
 export default function SEO({
@@ -20,6 +21,7 @@ export default function SEO({
   keywords = ['IEEE', 'RITB', 'RIT Bangalore', 'Student Branch', 'Technology', 'Engineering', 'Innovation'],
   image = '/ieee_icon.png',
   url = 'https://ieee.ritb.in',
+  jsonLd,
 }: SEOProps) {
   const siteTitle = title.includes('IEEE RITB') ? title : `${title} | IEEE RITB`;
   const currentUrl = typeof window !== 'undefined'
@@ -44,6 +46,11 @@ export default function SEO({
 
       {/* Theme Color */}
       <meta name="theme-color" content="#05060f" />
+
+      {/* JSON-LD */}
+      {jsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      )}
     </>
   );
 }

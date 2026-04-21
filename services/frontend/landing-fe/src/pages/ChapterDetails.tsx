@@ -6,6 +6,7 @@ import GlowText from '../components/effects/GlowText';
 import type { IChapter, IChapterAcronyms } from '@astranova/catalogues';
 import type { LayoutContext } from '../layouts/MainLayout';
 import { RECRUITMENT_CONFIG, isRecruitmentOpen } from '@/data/recruitment';
+import SEO from '../components/common/SEO';
 import './ChapterDetails.css';
 
 // Chapter colors from the main Chapters section
@@ -79,8 +80,11 @@ export default function ChapterDetails() {
 
     return (
         <>
-            <title>{chapter.name} | IEEE RITB</title>
-            <meta name="description" content={chapter.shortDescription} />
+            <SEO 
+                title={chapter.name} 
+                description={chapter.shortDescription} 
+                url={`https://ieee.ritb.in/chapters/${chapter.acronym.toLowerCase()}`}
+            />
 
             <motion.div
                 className="chapter-details"

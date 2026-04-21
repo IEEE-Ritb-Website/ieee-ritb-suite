@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useMotion } from '../hooks/useMotion';
 import type { IEventDetails } from '../data/mockData';
 import type { LayoutContext } from '../layouts/MainLayout';
+import SEO from '../components/common/SEO';
 import './EventDetails.css';
 
 /**
@@ -68,8 +69,28 @@ export default function EventDetails() {
 
     return (
         <>
-            <title>{event.title} | IEEE RITB</title>
-            <meta name="description" content={event.description} />
+            <SEO 
+                title={event.title} 
+                description={event.description} 
+                image={event.image}
+                url={`https://ieee.ritb.in/events/${event.id}`}
+                jsonLd={{
+                    "@context": "https://schema.org",
+                    "@type": "Event",
+                    "name": event.title,
+                    "description": event.description,
+                    "image": event.image,
+                    "startDate": event.date,
+                    "location": {
+                        "@type": "Place",
+                        "name": event.venue || "RIT Bangalore",
+                        "address": {
+                            "@type": "PostalAddress",
+                            "addressLocality": "Bangalore"
+                        }
+                    }
+                }}
+            />
 
             <motion.div
                 className="event-details"
