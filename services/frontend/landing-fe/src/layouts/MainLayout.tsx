@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { useEffect, useState, useLayoutEffect, lazy, Suspense } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { AnimatePresence, m } from 'framer-motion';
 import Navigation from '../components/layout/Navigation';
 import Footer from '../components/layout/Footer';
@@ -120,17 +120,7 @@ export default function MainLayout() {
         };
     }, [tier]);
 
-    // Scroll to top on route change
-    useLayoutEffect(() => {
-        // Reset scroll position for both native and Lenis smooth scroll
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
 
-        // Also reset any wrapper that Lenis might be using
-        const wrapper = document.querySelector('[data-lenis-wrapper]') as HTMLElement;
-        if (wrapper) wrapper.scrollTop = 0;
-    }, [location.pathname]);
 
     // Scroll Reset Logic: Land on Hero every refresh
     useEffect(() => {
@@ -156,7 +146,7 @@ export default function MainLayout() {
     useEffect(() => {
         const lenis = initSmoothScroll();
         const parallaxCleanup = setTimeout(() => {
-            initParallax();
+            initParallax(lenis);
         }, 100);
         const magneticCleanup = setTimeout(() => {
             initMagneticElements();

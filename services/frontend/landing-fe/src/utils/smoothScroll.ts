@@ -28,25 +28,34 @@ export function initSmoothScroll() {
 
   requestAnimationFrame(raf);
 
-  // Handle anchor links with Lenis
-  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener('click', (e) => {
+  const handleAnchorClick = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const anchor = target.closest('a[href^="#"]') as HTMLAnchorElement;
+    if (!anchor) return;
+    
+    const href = anchor.getAttribute('href');
+    if (!href || href === '#') return;
+
+    const targetId = href.substring(1);
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
       e.preventDefault();
-      const href = (anchor as HTMLAnchorElement).getAttribute('href');
-      if (!href || href === '#') return;
+      lenis.scrollTo(targetElement, {
+        offset: -80, // Offset for fixed nav
+        duration: 1.5,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
+    }
+  };
 
-      const targetId = href.substring(1);
-      const targetElement = document.getElementById(targetId);
+  document.addEventListener('click', handleAnchorClick);
 
-      if (targetElement) {
-        lenis.scrollTo(targetElement, {
-          offset: -80, // Offset for fixed nav
-          duration: 1.5,
-          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        });
-      }
-    });
-  });
+  const originalDestroy = lenis.destroy.bind(lenis);
+  lenis.destroy = () => {
+    document.removeEventListener('click', handleAnchorClick);
+    originalDestroy();
+  };
 
   return lenis;
 }
@@ -55,61 +64,76 @@ export function initSmoothScroll() {
 /**
  * Parallax scroll effect for background elements
  */
-export function initParallax() {
+export function initParallax(lenis?: any) {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (prefersReducedMotion) return;
+  if (prefersReducedMotion) return () => {};
 
   // Check if mobile
   const isMobile = window.innerWidth < 768;
-  if (isMobile) return;
+  if (isMobile) return () => {};
 
-  function updateParallaxElements() {
-    const parallaxElements = document.querySelectorAll('[data-parallax]');
-    const scrolled = window.pageYOffset;
+  let parallaxElements = Array.from(document.querySelectorAll('[data-parallax]')).map((el) => {
+    const htmlElement = el as HTMLElement;
+    return {
+      element: htmlElement,
+      speed: parseFloat(htmlElement.dataset.parallax || '0.5')
+    };
+  });
 
-    parallaxElements.forEach((element) => {
-      const htmlElement = element as HTMLElement;
-      const speed = parseFloat(htmlElement.dataset.parallax || '0.5');
-
-      // Calculate parallax offset based on scroll position
+  function updateParallaxElements(scrolled: number) {
+    parallaxElements.forEach(({ element, speed }) => {
       const yPos = -(scrolled * speed);
-
-      htmlElement.style.transform = `translate3d(0, ${yPos}px, 0)`;
+      element.style.transform = `translate3d(0, ${yPos}px, 0)`;
     });
   }
 
   // Initial call
-  updateParallaxElements();
+  updateParallaxElements(window.scrollY);
 
-  // Throttle scroll events with RAF
-  let ticking = false;
-  const handleScroll = () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        updateParallaxElements();
-        ticking = false;
-      });
-      ticking = true;
-    }
-  };
+  let cleanupScroll: () => void;
 
-  window.addEventListener('scroll', handleScroll, { passive: true });
+  if (lenis) {
+    const onLenisScroll = (e: any) => updateParallaxElements(e.animatedScroll || e.scroll);
+    lenis.on('scroll', onLenisScroll);
+    cleanupScroll = () => lenis.off('scroll', onLenisScroll);
+  } else {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateParallaxElements(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    cleanupScroll = () => window.removeEventListener('scroll', handleScroll);
+  }
 
-  // Re-initialize on window resize
+  // Re-initialize on window resize to pick up new elements
   let resizeTimer: number;
-  window.addEventListener('resize', () => {
+  const onResize = () => {
     clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(() => {
       const isMobileNow = window.innerWidth < 768;
       if (!isMobileNow) {
-        updateParallaxElements();
+        parallaxElements = Array.from(document.querySelectorAll('[data-parallax]')).map((el) => {
+          const htmlElement = el as HTMLElement;
+          return {
+            element: htmlElement,
+            speed: parseFloat(htmlElement.dataset.parallax || '0.5')
+          };
+        });
+        updateParallaxElements(window.scrollY);
       }
     }, 250);
-  });
+  };
+  window.addEventListener('resize', onResize);
 
-  // Cleanup function
   return () => {
-    window.removeEventListener('scroll', handleScroll);
+    cleanupScroll();
+    window.removeEventListener('resize', onResize);
   };
 }
 
