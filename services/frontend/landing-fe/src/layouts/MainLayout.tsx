@@ -7,7 +7,7 @@ import MagneticCursor from '../components/effects/MagneticCursor';
 import BackToTop from '../components/ui/BackToTop';
 import EnhancedLoader from '../components/common/loading';
 import SEO from '../components/common/SEO';
-import { usePerformanceMonitor } from '../hooks/usePerformanceMonitor';
+import { usePerformance } from '../contexts/PerformanceContext';
 import PerformanceMonitor from '../components/debug/PerformanceMonitor';
 import { ToastProvider } from '../contexts/ToastContext';
 import { initSmoothScroll, initParallax, initMagneticElements } from '../utils/smoothScroll';
@@ -86,7 +86,7 @@ export default function MainLayout() {
     const [showNavigation, setShowNavigation] = useState(animationAlreadySeen);
     const [warpComplete, setWarpComplete] = useState(animationAlreadySeen);
 
-    const { tier } = usePerformanceMonitor(false);
+    const { tier } = usePerformance();
     const location = useLocation();
 
     // Scroll to top on route change

@@ -12,6 +12,7 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { GlobalLoader } from "@/components/common/GlobalLoader"
+import { PerformanceProvider } from "./contexts/PerformanceContext"
 
 // Fontsource managed fonts
 import "@fontsource/inter/latin-400.css"
@@ -26,8 +27,10 @@ import './index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-      <Suspense fallback={<GlobalLoader />}>
-        <RouterProvider router={router} />
-      </Suspense>
+      <PerformanceProvider>
+        <Suspense fallback={<GlobalLoader />}>
+          <RouterProvider router={router} />
+        </Suspense>
+      </PerformanceProvider>
   </StrictMode>,
 )

@@ -17,7 +17,8 @@ import ShootingStars from './ShootingStars';
 import { getOptimalStarCount, prefersReducedMotion } from '@/utils/deviceDetection';
 import { hasWebGLSupport } from '@/utils/webglSupport';
 import { throttle } from '@/utils/throttle';
-import { usePerformanceMonitor, type PerformanceTier } from '@/hooks/usePerformanceMonitor';
+import { type PerformanceTier } from '@/hooks/usePerformanceMonitor';
+import { usePerformance } from '@/contexts/PerformanceContext';
 import { useInView } from 'framer-motion';
 import './HeroStarfield.css';
 
@@ -293,7 +294,7 @@ export function HeroFallback() {
 export default function HeroStarfield({ isLoading, onPhaseChange, initialPhase }: HeroStarfieldProps) {
   const hasReducedMotion = prefersReducedMotion();
   const hasWebGL = hasWebGLSupport();
-  const { tier } = usePerformanceMonitor(false);
+  const { tier } = usePerformance();
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { margin: "200px" });
 

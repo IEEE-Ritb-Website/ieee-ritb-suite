@@ -1,8 +1,8 @@
-import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
+import { usePerformance } from '@/contexts/PerformanceContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function PerformanceMonitor() {
-  const { fps, tier } = usePerformanceMonitor();
+  const { fps, tier } = usePerformance();
 
   const getStatusColor = () => {
     if (tier === 'ULTRA') return '#10b981'; // Emerald
