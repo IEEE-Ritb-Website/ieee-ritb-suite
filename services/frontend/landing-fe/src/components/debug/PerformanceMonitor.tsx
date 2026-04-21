@@ -4,6 +4,10 @@ import { m, AnimatePresence } from 'framer-motion';
 export default function PerformanceMonitor() {
   const { fps, tier } = usePerformance();
 
+  if (!import.meta.env.DEV && new URLSearchParams(window.location.search).get('perf') !== '1') {
+    return null;
+  }
+
   const getStatusColor = () => {
     if (tier === 'ULTRA') return '#10b981'; // Emerald
     if (tier === 'BALANCED') return '#f59e0b'; // Amber

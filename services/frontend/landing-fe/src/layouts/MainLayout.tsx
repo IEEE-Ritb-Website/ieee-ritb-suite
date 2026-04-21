@@ -53,8 +53,7 @@ function isPageReload(): boolean {
         if (navEntries.length > 0) {
             return navEntries[0].type === 'reload';
         }
-        // Fallback for older browsers
-        return performance.navigation?.type === 1;
+        return false;
     } catch {
         return false;
     }
