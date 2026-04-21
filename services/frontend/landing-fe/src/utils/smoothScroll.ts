@@ -120,6 +120,7 @@ export function initParallax() {
 export function initMagneticElements() {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReducedMotion) return;
+  if (document.body.getAttribute('data-perf-tier') === 'low') return;
 
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   if (isTouchDevice) return;

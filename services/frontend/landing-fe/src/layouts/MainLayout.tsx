@@ -176,8 +176,8 @@ export default function MainLayout() {
         markAnimationSeen();
     };
 
-    // Page transition variants - instant if animation already seen
-    const pageVariants = animationAlreadySeen ? {
+    // Page transition variants - instant if animation already seen or on LOW tier
+    const pageVariants = (animationAlreadySeen || tier === 'LOW') ? {
         initial: { opacity: 1, y: 0 },
         animate: { opacity: 1, y: 0, transition: { duration: 0 } },
         exit: { opacity: 1, y: 0, transition: { duration: 0 } }

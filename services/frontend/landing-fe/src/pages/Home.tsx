@@ -2,14 +2,28 @@ import { m, type Variants } from 'framer-motion';
 import { useOutletContext } from 'react-router-dom';
 import { useMotion } from '../hooks/useMotion';
 import type { LayoutContext } from '../layouts/MainLayout';
+import { lazy, Suspense, useRef } from 'react';
+import type { ReactNode } from 'react';
+import { useInView } from 'framer-motion';
 
 // Sections
 import Hero from '../components/sections/Hero';
 import About from '../components/sections/About';
 import Features from '../components/sections/Features';
-import Events from '../components/sections/Events';
-import Chapters from '../components/sections/Chapters';
-import Contact from '../components/sections/Contact';
+
+const Events = lazy(() => import('../components/sections/Events'));
+const Chapters = lazy(() => import('../components/sections/Chapters'));
+const Contact = lazy(() => import('../components/sections/Contact'));
+
+function LazySection({ children, height }: { children: ReactNode, height: string }) {
+    const ref = useRef(null);
+    const isInView = useInView(ref, { once: true, margin: "600px 0px" });
+    return (
+        <div ref={ref} style={{ minHeight: height }}>
+            {isInView && <Suspense fallback={null}>{children}</Suspense>}
+        </div>
+    );
+}
 
 /**
  * Home Page
@@ -45,9 +59,9 @@ export default function Home() {
             <Hero />
             <About />
             <Features />
-            <Events />
-            <Chapters />
-            <Contact />
+            <LazySection height="800px"><Events /></LazySection>
+            <LazySection height="800px"><Chapters /></LazySection>
+            <LazySection height="600px"><Contact /></LazySection>
         </m.div>
     );
 }
