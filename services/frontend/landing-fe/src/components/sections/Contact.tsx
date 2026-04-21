@@ -9,7 +9,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { m, AnimatePresence, type Variants } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import { useMotion } from '@/hooks/useMotion';
@@ -46,7 +46,7 @@ function ChannelCard({ item, safeItemVariants }: { item: ChannelItem, safeItemVa
     card.style.setProperty('--mouse-y', `${y}%`);
   };
 
-  const MotionTag = item.href ? motion.a : motion.div;
+  const MotionTag = item.href ? m.a : m.div;
 
   return (
     <MotionTag
@@ -124,13 +124,13 @@ function TerminalConsole() {
 
 function TerminalSeal() {
   return (
-    <motion.div
+    <m.div
       className="terminal-seal"
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 100 }}
     >
-      <motion.div
+      <m.div
         className="seal-inner"
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ repeat: Infinity, duration: 4 }}
@@ -140,10 +140,10 @@ function TerminalSeal() {
           <path d="M12 8v4" />
           <path d="M12 16h.01" />
         </svg>
-      </motion.div>
+      </m.div>
       <div className="seal-text" style={{ top: -20 }}>Secure</div>
       <div className="seal-text" style={{ bottom: -20 }}>Verified</div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -161,7 +161,7 @@ function SingularityButton({ state, isValid }: SingularityButtonProps) {
     <div className="singularity-btn-container">
       <AnimatePresence mode="wait">
         {state === 'idle' && (
-          <motion.button
+          <m.button
             key="idle"
             type="submit"
             className={`btn-primary magnetic ${isValid ? 'ignited' : 'dormant'}`}
@@ -191,7 +191,7 @@ function SingularityButton({ state, isValid }: SingularityButtonProps) {
               <line x1="22" y1="2" x2="11" y2="13" />
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </svg>
-          </motion.button>
+          </m.button>
         )}
       </AnimatePresence>
     </div>
@@ -393,25 +393,25 @@ export default function Contact() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div
+        <m.div
           className="section-header"
           variants={safeContainerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
         >
-          <motion.span className="section-overline" variants={safeItemVariants}>Contact Us</motion.span>
-          <motion.h2 id="contact-heading" className="section-heading" variants={safeItemVariants}>
+          <m.span className="section-overline" variants={safeItemVariants}>Contact Us</m.span>
+          <m.h2 id="contact-heading" className="section-heading" variants={safeItemVariants}>
             Get in
             <span className="section-heading-accent"> Touch</span>
-          </motion.h2>
-          <motion.p className="section-description" variants={safeItemVariants}>
+          </m.h2>
+          <m.p className="section-description" variants={safeItemVariants}>
             Whether you're a student looking to join, a company interested in partnership,
             or just curious about our work, we're ready to connect.
-          </motion.p>
-        </motion.div>
+          </m.p>
+        </m.div>
 
-        <motion.div
+        <m.div
           className="contact-grid"
           variants={safeContainerVariants}
           initial="hidden"
@@ -419,7 +419,7 @@ export default function Contact() {
           viewport={{ once: true, margin: "-100px" }}
         >
           {/* Contact Channels */}
-          <motion.div className="contact-channels" variants={safeContainerVariants}>
+          <m.div className="contact-channels" variants={safeContainerVariants}>
             {[
               {
                 label: 'Email Us',
@@ -459,11 +459,11 @@ export default function Contact() {
             ].map((item, i) => (
               <ChannelCard key={i} item={item} safeItemVariants={safeItemVariants} />
             ))}
-          </motion.div>
+          </m.div>
 
           {/* Contact Form Terminal */}
-          <motion.div variants={safeItemVariants} className="w-full">
-            <motion.div
+          <m.div variants={safeItemVariants} className="w-full">
+            <m.div
               ref={containerRef}
               className="contact-form-container glass-panel"
               onMouseMove={handleMouseMove}
@@ -476,7 +476,7 @@ export default function Contact() {
 
               <AnimatePresence mode="wait">
                 {formState === 'idle' && (
-                  <motion.form
+                  <m.form
                     ref={formRef}
                     key="form-idle"
                     className="contact-form"
@@ -525,22 +525,22 @@ export default function Contact() {
                     )}
 
                     <SingularityButton state={formState} isValid={isFormValid && (!TURNSTILE_SITE_KEY || !!turnstileToken)} />
-                  </motion.form>
+                  </m.form>
                 )}
 
                 {formState === 'submitting' && (
-                  <motion.div
+                  <m.div
                     key="form-submitting"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                   >
                     <TerminalConsole />
-                  </motion.div>
+                  </m.div>
                 )}
 
                 {formState === 'success' && (
-                  <motion.div
+                  <m.div
                     key="form-success"
                     className="transmission-success"
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -552,20 +552,20 @@ export default function Contact() {
                     <p className="success-desc">
                       Your data has been successfully routed to the IEEE RITB core server. A response will be dispatched shortly.
                     </p>
-                    <motion.button
+                    <m.button
                       className="terminal-return"
                       onClick={resetForm}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       RETURN TO TERMINAL
-                    </motion.button>
-                  </motion.div>
+                    </m.button>
+                  </m.div>
                 )}
               </AnimatePresence>
-            </motion.div>
-          </motion.div>
-        </motion.div>
+            </m.div>
+          </m.div>
+        </m.div>
       </div>
     </section>
   );

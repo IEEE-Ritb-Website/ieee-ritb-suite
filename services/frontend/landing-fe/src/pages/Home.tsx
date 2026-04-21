@@ -1,4 +1,4 @@
-import { motion, type Variants } from 'framer-motion';
+import { m, type Variants } from 'framer-motion';
 import { useOutletContext } from 'react-router-dom';
 import { useMotion } from '../hooks/useMotion';
 import type { LayoutContext } from '../layouts/MainLayout';
@@ -37,7 +37,7 @@ export default function Home() {
     const safeContainerVariants = orchestrate(containerVariants);
 
     return (
-        <motion.div
+        <m.div
             variants={safeContainerVariants}
             initial={warpComplete ? "visible" : "hidden"}
             animate={warpComplete ? "visible" : "hidden"}
@@ -48,6 +48,6 @@ export default function Home() {
             <Events />
             <Chapters />
             <Contact />
-        </motion.div>
+        </m.div>
     );
 }

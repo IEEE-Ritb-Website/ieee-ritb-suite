@@ -10,7 +10,7 @@ import { useRef } from 'react';
 import { Chapters } from '@astranova/catalogues';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './Features.css';
-import { motion, type Variants } from 'framer-motion';
+import { m, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
 
 // --- Types ---
@@ -51,7 +51,7 @@ function FeatureCard({ feature, safeItemVariants }: { feature: Feature, safeItem
   };
 
   return (
-    <motion.div variants={safeItemVariants}>
+    <m.div variants={safeItemVariants}>
       <article
         ref={cardRef}
         className="feature-card holographic"
@@ -64,7 +64,7 @@ function FeatureCard({ feature, safeItemVariants }: { feature: Feature, safeItem
         <h3 className="feature-title">{feature.title}</h3>
         <p className="feature-description">{feature.description}</p>
       </article>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -179,7 +179,7 @@ export default function Features() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div
+        <m.div
           className="section-header"
           variants={safeHeaderVariants}
           initial="hidden"
@@ -195,9 +195,9 @@ export default function Features() {
             Join a vibrant community of innovators, researchers, and technology enthusiasts
             working together to advance technology for humanity.
           </p>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           className="grid-features"
           variants={safeContainerVariants}
           initial="hidden"
@@ -211,7 +211,7 @@ export default function Features() {
               safeItemVariants={safeItemVariants}
             />
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

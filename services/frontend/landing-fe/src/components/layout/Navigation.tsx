@@ -9,7 +9,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, useScroll, useSpring } from 'framer-motion';
+import { m, useScroll, useSpring } from 'framer-motion';
 import AnnouncementBanner from '../common/AnnouncementBanner';
 import './Navigation.css';
 
@@ -220,7 +220,7 @@ export default function Navigation({ showNavigation, warpComplete }: { showNavig
           </ul>
         </div>
 
-        <motion.div
+        <m.div
           className="nav-progress-bar"
           style={{ scaleX }}
         />

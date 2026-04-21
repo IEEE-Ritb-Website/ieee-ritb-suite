@@ -10,7 +10,7 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import './About.css';
 import { Chapters, ChapterType } from '@astranova/catalogues';
-import { motion, type Variants } from 'framer-motion';
+import { m, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
 
 // --- Types ---
@@ -39,7 +39,7 @@ function StatCard({ s, safeItemRightVariants }: { s: StatItemData, safeItemRight
   };
 
   return (
-    <motion.div
+    <m.div
       ref={cardRef}
       className="stat-card holographic"
       variants={safeItemRightVariants}
@@ -49,7 +49,7 @@ function StatCard({ s, safeItemRightVariants }: { s: StatItemData, safeItemRight
       <AnimatedNumber end={s.end} suffix={s.suffix} />
       <div className="stat-label">{s.label}</div>
       <div className="stat-description">{s.desc}</div>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -159,7 +159,7 @@ export default function About() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div
+        <m.div
           className="about-layout"
           variants={safeContainerVariants}
           initial="hidden"
@@ -168,12 +168,12 @@ export default function About() {
         >
           {/* ===== INTRO BLOCK ===== */}
           <div className="about-intro">
-            <motion.span className="section-overline" variants={safeItemVariants}>About IEEE RITB</motion.span>
-            <motion.h2 id="about-heading" className="section-heading" variants={safeItemVariants}>
+            <m.span className="section-overline" variants={safeItemVariants}>About IEEE RITB</m.span>
+            <m.h2 id="about-heading" className="section-heading" variants={safeItemVariants}>
               Leading the Future of
               <span className="section-heading-accent"> Technology</span>
-            </motion.h2>
-            <motion.div className="about-description" variants={safeItemVariants}>
+            </m.h2>
+            <m.div className="about-description" variants={safeItemVariants}>
               <p>
                 IEEE RIT-B is one of the premier student branches in the IEEE Bangalore Section,
                 fostering innovation and technical excellence since our inception. We are part of the world's largest
@@ -184,11 +184,11 @@ export default function About() {
                 together on cutting-edge projects, organize impactful events, and create
                 opportunities for growth in emerging technologies.
               </p>
-            </motion.div>
+            </m.div>
           </div>
 
           {/* ===== FULL-WIDTH STATS ROW ===== */}
-          <motion.div className="about-stats" variants={safeContainerVariants}>
+          <m.div className="about-stats" variants={safeContainerVariants}>
             <div className="stats-grid">
               {[
                 { end: 300, suffix: '+', label: 'Active Members', desc: 'Passionate students driving innovation' },
@@ -199,18 +199,18 @@ export default function About() {
               ))}
             </div>
 
-            <motion.div className="stats-visual" aria-hidden="true" variants={safeStatCardVariants}>
+            <m.div className="stats-visual" aria-hidden="true" variants={safeStatCardVariants}>
               <div className="data-flow-container">
                 <div className="data-particle" style={{ animationDelay: '0s' }} />
                 <div className="data-particle" style={{ animationDelay: '0.5s' }} />
                 <div className="data-particle" style={{ animationDelay: '1s' }} />
                 <div className="data-particle" style={{ animationDelay: '1.5s' }} />
               </div>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
 
           {/* ===== HIGHLIGHTS ===== */}
-          <motion.div className="about-highlights" variants={safeContainerVariants}>
+          <m.div className="about-highlights" variants={safeContainerVariants}>
             {[
               {
                 title: 'Student-Led Innovation',
@@ -228,7 +228,7 @@ export default function About() {
                 icon: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>
               }
             ].map((h, i) => (
-              <motion.div
+              <m.div
                 key={i}
                 className="highlight-item"
                 variants={safeItemVariants}
@@ -243,10 +243,10 @@ export default function About() {
                   <h3 className="highlight-title">{h.title}</h3>
                   <p className="highlight-text">{h.text}</p>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </div>
     </section>
   );

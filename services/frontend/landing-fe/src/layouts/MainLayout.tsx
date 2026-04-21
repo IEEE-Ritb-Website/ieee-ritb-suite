@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState, useLayoutEffect, lazy, Suspense } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import Navigation from '../components/layout/Navigation';
 import Footer from '../components/layout/Footer';
 import MagneticCursor from '../components/effects/MagneticCursor';
@@ -227,7 +227,7 @@ export default function MainLayout() {
 
             <main id="main-content" role="main" data-perf-tier={tier}>
                 <AnimatePresence mode="wait">
-                    <motion.div
+                    <m.div
                         key={location.pathname}
                         variants={pageVariants}
                         initial="initial"
@@ -235,7 +235,7 @@ export default function MainLayout() {
                         exit="exit"
                     >
                         <Outlet context={{ warpComplete, isLoading }} />
-                    </motion.div>
+                    </m.div>
                 </AnimatePresence>
             </main>
 

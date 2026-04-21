@@ -9,7 +9,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { m, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import ParallaxLayer from '../effects/ParallaxLayer';
 import { initMagneticElements } from '../../utils/smoothScroll';
@@ -121,7 +121,7 @@ export default function Events() {
       </ParallaxLayer>
 
       <div className="section-container" ref={containerRef}>
-        <motion.div
+        <m.div
           className="section-header mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -135,10 +135,10 @@ export default function Events() {
           <p className="section-description">
             A look back at our events
           </p>
-        </motion.div>
+        </m.div>
 
         <LayoutGroup>
-          <motion.div
+          <m.div
             className="chronosphere-container"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
@@ -148,7 +148,7 @@ export default function Events() {
               const isActive = activeId === event.id;
 
               return (
-                <motion.div
+                <m.div
                   layout
                   key={event.id}
                   className={`chrono-slice magnetic ${isActive ? 'active' : ''}`}
@@ -169,7 +169,7 @@ export default function Events() {
                   {/* Inactive Vertical Label */}
                   <AnimatePresence>
                     {!isActive && (
-                      <motion.div
+                      <m.div
                         className="slice-vertical-label"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 0.8 }}
@@ -177,7 +177,7 @@ export default function Events() {
                         transition={{ duration: 0.3 }}
                       >
                         {event.date} • {event.category}
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
 
@@ -185,7 +185,7 @@ export default function Events() {
                   <div className="slice-content">
                     <AnimatePresence mode="wait">
                       {isActive && (
-                        <motion.div
+                        <m.div
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 10 }}
@@ -199,14 +199,14 @@ export default function Events() {
                             <DecoderText text={event.title} active={isActive} />
                           </h3>
 
-                          <motion.p
+                          <m.p
                             className="event-desc"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5, duration: 0.5 }}
                           >
                             {event.description}
-                          </motion.p>
+                          </m.p>
 
                           <div className="event-actions">
                             <Link
@@ -220,14 +220,14 @@ export default function Events() {
                               </svg>
                             </Link>
                           </div>
-                        </motion.div>
+                        </m.div>
                       )}
                     </AnimatePresence>
                   </div>
-                </motion.div>
+                </m.div>
               );
             })}
-          </motion.div>
+          </m.div>
         </LayoutGroup>
       </div>
     </section>

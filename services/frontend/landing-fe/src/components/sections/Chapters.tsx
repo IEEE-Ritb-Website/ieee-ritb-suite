@@ -13,7 +13,7 @@ import ParallaxLayer from '../effects/ParallaxLayer';
 import ChapterIcon from '../ui/ChapterIcon';
 import './Chapters.css';
 import { Chapters as IEEEChapters, ChapterType, type IChapterAcronyms } from "@astranova/catalogues";
-import { motion, type Variants } from 'framer-motion';
+import { m, type Variants } from 'framer-motion';
 import { useMotion } from '@/hooks/useMotion';
 
 const chapterColors: Record<IChapterAcronyms, string> = {
@@ -83,7 +83,7 @@ export default function Chapters() {
       </ParallaxLayer>
 
       <div className="section-container">
-        <motion.div
+        <m.div
           className="section-header"
           variants={safeHeaderVariants}
           initial="hidden"
@@ -98,7 +98,7 @@ export default function Chapters() {
           <p className="section-description">
             Join any of our {chapters.length} diverse technical societies and special interest groups.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Tabs */}
         <div className="chapters-tabs" role="tablist">
@@ -120,7 +120,7 @@ export default function Chapters() {
           ))}
         </div>
 
-        <motion.div
+        <m.div
           className="grid-chapters"
           variants={safeContainerVariants}
           initial="hidden"
@@ -129,7 +129,7 @@ export default function Chapters() {
           key={activeTab}
         >
           {filteredChapters.map((chapter, index) => (
-            <motion.div key={`${chapter.acronym}-${index}`} variants={safeItemVariants}>
+            <m.div key={`${chapter.acronym}-${index}`} variants={safeItemVariants}>
               <Link
                 to={`/chapters/${chapter.acronym.toLowerCase()}`}
                 className={`chapter-card ${activeChapter === index ? 'active' : ''}`}
@@ -156,9 +156,9 @@ export default function Chapters() {
                 </div>
                 <div className="chapter-border" style={{ borderColor: chapter.color }} />
               </Link>
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
 
 
       </div>

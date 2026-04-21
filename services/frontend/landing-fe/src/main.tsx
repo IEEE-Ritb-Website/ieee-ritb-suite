@@ -13,6 +13,7 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { GlobalLoader } from "@/components/common/GlobalLoader"
 import { PerformanceProvider } from "./contexts/PerformanceContext"
+import { LazyMotion, domAnimation } from "framer-motion"
 
 // Fontsource managed fonts
 import "@fontsource/inter/latin-400.css"
@@ -28,9 +29,11 @@ import './index.css'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
       <PerformanceProvider>
-        <Suspense fallback={<GlobalLoader />}>
-          <RouterProvider router={router} />
-        </Suspense>
+        <LazyMotion features={domAnimation} strict>
+          <Suspense fallback={<GlobalLoader />}>
+            <RouterProvider router={router} />
+          </Suspense>
+        </LazyMotion>
       </PerformanceProvider>
   </StrictMode>,
 )

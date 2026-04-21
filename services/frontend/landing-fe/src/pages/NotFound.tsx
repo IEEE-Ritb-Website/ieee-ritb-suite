@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useMotion } from '../hooks/useMotion';
 import GlitchText from '../components/effects/GlitchText';
 import type { LayoutContext } from '../layouts/MainLayout';
@@ -51,27 +51,27 @@ export default function NotFound() {
                 <title>404 - Page Not Found | IEEE RITB</title>
                 <meta name="robots" content="noindex" />
 
-      <motion.div
+      <m.div
                 className="not-found"
                 variants={containerVariants}
                 initial={warpComplete ? "visible" : "hidden"}
                 animate={warpComplete ? "visible" : "hidden"}
             >
                 <div className="not-found-content">
-                    <motion.div className="error-code" variants={itemVariants}>
+                    <m.div className="error-code" variants={itemVariants}>
                         <GlitchText key={glitchKey} text="404" style="hero" glitchDuration={1500} />
-                    </motion.div>
+                    </m.div>
 
-                    <motion.h1 className="not-found-title" variants={itemVariants}>
+                    <m.h1 className="not-found-title" variants={itemVariants}>
                         Signal Lost
-                    </motion.h1>
+                    </m.h1>
 
-                    <motion.p className="not-found-description" variants={itemVariants}>
+                    <m.p className="not-found-description" variants={itemVariants}>
                         The coordinates you're searching for don't exist in our system.
                         The page may have been moved, deleted, or never existed.
-                    </motion.p>
+                    </m.p>
 
-                    <motion.div className="not-found-terminal" variants={itemVariants}>
+                    <m.div className="not-found-terminal" variants={itemVariants}>
                         <div className="terminal-header">
                             <span className="terminal-dot" />
                             <span className="terminal-dot" />
@@ -88,9 +88,9 @@ export default function NotFound() {
                                 <span className="terminal-success">→</span> Use navigation menu
                             </code>
                         </div>
-                    </motion.div>
+                    </m.div>
 
-                    <motion.div className="not-found-actions" variants={itemVariants}>
+                    <m.div className="not-found-actions" variants={itemVariants}>
                         <Link to="/" className="btn-primary em-field">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -101,9 +101,9 @@ export default function NotFound() {
                         <Link to="/#contact" className="btn-secondary">
                             Report Issue
                         </Link>
-                    </motion.div>
+                    </m.div>
                 </div>
-            </motion.div>
+            </m.div>
         </>
     );
 }

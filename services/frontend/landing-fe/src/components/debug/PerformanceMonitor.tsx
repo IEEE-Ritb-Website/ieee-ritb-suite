@@ -1,5 +1,5 @@
 import { usePerformance } from '@/contexts/PerformanceContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 
 export default function PerformanceMonitor() {
   const { fps, tier } = usePerformance();
@@ -31,7 +31,7 @@ export default function PerformanceMonitor() {
         
         <AnimatePresence>
           {tier !== 'ULTRA' && (
-            <motion.div 
+            <m.div 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
@@ -40,7 +40,7 @@ export default function PerformanceMonitor() {
               <span className="font-mono text-[9px] tracking-tight text-white/20 uppercase">
                 {tier} MODE
               </span>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>
