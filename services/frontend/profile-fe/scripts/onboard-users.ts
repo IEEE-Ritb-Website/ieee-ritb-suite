@@ -30,6 +30,7 @@ async function onboardUser(userData: {
   username: string;
   membershipId: string;
   chapters?: string; // Comma separated acronyms or JSON string
+
   positions?: string; // JSON string or comma separated
 }) {
   const password = generatePassword();
@@ -59,7 +60,7 @@ async function onboardUser(userData: {
       positions = userData.positions.split(",").map(pos => pos.trim());
     }
   }
-  
+
   try {
     console.log(`Creating user: ${userData.email}...`);
     
