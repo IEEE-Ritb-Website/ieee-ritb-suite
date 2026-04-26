@@ -61,6 +61,10 @@ export async function POST(req: NextRequest) {
   const client = await clientPromise;
   const db = client.db(getDbName());
 
+  // Get existing profile to preserve chapters
+  const currentProfile = await db.collection("profile").findOne({ email: session.user.email });
+  const preservedChapters = currentProfile?.chapters || [];
+
   // Strict check: Is this username taken by someone ELSE in either our profile table OR BA user table?
   const username = result.data.username;
   
@@ -86,15 +90,16 @@ export async function POST(req: NextRequest) {
   }
 
   // Update or Insert the profile document
+  const profileData = {
+    ...result.data,
+    chapters: preservedChapters, // Overwrite with preserved chapters
+    userId: session.user.id,
+    updatedAt: new Date()
+  };
+
   await db.collection("profile").updateOne(
     { email: session.user.email },
-    { 
-      $set: { 
-        ...result.data, 
-        userId: session.user.id, 
-        updatedAt: new Date() 
-      } 
-    },
+    { $set: profileData },
     { upsert: true }
   );
 
@@ -106,6 +111,8 @@ export async function POST(req: NextRequest) {
         name: result.data.name,
         image: result.data.image,
         username: result.data.username,
+        social_links: result.data.social_links,
+        // chapters are not updated here as they are managed by admin/onboarding
         updatedAt: new Date()
       }
     }

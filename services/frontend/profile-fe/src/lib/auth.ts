@@ -28,28 +28,12 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
-      github: {
-        type: "string",
-        required: false,
-      },
-      linkedin: {
-        type: "string",
-        required: false,
-      },
-      website: {
-        type: "string",
-        required: false,
-      },
-      leetcode: {
-        type: "string",
-        required: false,
-      },
-      devpost: {
-        type: "string",
+      social_links: {
+        type: "json",
         required: false,
       },
       chapters: {
-        type: "string[]",
+        type: "json",
         required: false,
       },
       batch: {
@@ -74,7 +58,7 @@ export const auth = betterAuth({
       },
       membershipId: {
         type: "string",
-        required: false,
+        required: true,
       },
       positions: {
         type: "json",

@@ -65,7 +65,7 @@ export default function SignIn() {
           </button>
 
           <div className="text-center mt-6 text-[11px] text-[rgba(200,255,232,0.45)] uppercase tracking-wider">
-            New user? <Link href="/auth/sign-up" className="text-[#00ff9d] hover:underline">Register Account</Link>
+            Contact admin if you don't have an account
           </div>
         </div>
       </div>
