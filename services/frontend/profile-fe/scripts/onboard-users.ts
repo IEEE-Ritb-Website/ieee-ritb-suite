@@ -62,7 +62,7 @@ async function onboardUser(userData: {
         membershipId: userData.membershipId,
         chapters: chapters,
         social_links: [], // Initialize empty
-      },
+      } as any,
     });
 
     if (!user) {

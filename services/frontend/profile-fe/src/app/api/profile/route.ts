@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
     }
     // Construct a minimal profile from user data
     profile = {
+      _id: user._id,
       name: user.name,
       username: user.username,
       email: user.email,

@@ -349,7 +349,7 @@ export default function ProfilePage() {
               <SectionBlock title="SYSTEM HONORS">
                 <div className="flex flex-wrap gap-2">
                   {(formData.achievements || []).map((ach, idx) => (
-                    <Badge key={idx} label={ach.title} color={
+                    <Badge key={idx} label={ach.title || ""} color={
                       ach.badge_type === 'hackathon' ? 'amber' :
                       ach.badge_type === 'gsoc' ? 'green' :
                       ach.badge_type === 'open_source' ? 'pink' :
