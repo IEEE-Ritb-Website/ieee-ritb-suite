@@ -30,7 +30,6 @@ async function onboardUser(userData: {
   username: string;
   membershipId: string;
   chapters?: string; // Comma separated acronyms or JSON string
-
   positions?: string; // JSON string or comma separated
 }) {
   const password = generatePassword();
