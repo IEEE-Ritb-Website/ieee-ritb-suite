@@ -30,6 +30,7 @@ async function onboardUser(userData: {
   username: string;
   membershipId: string;
   chapters?: string; // Comma separated acronyms or JSON string
+  positions?: string; // JSON string or comma separated
 }) {
   const password = generatePassword();
   
@@ -48,6 +49,16 @@ async function onboardUser(userData: {
       }));
     }
   }
+
+  // Parse positions if provided
+  let positions: any[] = [];
+  if (userData.positions) {
+    try {
+      positions = JSON.parse(userData.positions);
+    } catch (e) {
+      positions = userData.positions.split(",").map(pos => pos.trim());
+    }
+  }
   
   try {
     console.log(`Creating user: ${userData.email}...`);
@@ -61,6 +72,7 @@ async function onboardUser(userData: {
         username: userData.username,
         membershipId: userData.membershipId,
         chapters: chapters,
+        positions: positions,
         social_links: [], // Initialize empty
       } as any,
     });

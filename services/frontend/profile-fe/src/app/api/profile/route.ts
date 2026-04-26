@@ -62,9 +62,10 @@ export async function POST(req: NextRequest) {
   const client = await clientPromise;
   const db = client.db(getDbName());
 
-  // Get existing profile to preserve chapters
+  // Get existing profile to preserve chapters and positions
   const currentProfile = await db.collection("profile").findOne({ email: session.user.email });
   const preservedChapters = currentProfile?.chapters || [];
+  const preservedPositions = currentProfile?.positions || [];
 
   // Strict check: Is this username taken by someone ELSE in either our profile table OR BA user table?
   const username = result.data.username;
@@ -94,6 +95,7 @@ export async function POST(req: NextRequest) {
   const profileData = {
     ...result.data,
     chapters: preservedChapters, // Overwrite with preserved chapters
+    positions: preservedPositions, // Overwrite with preserved positions
     userId: session.user.id,
     updatedAt: new Date()
   };
