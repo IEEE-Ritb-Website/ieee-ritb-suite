@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { ScanlineOverlay, HeaderBar } from "@/components/layout/Common";
@@ -10,11 +11,14 @@ import {
   SectionBlock, 
   SkillTag, 
   OpenTag,
-  Badge
+  Badge,
+  Modal,
+  Button,
+  Input,
+  Label
 } from "@/components/ui";
 import { Chapters } from "@astranova/catalogues";
 import { profileSchema, type ProfileFormData } from "@/lib/schema";
-import { Modal } from "@/components/ui";
 
 export default function ProfilePage() {
   const [isEditMode, setIsEditMode] = useState(true); 
@@ -23,6 +27,8 @@ export default function ProfilePage() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isMetricModalOpen, setIsMetricModalOpen] = useState(false);
+  const [newMetricLabel, setNewMetricLabel] = useState("");
 
   const [formData, setFormData] = useState<Partial<ProfileFormData>>({
     name: "",
@@ -55,13 +61,14 @@ export default function ProfilePage() {
         const data = await response.json();
         setFormData(prev => ({ ...prev, image: data.url }));
         setIsModalOpen(false);
+        toast.success("Identity visual updated successfully");
       } else {
         const err = await response.json();
-        alert(err.message || "Upload failed");
+        toast.error(err.message || "Upload failed");
       }
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Network error. Upload failed.");
+      toast.error("Network error. Upload failed.");
     } finally {
       setIsUploading(false);
     }
@@ -156,12 +163,13 @@ export default function ProfilePage() {
             const updated = await refresh.json();
             setFormData(updated);
         }
+        toast.success("Profile synchronized successfully");
       } else {
         const err = await response.json();
-        alert(err.message || "Failed to update data");
+        toast.error(err.message || "Failed to update data");
       }
     } catch (e) {
-      alert("Network error. Update failed.");
+      toast.error("Network error. Update failed.");
     }
     setIsUpdating(false);
   };
@@ -184,19 +192,26 @@ export default function ProfilePage() {
 
       <div className="border-b border-[rgba(0,255,157,0.25)] bg-[rgba(0,255,157,0.02)] px-6 py-2 flex justify-between items-center relative z-20">
         <div className="flex gap-4 items-center">
-          <button 
+          <Button 
+            variant={isEditMode ? "default" : "outline"}
+            size="sm"
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`text-[10px] px-3 py-1 border transition-all uppercase tracking-widest ${isEditMode ? 'bg-[#00ff9d] text-[#0d0d1a] border-[#00ff9d]' : 'border-[rgba(0,255,157,0.4)] text-[#00ff9d] hover:bg-[rgba(0,255,157,0.1)]'}`}
+            className={`text-[10px] uppercase tracking-widest h-auto py-1 px-3 rounded-none ${isEditMode ? 'bg-[#00ff9d] text-[#0d0d1a] hover:bg-[#00ff9d]/90' : 'border-[rgba(0,255,157,0.4)] text-[#00ff9d] hover:bg-[rgba(0,255,157,0.1)] bg-transparent'}`}
           >
             {isEditMode ? "View Profile" : "Edit Profile"}
-          </button>
+          </Button>
           <span className="text-[9px] text-[rgba(200,255,232,0.45)] uppercase tracking-tighter">
             System Status: <span className="text-[#00ff9d]">{formData.current_status || "STABLE"}</span>
           </span>
         </div>
-        <button onClick={() => authClient.signOut().then(() => router.push("/auth/sign-in"))} className="text-[10px] text-[#ff4fd8] border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest">
+        <Button 
+          variant="outline"
+          size="sm"
+          onClick={() => authClient.signOut().then(() => router.push("/auth/sign-in"))} 
+          className="text-[10px] text-[#ff4fd8] border-[#ff4fd8] hover:bg-[rgba(255,79,216,0.1)] hover:text-[#ff4fd8] transition-all uppercase tracking-widest h-auto py-1 px-3 rounded-none bg-transparent"
+        >
           Logout
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)]">
@@ -211,35 +226,35 @@ export default function ProfilePage() {
             <div className="space-y-8 animate-in slide-in-from-bottom duration-500">
               <div className="flex justify-between items-center border-b border-[rgba(0,255,157,0.25)] pb-4">
                 <h2 className="font-vt text-4xl text-[#00ff9d] uppercase tracking-wider">System Override</h2>
-                <button 
+                <Button 
                   onClick={saveProfile}
                   disabled={isUpdating}
-                  className={`bg-[#00ff9d] text-[#0d0d1a] px-8 py-2 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:scale-105 transition-all ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`bg-[#00ff9d] text-[#0d0d1a] px-8 py-2 h-auto font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:scale-105 transition-all rounded-none hover:bg-[#00ff9d]/90 ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {isUpdating ? "Synchronizing..." : "Update Data"}
-                </button>
+                </Button>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-[10px] uppercase text-[rgba(200,255,232,0.45)] mb-1">// identifier (name)</label>
-                            <input name="name" value={formData.name} onChange={handleInputChange} className="w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d]" />
+                        <div className="space-y-1">
+                            <Label className="block text-[10px] uppercase text-[rgba(200,255,232,0.45)] mb-1">{"// identifier (name)"}</Label>
+                            <Input name="name" value={formData.name} onChange={handleInputChange} className="w-full bg-[rgba(0,255,157,0.05)] border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d] text-[#c8ffe8]" />
                         </div>
-                        <div>
-                            <label className="block text-[10px] uppercase text-[rgba(200,255,232,0.45)] mb-1">// network id (username)</label>
-                            <input name="username" value={formData.username} onChange={handleInputChange} className="w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d]" />
+                        <div className="space-y-1">
+                            <Label className="block text-[10px] uppercase text-[rgba(200,255,232,0.45)] mb-1">{"// network id (username)"}</Label>
+                            <Input name="username" value={formData.username} onChange={handleInputChange} className="w-full bg-[rgba(0,255,157,0.05)] border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d] text-[#c8ffe8]" />
                         </div>
                     </div>
-                    <div>
-                        <label className="block text-[10px] uppercase text-[rgba(200,255,232,0.45)] mb-1">// live telemetry (status)</label>
-                        <input name="current_status" placeholder="building DevOps autopilot..." value={formData.current_status} onChange={handleInputChange} className="w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d] text-[#00ff9d]" />
+                    <div className="space-y-1">
+                        <Label className="block text-[10px] uppercase text-[rgba(200,255,232,0.45)] mb-1">{"// live telemetry (status)"}</Label>
+                        <Input name="current_status" placeholder="building DevOps autopilot..." value={formData.current_status} onChange={handleInputChange} className="w-full bg-[rgba(0,255,157,0.05)] border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d] text-[#00ff9d]" />
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-[10px] uppercase text-[rgba(200,255,232,0.45)] mb-1">// source records (bio)</label>
-                    <textarea name="bio" rows={4} value={formData.bio} onChange={handleInputChange} className="w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d]" />
+                  <div className="space-y-1">
+                    <Label className="block text-[10px] uppercase text-[rgba(200,255,232,0.45)] mb-1">{"// source records (bio)"}</Label>
+                    <textarea name="bio" rows={4} value={formData.bio} onChange={handleInputChange} className="w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d] text-[#c8ffe8] flex min-h-[80px] w-full rounded-md border border-input px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm" />
                   </div>
               </div>
 
@@ -247,7 +262,7 @@ export default function ProfilePage() {
                   {/* Social Links */}
                   <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
                     <div className="flex justify-between items-center">
-                        <label className="text-[10px] uppercase tracking-widest text-[rgba(200,255,232,0.45)]">// established links</label>
+                        <label className="text-[10px] uppercase tracking-widest text-[rgba(200,255,232,0.45)]">{"// established links"}</label>
                         <button onClick={() => handleArrayAdd('social_links', { label: '', link: '' })} className="text-[10px] border border-[#00ff9d] px-2 py-1">+ Add Link</button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -264,7 +279,7 @@ export default function ProfilePage() {
                   {/* Chapters */}
                   <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
                     <div className="flex justify-between items-center">
-                      <label className="text-[10px] uppercase tracking-widest text-[rgba(200,255,232,0.45)]">// node affiliations (chapters)</label>
+                      <label className="text-[10px] uppercase tracking-widest text-[rgba(200,255,232,0.45)]">{"// node affiliations (chapters)"}</label>
                       <select 
                         onChange={(e) => {
                             const ch = Chapters.find(c => c.acronym === e.target.value);
@@ -291,7 +306,7 @@ export default function ProfilePage() {
 
                   {/* Stats */}
                   <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
-                    <label className="text-[10px] uppercase tracking-widest text-[rgba(200,255,232,0.45)]">// performance metrics</label>
+                    <label className="text-[10px] uppercase tracking-widest text-[rgba(200,255,232,0.45)]">{"// performance metrics"}</label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {Object.entries(formData.stats || {}).map(([key, val]) => (
                             <div key={key} className="bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] p-2 rounded relative">
@@ -300,14 +315,14 @@ export default function ProfilePage() {
                                 <input value={val} onChange={(e) => handleStatUpdate(key, e.target.value)} className="w-full bg-transparent outline-none text-[#00ff9d] text-lg font-vt" />
                             </div>
                         ))}
-                        <button onClick={() => {const k = prompt("Metric Label:"); if(k) handleStatUpdate(k.toUpperCase(), "0")}} className="border border-dashed border-[rgba(0,255,157,0.3)] text-[9px] opacity-60">+ Add Metric</button>
+                        <button onClick={() => setIsMetricModalOpen(true)} className="border border-dashed border-[rgba(0,255,157,0.3)] text-[9px] opacity-60">+ Add Metric</button>
                     </div>
                   </div>
 
                   {/* Achievements */}
                   <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
                     <div className="flex justify-between items-center">
-                        <label className="text-[10px] uppercase tracking-widest text-[rgba(200,255,232,0.45)]">// validated honors</label>
+                        <label className="text-[10px] uppercase tracking-widest text-[rgba(200,255,232,0.45)]">{"// validated honors"}</label>
                         <button onClick={() => handleArrayAdd('achievements', { title: '', badge_type: 'hackathon' })} className="text-[10px] border border-[#00ff9d] px-2 py-1">+ Add Honor</button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -389,6 +404,33 @@ export default function ProfilePage() {
             <div className="text-[9px] text-[rgba(255,79,216,0.6)] uppercase text-center mt-2">
                 Supported formats: JPG, PNG, GIF. Max size: 2MB.
             </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isMetricModalOpen} onClose={() => setIsMetricModalOpen(false)} title="New Performance Metric">
+        <div className="space-y-4">
+            <div className="space-y-2">
+                <Label className="text-[10px] uppercase text-[rgba(200,255,232,0.45)]">{"// metric identifier"}</Label>
+                <Input 
+                    value={newMetricLabel} 
+                    onChange={(e) => setNewMetricLabel(e.target.value)}
+                    placeholder="E.G. HACKATHONS WON"
+                    className="bg-[rgba(0,255,157,0.05)] border-[rgba(0,255,157,0.2)] text-[#00ff9d]"
+                />
+            </div>
+            <Button 
+                onClick={() => {
+                    if (newMetricLabel) {
+                        handleStatUpdate(newMetricLabel.toUpperCase(), "0");
+                        setNewMetricLabel("");
+                        setIsMetricModalOpen(false);
+                        toast.success(`Metric '${newMetricLabel.toUpperCase()}' initialized`);
+                    }
+                }}
+                className="w-full bg-[#00ff9d] text-[#0d0d1a] hover:bg-[#00ff9d]/90 font-bold uppercase tracking-widest"
+            >
+                Initialize Metric
+            </Button>
         </div>
       </Modal>
     </div>

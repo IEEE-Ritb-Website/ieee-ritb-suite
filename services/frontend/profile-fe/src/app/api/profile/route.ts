@@ -91,7 +91,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Username already taken by another system user" }, { status: 400 });
   }
 
-  // Update or Insert the profile document
   const profileData = {
     ...result.data,
     chapters: preservedChapters, // Overwrite with preserved chapters

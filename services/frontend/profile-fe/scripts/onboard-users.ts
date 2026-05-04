@@ -59,7 +59,7 @@ async function onboardUser(userData: {
       positions = userData.positions.split(",").map(pos => pos.trim());
     }
   }
-  
+
   try {
     console.log(`Creating user: ${userData.email}...`);
     
