@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -20,7 +21,7 @@ export default function SignIn() {
       callbackURL: "/",
     });
     if (error) {
-      alert(error.message);
+      toast.error(error.message);
     } else {
       router.push("/");
     }
@@ -35,7 +36,7 @@ export default function SignIn() {
         
         <div className="space-y-4">
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">// identifier (email)</label>
+            <label className="block text-[10px] uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">{"// identifier (email)"}</label>
             <input
               type="email"
               placeholder="user@ieee-ritb.org"
@@ -46,7 +47,7 @@ export default function SignIn() {
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">// authorization code (password)</label>
+            <label className="block text-[10px] uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">{"// authorization code (password)"}</label>
             <input
               type="password"
               placeholder="********"
@@ -65,7 +66,7 @@ export default function SignIn() {
           </button>
 
           <div className="text-center mt-6 text-[11px] text-[rgba(200,255,232,0.45)] uppercase tracking-wider">
-            Contact admin if you don't have an account
+            Contact admin if you don&apos;t have an account
           </div>
         </div>
       </div>
