@@ -16,3 +16,5 @@ GEMINI.md
 .playwright-mcp/
 
 ROUTING_PLAN.md
+.vercel
+.env*
