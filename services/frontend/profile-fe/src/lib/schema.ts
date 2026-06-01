@@ -9,6 +9,19 @@ export const usernameSchema = z
 
 export const badgeTypeEnum = z.enum(["hackathon", "gsoc", "open_source", "certification", "award"]);
 
+export const projectTypeEnum = z.enum([
+  "website",
+  "aiml",
+  "cli",
+  "cybersecurity",
+  "research",
+  "embedded",
+  "mobile",
+  "game",
+  "devtool",
+  "other",
+]);
+
 export const chapterSchema = z.object({
   name: z.string(),
   acronym: z.string(),
@@ -26,13 +39,21 @@ export const achievementSchema = z.object({
   title: z.string().optional().or(z.literal("")),
   badge_type: badgeTypeEnum.optional().default("hackathon"),
   date: z.string().optional().or(z.literal("")),
+  description: z.string().max(200, "Description must be at most 200 characters").optional().or(z.literal("")),
+  link: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
 });
 
 export const projectSchema = z.object({
+  type: projectTypeEnum.optional().default("other"),
   title: z.string().optional().or(z.literal("")),
+  short_description: z.string().max(350, "Short description must be at most 50 words").optional().or(z.literal("")),
+  long_description: z.string().max(1400, "Long description must be at most 200 words").optional().or(z.literal("")),
+  primary_link: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
+  extra_link: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
+  tags: z.array(z.string()).default([]),
+  // Legacy field kept for backwards compat
   description: z.string().optional().or(z.literal("")),
   link: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
-  tags: z.array(z.string()).default([]),
 });
 
 export const profileSchema = z.object({
@@ -47,6 +68,15 @@ export const profileSchema = z.object({
   stats: z.record(z.string(), z.string()).default({}),
   achievements: z.array(achievementSchema).default([]),
   projects: z.array(projectSchema).default([]),
+  skills: z.array(z.string()).default([]),
+  usn: z.string().optional(),
+  department: z.string().optional(),
+  year: z.string().optional(),
+  batch: z.string().optional(),
+  membershipId: z.string().optional(),
+  phoneNumber: z.string().optional(),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
+export type ProjectType = z.infer<typeof projectTypeEnum>;
+export type BadgeType = z.infer<typeof badgeTypeEnum>;

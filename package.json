@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "rs": "pnpm --filter scripting run",
     "build-all": "nx run-many --target=build --all"
   },

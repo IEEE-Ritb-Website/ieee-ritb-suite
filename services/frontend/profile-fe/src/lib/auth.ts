@@ -60,7 +60,15 @@ export const auth = betterAuth({
         type: "string",
         required: true,
       },
+      phoneNumber: {
+        type: "string",
+        required: false,
+      },
       positions: {
+        type: "json",
+        defaultValue: [],
+      },
+      skills: {
         type: "json",
         defaultValue: [],
       }

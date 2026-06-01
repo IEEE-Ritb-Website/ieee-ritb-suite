@@ -3,24 +3,29 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { ScanlineOverlay } from "@/components/layout/Common";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function SignIn() {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const signIn = async () => {
     setLoading(true);
     const { error } = await authClient.signIn.email({
-      email,
+      email: identifier,
       password,
       callbackURL: "/",
     });
     if (error) {
-      alert(error.message);
+      toast({
+        title: "Connection Failed",
+        description: error.message,
+        variant: "destructive",
+      });
     } else {
       router.push("/");
     }
@@ -32,16 +37,16 @@ export default function SignIn() {
       <ScanlineOverlay />
       <div className="w-full max-w-md border border-[rgba(0,255,157,0.25)] bg-[rgba(0,255,157,0.02)] p-8 rounded-lg relative z-10">
         <h1 className="font-vt text-4xl text-[#00ff9d] mb-6 text-center uppercase tracking-widest">System Access: Log In</h1>
-        
+
         <div className="space-y-4">
           <div>
-            <label className="block text-[10px] uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">// identifier (email)</label>
+            <label className="block text-[10px] uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">// identifier (email / membership id)</label>
             <input
-              type="email"
-              placeholder="user@ieee-ritb.org"
+              type="text"
+              placeholder="user@ieee-ritb.org or IEEE-XXXX"
               className="w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-4 py-2 text-[#c8ffe8] outline-none focus:border-[#00ff9d] transition-colors"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
             />
           </div>
 

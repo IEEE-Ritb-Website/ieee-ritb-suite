@@ -272,7 +272,7 @@ pnpm build-all
 
 To see the interactive module dependencies mapping, run:
 ```bash
-npx nx graph
+pnpm nx graph
 ```
 
 > [!TIP]
