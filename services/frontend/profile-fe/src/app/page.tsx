@@ -871,9 +871,9 @@ export default function ProfilePage() {
                         {proj.tags && proj.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {proj.tags.slice(0, 3).map(tag => (
-                              <span key={tag} className="text-[9px] opacity-40" style={{ color: iconColor }}>#{tag}</span>
+                              <span key={tag} className="text-xs opacity-40" style={{ color: iconColor }}>#{tag}</span>
                             ))}
-                            {proj.tags.length > 3 && <span className="text-[9px] opacity-30 text-[rgba(200,255,232,0.4)]">+{proj.tags.length - 3}</span>}
+                            {proj.tags.length > 3 && <span className="text-xs opacity-30 text-[rgba(200,255,232,0.4)]">+{proj.tags.length - 3}</span>}
                           </div>
                         )}
                       </div>
@@ -920,7 +920,7 @@ export default function ProfilePage() {
               {isUploading ? "Processing Data..." : "Choose File or Drag & Drop"}
             </div>
           </div>
-          <div className="text-[9px] text-[rgba(255,79,216,0.6)] uppercase text-center mt-2">
+          <div className="text-xs text-[rgba(255,79,216,0.6)] uppercase text-center mt-2">
             Supported formats: JPG, PNG, GIF. Max size: 2MB.
           </div>
         </div>

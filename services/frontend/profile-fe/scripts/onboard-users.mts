@@ -15,19 +15,34 @@ const Chapters = [
   }
 ];
 
-
-// Load environment variables from .env or .env.local
-dotenv.config({ path: ".env.local" });
-dotenv.config({ path: ".env" });
-
 // Configure Node environment before any database/auth imports to prevent hoisting-based connection issues
-let NODE_ENV: string;
 const isProd = process.argv.includes("--production") || process.argv.includes("-p");
+const envMode: "production" | "development" = isProd ? "production" : "development";
+type MutableProcessEnv = Omit<NodeJS.ProcessEnv, "NODE_ENV"> & { NODE_ENV?: string };
+
+// Better Auth and db.ts both rely on process.env.NODE_ENV at import time.
+(process.env as MutableProcessEnv).NODE_ENV = envMode;
+
+const loadEnvIfExists = (filePath: string) => {
+  if (fs.existsSync(filePath)) {
+    dotenv.config({ path: filePath });
+  }
+};
+
+// Next-style env precedence: highest priority files first.
 if (isProd) {
-  NODE_ENV = "production";
+  loadEnvIfExists(".env.production.local");
+  loadEnvIfExists(".env.local");
+  loadEnvIfExists(".env.production");
+  loadEnvIfExists(".env");
 } else {
-  NODE_ENV = "development";
+  loadEnvIfExists(".env.development.local");
+  loadEnvIfExists(".env.local");
+  loadEnvIfExists(".env.development");
+  loadEnvIfExists(".env");
 }
+
+console.log(`Running in ${envMode} mode`);
 
 // Module-scoped auth variable that will be dynamically imported
 let auth: any;
@@ -166,7 +181,7 @@ async function onboardUser(userData: {
 async function main() {
   await initAuth();
 
-  const targetDb = process.env.NODE_ENV === "production" ? "astranova (PRODUCTION)" : "test (TEST)";
+  const targetDb = envMode === "production" ? "astranova (PRODUCTION)" : "test (TEST)";
   console.log(`\n=========================================`);
   console.log(`Targeting Database: ${targetDb.toUpperCase()}`);
   console.log(`=========================================\n`);
@@ -176,7 +191,7 @@ async function main() {
 
   if (missingEnvVars.length > 0) {
     console.error(`Missing required environment variables: ${missingEnvVars.join(", ")}`);
-    console.info("Please ensure they are defined in .env or .env.local");
+    console.info("Please ensure they are defined in .env*. Production runs prefer .env.production(.local).");
     process.exit(1);
   }
 
