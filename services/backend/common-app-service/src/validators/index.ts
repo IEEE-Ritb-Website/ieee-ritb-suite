@@ -68,3 +68,27 @@ export type IGetShortUrlRequest = z.infer<typeof GetShortUrlRequestValidator>;
 export type IGetShortUrlResponse = z.infer<typeof GetShortUrlResponseValidator>;
 export type GetShortUrlResponse = CreateExpressResponse<IGetShortUrlResponse>;
 export type GetShortUrlRequest = CreateExpressRequest<IGetShortUrlRequest, IGetShortUrlResponse>;
+
+export const CronRequestValidator = defineRequestSchema(
+    z.object({
+        params: z.object({}).optional().default({}),
+        body: z.object({}).optional().default({}),
+        query: z.object({}).optional().default({}),
+    })
+)
+
+export const CronResponseValidator = defineResponseSchema(
+    z.object({
+        success: z.literal(true),
+        data: z.object({
+            timestamp: z.string(),
+            message: z.string(),
+        }),
+        message: z.string(),
+    }),
+)
+
+export type ICronRequest = z.infer<typeof CronRequestValidator>;
+export type ICronResponse = z.infer<typeof CronResponseValidator>;
+export type CronResponse = CreateExpressResponse<ICronResponse>;
+export type CronRequest = CreateExpressRequest<ICronRequest, ICronResponse>;

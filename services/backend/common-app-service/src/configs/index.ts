@@ -20,5 +20,6 @@ export const CONFIG: ICONFIG = {
             notFound: "public/templates/not-found.html",
             linkExpired: "public/templates/not-found.html",
         }
-    }
+    },
+    cronSecret: process.env.CRON_SECRET || "",
 };

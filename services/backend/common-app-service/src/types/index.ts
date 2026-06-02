@@ -13,7 +13,8 @@ export type ICONFIG = {
     url: string,
     static: {
         html: Record<string, string>,
-    }
+    },
+    cronSecret: string,
 }
 
 export type ReqSchemaMap = ZodObject<{

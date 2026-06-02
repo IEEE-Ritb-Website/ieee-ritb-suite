@@ -24,6 +24,7 @@
   <a href="#-architecture">Architecture</a> •
   <a href="#-tech-stack">Tech Stack</a> •
   <a href="#-features">Features</a> •
+  <a href="#-architecture-decision-records">ADRs</a> •
   <a href="#-contributing">Contributing</a>
 </p>
 
@@ -36,6 +37,7 @@
 - [🚀 Quick Start](#-quick-start)
 - [🏛️ Architecture](#️-architecture)
 - [✨ Features](#-features)
+- [📖 Architecture Decision Records](#-architecture-decision-records)
 - [⚡ Tech Stack](#-tech-stack)
 - [🛠️ Commands](#️-commands)
 - [📦 Packages & Services](#-packages--services)
@@ -183,6 +185,10 @@ graph TB
         IND["🏭 industry-conclave<br/><i>Event Site</i>"]
     end
 
+    subgraph Docs["📖 Documentation"]
+        ADR["📝 docs/adrs/<br/><i>Architecture Decisions</i>"]
+    end
+
     Packages --> Backend
     Packages --> Frontend
     ADMIN -.->|"auth-client"| ROOT
@@ -212,6 +218,9 @@ ieee-ritb-suite/
 │       ├── 🧰 common-app-fe/        # Developer tools dashboard
 │       ├── 📋 ieee-links/           # Chapter showcase
 │       └── 🏭 industry-conclave-fe/
+│
+├── 📖 docs/
+│   └── 📝 adrs/                     # Architecture Decision Records
 │
 └── 📜 scripting/                    # CLI entry point
 ```
@@ -302,6 +311,27 @@ Stunning Three.js + React Three Fiber powered landing with WebGL effects
 </td>
 </tr>
 </table>
+
+<p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
+
+---
+
+## 📖 Architecture Decision Records
+
+Architecture Decision Records (ADRs) are lightweight documents that capture important architectural decisions made during the project's development. Each ADR records a specific decision, its context, the options considered, and the rationale for the chosen approach.
+
+**Purpose:** ADRs provide a historical record of why the project is built the way it is — helping current and future contributors understand the reasoning behind key choices without needing to rediscover or debate them again.
+
+**Location:** [`docs/adrs/`](docs/adrs/)
+
+| ADR | Title | Decision |
+|-----|-------|----------|
+| [ADR-001](docs/adrs/001-use-nx-monorepo.md) | Use Nx Monorepo | Nx with pnpm workspace for unified build, caching, and dependency management |
+| [ADR-002](docs/adrs/002-choose-framework-and-styling.md) | Framework & Styling | React 19 + Vite + Tailwind v4 + TypeScript strict across all frontend apps |
+| [ADR-003](docs/adrs/003-backend-service-separation.md) | Backend Separation | Separate Express microservices per domain instead of a monolithic API |
+| [ADR-004](docs/adrs/004-package-based-architecture.md) | Shared Package Strategy | Shared packages (`astralogger`, `catalogues`) via workspace protocol with Zod schemas as contracts |
+| [ADR-005](docs/adrs/005-deployment-and-free-tier-hosting.md) | Free-Tier Hosting | Render for backends, Vercel for frontends, Cloudflare for domains — all on free tiers |
+| [ADR-006](docs/adrs/006-ieee-accounts-and-email-setup.md) | IEEE Accounts & Email | IEEE official email for platform accounts with term credentials or social OAuth |
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
@@ -446,6 +476,7 @@ cd services/frontend/<app-name>
 | 🖥️ **Backend Services** | 4 |
 | 🎨 **Frontend Apps** | 4 |
 | 🎯 **IEEE Chapters** | 18 |
+| 📖 **ADR Documents** | 6 |
 
 </div>
 
@@ -484,6 +515,7 @@ We welcome contributions! Here's how to get started:
 |-----------|-------------|
 | **Custom CLI** | Use `pnpm rs create-be/fe <name>` to scaffold new services |
 | **Patterns** | Follow existing patterns in `services/backend/` or `services/frontend/` |
+| **Architecture** | Review [`docs/adrs/`](docs/adrs/) before making architectural decisions |
 | **Shared Packages** | Utilize `astralogger` and `catalogues` |
 | **Path Aliases** | Use `@/` prefix for imports: `import { x } from "@/utils/x"` |
 | **TypeScript** | Maintain strict mode compliance |

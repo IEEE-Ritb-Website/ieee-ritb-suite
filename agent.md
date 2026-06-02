@@ -71,6 +71,36 @@ ieee-ritb-suite/
 > [!NOTE]
 > The conceptually separated `url-shortener-service` listed in some higher-level diagrams is physically unified under `services/backend/common-app-service` which manages both the developer tool state and the `ritb.in` URL shortener mappings.
 
+### Cron Job Endpoint — `GET /api/cron`
+
+The `common-app-service` exposes a secured health-check endpoint at `/api/cron` designed to be triggered by [cron-job.org](https://cron-job.org).
+
+**Authentication:**
+- The endpoint requires a custom header `x-cron-secret` matching the `CRON_SECRET` environment variable.
+- Returns `401` with `"Invalid cron secret"` if the header is missing or mismatched.
+
+**Generate a secret:**
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+**cron-job.org setup:**
+1. Set `CRON_SECRET=<generated-key>` in the service's `.env` file
+2. Create a job targeting `https://<domain>/api/cron`
+3. Go to **Advanced > Custom Headers** and add `x-cron-secret: <generated-key>`
+
+**Success response (200):**
+```json
+{ "success": true, "data": { "timestamp": "...", "message": "Cron job executed successfully" }, "message": "Cron job completed" }
+```
+
+**Related files:**
+- `src/routes/index.ts` — route definition with header check middleware
+- `src/controllers/cron/cronHandler.ts` — handler logic
+- `src/validators/index.ts` — `CronRequestValidator` / `CronResponseValidator`
+- `src/configs/index.ts` — reads `CRON_SECRET` from env
+- `.env.example` — `CRON_SECRET` placeholder
+
 ---
 
 ## 📦 Shared Packages & Client Registries
@@ -121,7 +151,7 @@ All backends are developed with strict TypeScript using the **Express.js v5** fr
 | :--- | :--- | :--- | :--- |
 | **🔐 admin-service** | `services/backend/admin-service` | `better-auth` (`^1.3.13`), `mongodb` (`^6.20.0`), `cloudinary` (`^2.9.0`), `zod` (`^4.1.9`) | Serves auth requests and exports compiled clients/types. Houses `/src` with route structures, storage integrations, and better-auth configurations. |
 | **🌐 root-service** | `services/backend/root-service` | `express` (`^5.1.0`), `mongodb` (`^6.20.0`), `@astranova/catalogues`, `astralogger` | Main entry backend for public site endpoints, integrating shared packages for structured chapter verification. |
-| **🛠️ common-app-service** | `services/backend/common-app-service` | `express` (`^5.1.0`), `mongodb` (`^6.20.0`), `zod` (`^4.1.12`), `astralogger` | Houses API endpoints for internal tools as well as short URL forwarding actions. |
+| **🛠️ common-app-service** | `services/backend/common-app-service` | `express` (`^5.1.0`), `mongodb` (`^6.20.0`), `zod` (`^4.1.12`), `astralogger` | Houses API endpoints for internal tools, short URL forwarding, and a secured `GET /api/cron` endpoint triggered by cron-job.org via the `x-cron-secret` header. |
 | **📋 form-service** | `services/backend/form-service` | `express` (`^5.1.0`), `mongodb` (`^6.20.0`), `zod` (`^4.1.12`) | Dynamic backend designed for robust event registration data intake and validations. |
 
 ### Backend Service Code Layout
