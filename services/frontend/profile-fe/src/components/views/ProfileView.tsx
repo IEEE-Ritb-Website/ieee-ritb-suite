@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import {
   StatBox,
   SectionBlock,
   SkillTag,
-  Badge,
-  OpenTag
+  TimelineItem
 } from "@/components/ui";
+import { Chapters as CatalogChapters } from "@astranova/catalogues";
 import { ContributionGraph } from "@/components/ui/ContributionGraph";
 import { IconCloud } from "@/components/ui/IconCloud";
 import { SKILL_TO_SLUG } from "@/lib/skill-slugs";
@@ -72,6 +72,12 @@ interface ProfileViewProps {
       description?: string;
       link?: string;
     }>;
+    timeline?: Array<{
+      year: string;
+      position: string;
+      chapter: string;
+      description?: string;
+    }>;
     github_username?: string;
     leetcode_username?: string;
   };
@@ -103,7 +109,7 @@ function ProjectDetailModal({ project, onClose }: { project: NonNullable<Profile
             </div>
             <div>
               <div className="text-xs tracking-widest text-[rgba(200,255,232,0.4)] uppercase mb-0.5">{label}</div>
-              <h3 className="font-vt text-xl uppercase tracking-wider leading-tight" style={{ color: iconColor }}>{project.title}</h3>
+              <h3 className="font-vt text-xl tracking-wider leading-tight" style={{ color: iconColor }}>{project.title}</h3>
             </div>
           </div>
           <button onClick={onClose} className="text-[rgba(200,255,232,0.4)] hover:text-[#ff4fd8] transition-colors font-bold uppercase text-xs mt-1">✕</button>
@@ -168,13 +174,13 @@ function ProjectDetailModal({ project, onClose }: { project: NonNullable<Profile
 type AchievementItem = NonNullable<ProfileViewProps["data"]["achievements"]>[0];
 
 const BADGE_STYLES: Record<string, { border: string; bg: string }> = {
-  hackathon:    { border: "border-[#ffb700] text-[#ffb700]", bg: "bg-[rgba(255,183,0,0.08)]" },
-  gsoc:         { border: "border-[#00ff9d] text-[#00ff9d]", bg: "bg-[rgba(0,255,157,0.08)]" },
-  open_source:  { border: "border-[#ff4fd8] text-[#ff4fd8]", bg: "bg-[rgba(255,79,216,0.08)]" },
-  certification:{ border: "border-[#00cfff] text-[#00cfff]", bg: "bg-[rgba(0,207,255,0.08)]" },
-  award:        { border: "border-[#a78bfa] text-[#a78bfa]", bg: "bg-[rgba(167,139,250,0.08)]" },
-  internship:   { border: "border-[#f97316] text-[#f97316]", bg: "bg-[rgba(249,115,22,0.08)]" },
-  other:        { border: "border-[rgba(200,255,232,0.3)] text-[rgba(200,255,232,0.5)]", bg: "bg-[rgba(200,255,232,0.03)]" },
+  hackathon: { border: "border-[#ffb700] text-[#ffb700]", bg: "bg-[rgba(255,183,0,0.08)]" },
+  gsoc: { border: "border-[#00ff9d] text-[#00ff9d]", bg: "bg-[rgba(0,255,157,0.08)]" },
+  open_source: { border: "border-[#ff4fd8] text-[#ff4fd8]", bg: "bg-[rgba(255,79,216,0.08)]" },
+  certification: { border: "border-[#00cfff] text-[#00cfff]", bg: "bg-[rgba(0,207,255,0.08)]" },
+  award: { border: "border-[#a78bfa] text-[#a78bfa]", bg: "bg-[rgba(167,139,250,0.08)]" },
+  internship: { border: "border-[#f97316] text-[#f97316]", bg: "bg-[rgba(249,115,22,0.08)]" },
+  other: { border: "border-[rgba(200,255,232,0.3)] text-[rgba(200,255,232,0.5)]", bg: "bg-[rgba(200,255,232,0.03)]" },
 };
 
 const BADGE_TYPE_LABEL: Record<string, string> = {
@@ -274,6 +280,17 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
 
   const validAchievements = (data.achievements || []).filter(a => a.title?.trim());
   const validProjects = (data.projects || []).filter(p => p.title?.trim());
+  const validTimeline = (data.timeline || []).filter(t => t.year?.trim() && t.position?.trim());
+
+  const getChapterName = (acronym: string) => {
+    if (acronym === "SB") return "Student Branch";
+    const match = CatalogChapters.find(c => c.acronym === acronym);
+    return match?.name || acronym;
+  };
+
+  const formatPosition = (pos: string) => {
+    return pos.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  };
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -411,6 +428,27 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
           </div>
         ) : (
           <div className="text-sm opacity-40 italic uppercase tracking-wider">// no active project telemetry logged</div>
+        )}
+      </SectionBlock>
+
+      {/* Timeline */}
+      <SectionBlock title="TIMELINE">
+        {validTimeline.length > 0 ? (
+          validTimeline.map((entry, idx) => {
+            const isVolunteer = entry.position === "volunteer";
+            return (
+              <TimelineItem
+                key={idx}
+                year={entry.year}
+                title={isVolunteer ? "Volunteer" : getChapterName(entry.chapter || "")}
+                subtitle={entry.description || (isVolunteer ? "" : formatPosition(entry.position))}
+                badge={isVolunteer ? undefined : formatPosition(entry.position)}
+                badgeColor="amber"
+              />
+            );
+          })
+        ) : (
+          <div className="text-sm opacity-40 italic uppercase tracking-wider">// no timeline data recorded</div>
         )}
       </SectionBlock>
 

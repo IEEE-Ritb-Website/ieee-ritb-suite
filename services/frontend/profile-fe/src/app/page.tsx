@@ -13,6 +13,7 @@ import { DebouncedSelect } from "@/components/ui/DebouncedSelect";
 import { DEPARTMENTS } from "@/lib/departments";
 import { Modal } from "@/components/ui";
 import { useToast } from "@/components/ui/use-toast";
+import { Chapters as CatalogChapters, IEEE_POSITIONS } from "@astranova/catalogues";
 import {
   ChevronDown, GripVertical, Lock, Pen, X,
   Globe, Brain, Terminal, ShieldAlert, FileText, Cpu, Smartphone, Gamepad2, Wrench, Lightbulb,
@@ -72,6 +73,11 @@ const AVAILABLE_SKILLS = [
   "Penetration Testing", "Cryptography", "Network Security", "Reverse Engineering", "Linux Kernel", "Web Security",
 ];
 
+const CHAPTER_OPTIONS: { value: string; label: string }[] = [
+  ...CatalogChapters.map(c => ({ value: c.acronym, label: c.name })),
+  { value: "SB", label: "Student Branch" },
+];
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function safeParseArray(val: any): any[] {
   if (typeof val === "string") {
@@ -87,6 +93,7 @@ function safeNormalizeProfile(data: any): ProfileFormData {
     social_links: safeParseArray(data.social_links),
     achievements: safeParseArray(data.achievements),
     projects: safeParseArray(data.projects),
+    timeline: safeParseArray(data.timeline),
     stats: data.stats && typeof data.stats === "object" ? data.stats : {},
   } as ProfileFormData;
 }
@@ -141,6 +148,17 @@ function areProfilesEqual(a: Partial<ProfileFormData>, b: Partial<ProfileFormDat
   for (let i = 0; i < skillsA.length; i++) {
     if (s(skillsA[i]) !== s(skillsB[i])) return false;
   }
+
+  const tlA = (a.timeline || []).filter((t: any) => s(t?.year) !== "" && s(t?.position) !== "" && s(t?.chapter) !== "");
+  const tlB = (b.timeline || []).filter((t: any) => s(t?.year) !== "" && s(t?.position) !== "" && s(t?.chapter) !== "");
+  if (tlA.length !== tlB.length) return false;
+  for (let i = 0; i < tlA.length; i++) {
+    if (s(tlA[i]?.year) !== s(tlB[i]?.year)) return false;
+    if (s(tlA[i]?.position) !== s(tlB[i]?.position)) return false;
+    if (s(tlA[i]?.chapter) !== s(tlB[i]?.chapter)) return false;
+    if (s(tlA[i]?.description) !== s(tlB[i]?.description)) return false;
+  }
+
   return true;
 }
 
@@ -515,13 +533,14 @@ export default function ProfilePage() {
     defaultValues: {
       name: "", image: "",
       current_status: "", bio: "",
-      skills: [], social_links: [], stats: {}, achievements: [], projects: [],
+      skills: [], social_links: [], stats: {}, achievements: [], projects: [], timeline: [],
     },
   });
 
   const { fields: linkFields, append: appendLink, remove: removeLink, swap: swapLinks } = useFieldArray({ control, name: "social_links" });
   const { fields: achFields, append: appendAch, remove: removeAch, swap: swapAch } = useFieldArray({ control, name: "achievements" });
   const { fields: projFields, append: appendProj, remove: removeProj, update: updateProj } = useFieldArray({ control, name: "projects" });
+  const { fields: tlFields, prepend: prependTl, remove: removeTl, swap: swapTl } = useFieldArray({ control, name: "timeline" });
 
   const formData = watch();
   const hasChanges = isDirty || !areProfilesEqual(formData, originalData);
@@ -791,7 +810,7 @@ export default function ProfilePage() {
                   Tech Stack &amp; Skills
                 </label>
                 <DebouncedSelect
-                  options={AVAILABLE_SKILLS.filter(s => !(formData.skills || []).includes(s)).map(s => ({ acronym: s, name: s }))}
+                  options={AVAILABLE_SKILLS.filter(s => !(formData.skills || []).includes(s)).map(s => ({ value: s, label: s }))}
                   value=""
                   onChange={(val) => {
                     const current = formData.skills || [];
@@ -1022,6 +1041,112 @@ export default function ProfilePage() {
                   })}
                   {projFields.length === 0 && (
                     <div className="text-xs opacity-30 italic uppercase tracking-wider text-center py-4 col-span-2">// Add the projects that you&apos;re working on</div>
+                  )}
+                </div>
+              </div>
+
+              {/* ── Timeline ──────────────────────────────────────────────── */}
+              <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-[#00ff9d] text-sm">&#x29E9;</span>
+                  <span className="uppercase text-sm">Timeline</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <label className="text-xs uppercase tracking-widest text-[rgba(200,255,232,0.45)]">IEEE Journey</label>
+                  <button
+                    type="button"
+                    onClick={() => prependTl({ year: "", position: "", chapter: "", description: "" })}
+                    className="text-sm flex items-center gap-2 border border-[#00ff9d] px-2 py-1 hover:bg-[rgba(0,255,157,0.1)] transition-colors"
+                  >
+                    <Plus size={14} /> Add Entry
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  {tlFields.map((field, idx) => (
+                    <div
+                      key={field.id}
+                      draggable
+                      onDragStart={(e) => { e.dataTransfer.setData("text/plain", String(idx)); e.currentTarget.classList.add("opacity-40"); }}
+                      onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("border-[#00ff9d]", "border"); }}
+                      onDragLeave={(e) => { e.currentTarget.classList.remove("border-[#00ff9d]", "border"); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove("border-[#00ff9d]", "border");
+                        const from = parseInt(e.dataTransfer.getData("text/plain"));
+                        if (!isNaN(from) && from !== idx) swapTl(from, idx);
+                      }}
+                      onDragEnd={(e) => { e.currentTarget.classList.remove("opacity-40", "border-[#00ff9d]", "border"); }}
+                      className="bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.12)] rounded p-4 cursor-grab active:cursor-grabbing"
+                    >
+                      <div className="flex gap-2 items-start">
+                        <div className="flex items-center pt-2 text-[rgba(200,255,232,0.25)] hover:text-[#00ff9d] transition-colors flex-shrink-0">
+                          <GripVertical size={16} />
+                        </div>
+                        <div className="flex-1 space-y-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <div>
+                              <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">Year</label>
+                              <input
+                                {...register(`timeline.${idx}.year`)}
+                                placeholder="e.g. 2024-25"
+                                className={`w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-1.5 text-xs outline-none focus:border-[#00ff9d] text-[#00ff9d] transition-colors ${errCls(!!(errors.timeline?.[idx]?.year))}`}
+                              />
+                              <FieldError msg={(errors.timeline?.[idx]?.year as any)?.message} />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">Position / Role</label>
+                              <Controller
+                                control={control}
+                                name={`timeline.${idx}.position`}
+                                render={({ field }) => (
+                                  <DebouncedSelect
+                                    options={IEEE_POSITIONS.map(p => ({ value: p.value, label: p.name }))}
+                                    value={field.value || ""}
+                                    onChange={(val) => {
+                                      field.onChange(val);
+                                      setValue(`timeline.${idx}.position`, val, { shouldDirty: true });
+                                      if (val === "volunteer") {
+                                        setValue(`timeline.${idx}.chapter`, "", { shouldDirty: true });
+                                      }
+                                    }}
+                                    placeholder="Select position..."
+                                  />
+                                )}
+                              />
+                            </div>
+                            {formData.timeline?.[idx]?.position !== "volunteer" && (
+                              <div>
+                                <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">Chapter</label>
+                                <Controller
+                                  control={control}
+                                  name={`timeline.${idx}.chapter`}
+                                  render={({ field }) => (
+                                    <DebouncedSelect
+                                      options={CHAPTER_OPTIONS}
+                                      value={field.value || ""}
+                                      onChange={(val) => { field.onChange(val); setValue(`timeline.${idx}.chapter`, val, { shouldDirty: true }); }}
+                                      placeholder="Select chapter..."
+                                    />
+                                  )}
+                                />
+                              </div>
+                            )}
+                          </div>
+                          <textarea
+                            {...register(`timeline.${idx}.description`)}
+                            placeholder="Optional description of your role and responsibilities..."
+                            rows={2}
+                            className="w-full bg-transparent border-b border-[rgba(0,255,157,0.1)] py-1 outline-none focus:border-[rgba(0,255,157,0.3)] text-sm text-[rgba(200,255,232,0.6)] placeholder:text-[rgba(200,255,232,0.2)] resize-none transition-colors"
+                          />
+                        </div>
+                        <button type="button" onClick={() => removeTl(idx)} className="text-[#ff4fd8] flex-shrink-0 mt-1">
+                          <X size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {tlFields.length === 0 && (
+                    <div className="text-xs opacity-30 italic uppercase tracking-wider text-center py-4">// Add your IEEE journey timeline entries</div>
                   )}
                 </div>
               </div>

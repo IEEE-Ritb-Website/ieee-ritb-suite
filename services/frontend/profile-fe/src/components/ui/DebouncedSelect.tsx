@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { Search, ChevronDown } from "lucide-react";
 
 interface Option {
-  acronym: string;
-  name: string;
+  value: string;
+  label: string;
 }
 
 interface DebouncedSelectProps {
@@ -37,10 +37,10 @@ export const DebouncedSelect = ({ options, value, onChange, placeholder = "Searc
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const selected = options.find(o => o.acronym === value);
+  const selected = options.find(o => o.value === value);
   const filtered = options.filter(o =>
-    o.acronym.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-    o.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+    o.value.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+    o.label.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
   return (
@@ -52,7 +52,7 @@ export const DebouncedSelect = ({ options, value, onChange, placeholder = "Searc
         className="w-full flex items-center justify-between bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-2 text-xs outline-none focus:border-[#00ff9d] text-[#00ff9d] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
       >
         <span className={value ? "text-[#00ff9d]" : "text-[rgba(200,255,232,0.45)]"}>
-          {selected ? `${selected.acronym} — ${selected.name}` : value || placeholder}
+          {selected ? selected.label : value || placeholder}
         </span>
         <ChevronDown size={14} className={`text-[#00ff9d] transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -77,13 +77,12 @@ export const DebouncedSelect = ({ options, value, onChange, placeholder = "Searc
             ) : (
               filtered.map(opt => (
                 <button
-                  key={opt.acronym}
+                  key={opt.value}
                   type="button"
-                  onClick={() => { onChange(opt.acronym); setOpen(false); }}
-                  className={`w-full text-left px-3 py-2 text-xs hover:bg-[rgba(0,255,157,0.08)] transition-colors ${opt.acronym === value ? "text-[#00ff9d] bg-[rgba(0,255,157,0.06)]" : "text-[rgba(200,255,232,0.6)]"}`}
+                  onClick={() => { onChange(opt.value); setOpen(false); }}
+                  className={`w-full text-left px-3 py-2 text-xs hover:bg-[rgba(0,255,157,0.08)] transition-colors ${opt.value === value ? "text-[#00ff9d] bg-[rgba(0,255,157,0.06)]" : "text-[rgba(200,255,232,0.6)]"}`}
                 >
-                  <span className="font-medium">{opt.acronym}</span>
-                  <span className="text-[rgba(200,255,232,0.3)] ml-2">— {opt.name}</span>
+                  {opt.label}
                 </button>
               ))
             )}

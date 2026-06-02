@@ -108,6 +108,7 @@ export async function GET(req: NextRequest) {
     chapters: safeParseJson(user.chapters),
     skills: safeParseJson(profile.skills),
     social_links: safeParseJson(profile.social_links),
+    timeline: safeParseJson(profile.timeline),
   };
 
   return NextResponse.json(mergedProfile);
@@ -188,6 +189,17 @@ function hasProfileChanged(oldProfile: any, newProfile: any): boolean {
   if (skillsA.length !== skillsB.length) return true;
   for (let i = 0; i < skillsA.length; i++) {
     if (normString(skillsA[i]) !== normString(skillsB[i])) return true;
+  }
+
+  // Compare timeline
+  const tlA = (a.timeline || []).filter((t: any) => normString(t?.year) !== "" && normString(t?.position) !== "");
+  const tlB = (b.timeline || []).filter((t: any) => normString(t?.year) !== "" && normString(t?.position) !== "");
+  if (tlA.length !== tlB.length) return true;
+  for (let i = 0; i < tlA.length; i++) {
+    if (normString(tlA[i]?.year) !== normString(tlB[i]?.year)) return true;
+    if (normString(tlA[i]?.position) !== normString(tlB[i]?.position)) return true;
+    if (normString(tlA[i]?.chapter) !== normString(tlB[i]?.chapter)) return true;
+    if (normString(tlA[i]?.description) !== normString(tlB[i]?.description)) return true;
   }
 
   return false;

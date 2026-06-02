@@ -56,6 +56,13 @@ export const projectSchema = z.object({
   link: z.string().url("Must be a valid URL").or(z.literal("")).optional(),
 });
 
+export const timelineSchema = z.object({
+  year: z.string().min(1, "Year is required"),
+  position: z.string().min(1, "Position is required"),
+  chapter: z.string().optional().or(z.literal("")),
+  description: z.string().optional().or(z.literal("")),
+});
+
 export const profileSchema = z.object({
   name: z.string().min(1, "Name is required"),
   image: z.string().optional().or(z.literal("")),
@@ -73,6 +80,7 @@ export const profileSchema = z.object({
   department: z.string().optional(),
   github_username: z.string().optional().or(z.literal("")),
   leetcode_username: z.string().optional().or(z.literal("")),
+  timeline: z.array(timelineSchema).default([]),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
