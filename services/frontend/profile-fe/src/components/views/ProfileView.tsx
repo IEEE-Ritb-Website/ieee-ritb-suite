@@ -8,6 +8,7 @@ import {
   Badge,
   OpenTag
 } from "@/components/ui";
+import { ContributionGraph } from "@/components/ui/ContributionGraph";
 import { IconCloud } from "@/components/ui/IconCloud";
 import { SKILL_TO_SLUG } from "@/lib/skill-slugs";
 import { ChevronDown, ExternalLink, Github, Globe, Brain, Terminal, ShieldAlert, FileText, Cpu, Smartphone, Gamepad2, Wrench, Lightbulb, Link2, type LucideIcon, MoveRight } from "lucide-react";
@@ -48,6 +49,9 @@ interface ProfileViewProps {
     current_status?: string | null;
     bio?: string | null;
     skills?: string[];
+    batch_of?: string;
+    department?: string;
+    term: string;
     achievements?: Array<{
       title: string;
       badge_type: 'hackathon' | 'gsoc' | 'open_source' | 'certification' | 'award';
@@ -67,6 +71,8 @@ interface ProfileViewProps {
       description?: string;
       link?: string;
     }>;
+    github_username?: string;
+    leetcode_username?: string;
   };
 }
 
@@ -289,6 +295,15 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
         <div className="font-vt text-3xl text-[#00ff9d] leading-tight mb-2 uppercase">
           {data.name}
         </div>
+        {(data.batch_of || data.department) && (
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-[#00ff9d] uppercase font-vt tracking-wider mt-1 mb-2">
+            {data.batch_of && (
+              <span className="border border-[rgba(0,255,157,0.3)] bg-[rgba(0,255,157,0.06)] px-2 py-0.5 rounded-[2px]">
+                TERM ACTIVE: {data.term}
+              </span>
+            )}
+          </div>
+        )}
         <div className="text-[12px] text-[rgba(200,255,232,0.45)] leading-[1.7] mt-2.5">
           {data.bio}
         </div>
@@ -312,6 +327,13 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
           </div>
         )}
       </SectionBlock>
+
+      {/* Contribution Graph */}
+      {(data.github_username || data.leetcode_username) && (
+        <SectionBlock title="CONTRIBUTION LOG">
+          <ContributionGraph github={data.github_username} leetcode={data.leetcode_username} />
+        </SectionBlock>
+      )}
 
       {/* Honors & Achievements — Accordion */}
       <SectionBlock title="HONORS & ACHIEVEMENTS">

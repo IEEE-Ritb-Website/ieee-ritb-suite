@@ -3,7 +3,7 @@ import React from 'react';
 export const StatBox = ({ num, label }: { num: string, label: string }) => (
   <div className="bg-[rgba(0,255,157,0.03)] border border-[rgba(0,255,157,0.25)] rounded-[3px] p-2.5 text-center">
     <div className="font-vt text-[26px] text-[#00ff9d] leading-none">{num}</div>
-    <div className="text-[9px] text-[rgba(200,255,232,0.45)] tracking-[0.1em] mt-0.5 uppercase">{label}</div>
+    <div className="text-xs text-[rgba(200,255,232,0.45)] tracking-[0.1em] mt-0.5 uppercase">{label}</div>
   </div>
 );
 
@@ -43,7 +43,7 @@ export const TimelineItem = ({ year, title, subtitle, badge, badgeColor }: { yea
         <div className="text-[#c8ffe8] text-[12px] mb-0.5 flex items-center flex-wrap gap-2">
           {title}
           {badge && badgeColor && (
-            <span className={`text-[9px] px-1.5 py-[1px] rounded-[2px] border ${badgeStyles[badgeColor]}`}>
+            <span className={`text-xs px-1.5 py-[1px] rounded-[2px] border ${badgeStyles[badgeColor]}`}>
               {badge}
             </span>
           )}

@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "onboard": "tsx scripts/onboard-users.mts"
+    "onboard": "tsx scripts/onboard-users.mts",
+    "normalize": "tsx scripts/db-normalize.mts"
   },
   "dependencies": {
     "@astranova/catalogues": "workspace:*",

@@ -11,24 +11,26 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
   const client = await clientPromise;
   const db = client.db(getDbName());
 
-  // Find authoritative system user record first
+  // Find authoritative system user record first (since username is in user)
   const user = await db.collection("user").findOne({ username });
   if (!user) {
     notFound();
   }
 
-  let profileDoc = await db.collection("profile").findOne({ username });
+  // Find corresponding profile record by userId
+  let profileDoc = await db.collection("profile").findOne({ userId: user._id.toString() });
 
   if (!profileDoc) {
-    return (
-      <div className="min-h-screen bg-[#0d0d1a] text-[#c8ffe8] font-mono flex items-center justify-center">
-        <ScanlineOverlay />
-        <div className="text-center">
-          <h1 className="text-[#00ff9d] text-4xl mb-4 uppercase shadow-[0_0_20px_rgba(0,255,157,0.3)]">Profile Encrypted</h1>
-          <p className="opacity-50">Detailed system profile for @{username} has not been initialized.</p>
-        </div>
-      </div>
-    );
+    // Create minimal profile doc on the fly
+    profileDoc = {
+      _id: user._id,
+      name: user.name,
+      skills: [],
+      social_links: [],
+      stats: {},
+      achievements: [],
+      projects: [],
+    };
   }
 
   const safeParseJson = (val: any) => {
@@ -43,14 +45,15 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
   const profile = {
     ...JSON.parse(JSON.stringify(profileDoc)),
     name: user.name || profileDoc.name,
-    username: user.username || profileDoc.username,
+    username: user.username,
     membershipId: user.membershipId,
     department: user.department,
     year: user.year,
     batch: user.batch,
-    chapters: safeParseJson(user.chapters || profileDoc.chapters),
-    positions: safeParseJson(user.positions || profileDoc.positions),
-    skills: safeParseJson(user.skills || profileDoc.skills),
+    batch_of: user.batch_of,
+    term: user.term,
+    chapters: safeParseJson(user.chapters),
+    skills: safeParseJson(profileDoc.skills),
     social_links: safeParseJson(profileDoc.social_links),
     achievements: safeParseJson(profileDoc.achievements),
     projects: safeParseJson(profileDoc.projects),

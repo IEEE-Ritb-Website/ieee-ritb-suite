@@ -14,9 +14,10 @@ interface SidebarProps {
     name: string;
     username: string;
     image?: string;
-    // TODO: batch is required but not in schema
-    // batch: string;
+    batch_of?: string;
+    batch?: string;
     year?: string;
+    term?: string;
     chapters?: any[];
     social_links?: { label: string; link: string }[];
     department?: string;
@@ -80,7 +81,7 @@ export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: Sideb
     if (!match) return null;
     return {
       ...match,
-      position: typeof ch === 'string' ? 'Member' : ch?.position || 'Member'
+      position: typeof ch === 'string' ? 'Execom' : ch?.position || 'Execom'
     };
   }).filter(Boolean);
 
@@ -114,24 +115,30 @@ export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: Sideb
         <div className="mt-2">
           <button
             onClick={handleShare}
-            className="w-full flex gap-2 items-center justify-center text-md cursor-pointer uppercase tracking-widest border border-[#ff4fd8] py-1 bg-[rgba(255,79,216,0.05)] hover:bg-[rgba(255,79,216,0.15)] transition-all text-[#ff4fd8]"
+            className="w-full flex gap-2 items-center justify-center text-xs cursor-pointer uppercase tracking-widest border border-[#ff4fd8] py-1.5 bg-[rgba(255,79,216,0.05)] hover:bg-[rgba(255,79,216,0.15)] transition-all text-[#ff4fd8] rounded-[2px]"
           >
-            <Share2 size={16} />
-            {/* Share Profile */}
+            <Share2 size={12} />
+            <span>Share Profile</span>
           </button>
         </div>
       </div>
 
       <div>
         <h1 className="font-vt text-[28px] text-[#00ff9d] tracking-[1px] leading-tight m-0 uppercase">{user.name || "UNNAMED"}</h1>
-        {/* <div className="text-[11px] text-[rgba(200,255,232,0.45)] tracking-[0.1em]">@{user.username || "unknown"}</div> */}
-        <div className="inline-block bg-[rgba(0,255,157,0.08)] border border-[rgba(0,255,157,0.3)] text-[#00ff9d] text-sm px-2 py-0.5 rounded-[2px] tracking-[0.08em] mt-1.5 uppercase">
-          Year of Study: {user.year || "N/A"}
+        {/* <div className="text-[11px] text-[rgba(200,255,232,0.45)] tracking-[0.1em] uppercase">@{user.username || "unknown"}</div> */}
+        {(() => {
+          const termEndYear = user.term ? parseInt(user.term.slice(0, 2) + user.term.slice(-2)) : null;
+          const isTermOver = termEndYear ? new Date().getFullYear() > termEndYear : false;
+          return (
+            <div className="inline-block bg-[rgba(0,255,157,0.08)] border border-[rgba(0,255,157,0.3)] text-[#00ff9d] text-sm px-2 py-0.5 rounded-[2px] tracking-[0.08em] mt-1.5 uppercase">
+              {isTermOver ? `Term: ${user.term}` : `Year of Study: ${user.year || "N/A"}`}
+            </div>
+          );
+        })()}
+        <div className="flex pt-2 text-sm text-[rgba(200,255,232,0.65)] font-mono leading-relaxed">
+          <span className="text-[rgba(200,255,232,0.35)]">BATCH OF: </span>
+          <span className="text-[#00ff9d]">{user.batch_of || user.batch || "N/A"}</span>
         </div>
-        {/* TODO: batch is required but not in schema */}
-        {/* <div className="flex pt-2 text-sm text-[rgba(200,255,232,0.65)] font-mono leading-relaxed">
-          <span className="text-[#00ff9d]">{user.batch || "N/A"}</span>
-        </div> */}
         {/* Official Registry Data (System-Locked) */}
         <div className="flex pt-2 text-sm text-[rgba(200,255,232,0.65)] font-mono leading-relaxed">
           <span className="text-[rgba(200,255,232,0.35)]">DEPT: </span>
@@ -150,7 +157,7 @@ export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: Sideb
             onClick={() => setActiveChapterDetails(ch)}
           />
         )) : (
-          <div className="text-[10px] opacity-50">No affiliations detected</div>
+          <div className="text-xs opacity-50">No affiliations detected</div>
         )}
       </div>
 
@@ -160,7 +167,7 @@ export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: Sideb
           <LinkItem key={i} label={link.label} icon={<ExternalIcon />} href={link.link} />
         ))}
         {(!user.social_links || user.social_links.length === 0) && (
-          <div className="text-[10px] opacity-50">No links added</div>
+          <div className="text-xs opacity-50">No links added</div>
         )}
       </div>
 
@@ -177,7 +184,7 @@ export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: Sideb
               </h2>
             </div>
             {activeChapterDetails.type ?
-              <div className="inline-block px-2 py-0.5 rounded-[2px] border border-[rgba(0,255,157,0.3)] bg-[rgba(0,255,157,0.06)] text-[#00ff9d] uppercase text-[10px]">
+              <div className="inline-block px-2 py-0.5 rounded-[2px] border border-[rgba(0,255,157,0.3)] bg-[rgba(0,255,157,0.06)] text-[#00ff9d] uppercase text-xs">
                 {activeChapterDetails.type} society
               </div>
               : null}

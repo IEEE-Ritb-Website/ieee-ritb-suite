@@ -58,23 +58,21 @@ export const projectSchema = z.object({
 
 export const profileSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  username: usernameSchema,
-  email: z.string().email("Invalid email"),
   image: z.string().optional().or(z.literal("")),
   current_status: z.string().max(100, "Status must be at most 100 characters").optional().or(z.literal("")),
   bio: z.string().max(500, "Bio must be at most 500 characters").optional().or(z.literal("")),
-  chapters: z.array(chapterSchema).default([]),
   social_links: z.array(socialLinkSchema).default([]),
   stats: z.record(z.string(), z.string()).default({}),
   achievements: z.array(achievementSchema).default([]),
   projects: z.array(projectSchema).default([]),
   skills: z.array(z.string()).default([]),
   usn: z.string().optional(),
-  department: z.string().optional(),
   year: z.string().optional(),
   batch: z.string().optional(),
-  membershipId: z.string().optional(),
   phoneNumber: z.string().optional(),
+  department: z.string().optional(),
+  github_username: z.string().optional().or(z.literal("")),
+  leetcode_username: z.string().optional().or(z.literal("")),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;

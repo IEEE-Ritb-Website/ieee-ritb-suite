@@ -4,25 +4,22 @@ import { profileSchema } from "@/lib/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const username = searchParams.get("username");
+  const email = searchParams.get("email");
+  const userId = searchParams.get("userId");
 
-  if (!username) {
-    return NextResponse.json({ message: "Username is required" }, { status: 400 });
+  if (!username && !email && !userId) {
+    return NextResponse.json({ message: "Identifier is required" }, { status: 400 });
   }
 
   const client = await clientPromise;
   const db = client.db(getDbName());
   
-  // Find authoritative system user record first
-  const user = await db.collection("user").findOne({ username });
-  if (!user) {
-    return NextResponse.json({ message: "Profile not found" }, { status: 404 });
-  }
-
-  let profile = await db.collection("profile").findOne({ username });
-
   const safeParseJson = (val: any) => {
     if (typeof val === "string") {
       try {
@@ -35,39 +32,82 @@ export async function GET(req: NextRequest) {
     return Array.isArray(val) ? val : [];
   };
 
-  if (!profile) {
-    // Construct a minimal profile from user data
-    profile = {
-      _id: user._id,
-      name: user.name,
-      username: user.username,
-      email: user.email,
-      image: user.image,
-      chapters: safeParseJson(user.chapters),
-      skills: [],
-      social_links: [],
-      stats: {},
-      achievements: [],
-      projects: [],
-    };
+  let profile = null;
+  let user = null;
+
+  if (username) {
+    user = await db.collection("user").findOne({ username });
+    if (user) {
+      profile = await db.collection("profile").findOne({ userId: user._id.toString() });
+      if (!profile) {
+        // Create minimal profile
+        profile = {
+          _id: user._id,
+          name: user.name,
+          skills: [],
+          social_links: [],
+          stats: {},
+          achievements: [],
+          projects: [],
+        };
+      }
+    }
+  } else if (email) {
+    user = await db.collection("user").findOne({ email });
+    if (user) {
+      profile = await db.collection("profile").findOne({ userId: user._id.toString() });
+      if (!profile) {
+        // Create minimal profile on the fly
+        profile = {
+          _id: user._id,
+          name: user.name,
+          skills: [],
+          social_links: [],
+          stats: {},
+          achievements: [],
+          projects: [],
+        };
+      }
+    }
+  } else if (userId) {
+    user = await db.collection("user").findOne({ _id: userId as any });
+    if (user) {
+      profile = await db.collection("profile").findOne({ userId: user._id.toString() });
+      if (!profile) {
+        profile = {
+          _id: user._id,
+          name: user.name,
+          skills: [],
+          social_links: [],
+          stats: {},
+          achievements: [],
+          projects: [],
+        };
+      }
+    }
+  }
+
+  if (!user || !profile) {
+    return NextResponse.json({ message: "Profile not found" }, { status: 404 });
   }
 
   // Merge up-to-date authoritative user fields
   const mergedProfile = {
     ...profile,
     name: user.name || profile.name,
-    email: user.email || profile.email,
-    username: user.username || profile.username,
+    email: user.email,
+    username: user.username,
     membershipId: user.membershipId,
     usn: user.usn,
     phoneNumber: user.phoneNumber,
     year: user.year,
     batch: user.batch,
+    batch_of: user.batch_of,
     department: user.department,
-    chapters: safeParseJson(user.chapters || profile.chapters),
-    positions: safeParseJson(user.positions || profile.positions),
-    skills: safeParseJson(user.skills || profile.skills),
-    social_links: safeParseJson(user.social_links || profile.social_links),
+    term: user.term,
+    chapters: safeParseJson(user.chapters),
+    skills: safeParseJson(profile.skills),
+    social_links: safeParseJson(profile.social_links),
   };
 
   return NextResponse.json(mergedProfile);
@@ -83,7 +123,6 @@ function hasProfileChanged(oldProfile: any, newProfile: any): boolean {
   const b = newProfile || {};
 
   if (normString(a.name) !== normString(b.name)) return true;
-  if (normString(a.username) !== normString(b.username)) return true;
   if (normString(a.image) !== normString(b.image)) return true;
   if (normString(a.current_status) !== normString(b.current_status)) return true;
   if (normString(a.bio) !== normString(b.bio)) return true;
@@ -140,6 +179,9 @@ function hasProfileChanged(oldProfile: any, newProfile: any): boolean {
   }
 
 
+  if (normString(a.github_username) !== normString(b.github_username)) return true;
+  if (normString(a.leetcode_username) !== normString(b.leetcode_username)) return true;
+
   // Compare skills
   const skillsA = a.skills || [];
   const skillsB = b.skills || [];
@@ -178,69 +220,39 @@ export async function POST(req: NextRequest) {
   const client = await clientPromise;
   const db = client.db(getDbName());
 
-  // Get existing profile to preserve chapters and positions
-  const currentProfile = await db.collection("profile").findOne({ email: session.user.email });
+  // Get existing profile by userId
+  const currentProfile = await db.collection("profile").findOne({ userId: session.user.id });
 
   if (!hasProfileChanged(currentProfile, result.data)) {
     return NextResponse.json({ message: "No changes detected. Profile is already up-to-date." });
   }
 
-  const preservedChapters = currentProfile?.chapters || [];
-  const preservedPositions = currentProfile?.positions || [];
-
-  // Strict check: Is this username taken by someone ELSE in either our profile table OR BA user table?
-  const username = result.data.username;
-  
-  // 1. Check profiles collection
-  const existingProfile = await db.collection("profile").findOne({ 
-    username, 
-    email: { $ne: session.user.email } 
-  });
-  
-  if (existingProfile) {
-    return NextResponse.json({ message: "Username already taken by another profile" }, { status: 400 });
-  }
-
-  // 2. Check Better Auth user collection (to ensure consistency across the app)
-  // We assume the user table is named "user" as per standard Better Auth config
-  const existingUser = await db.collection("user").findOne({ 
-    username, 
-    email: { $ne: session.user.email } 
-  });
-
-  if (existingUser) {
-    return NextResponse.json({ message: "Username already taken by another system user" }, { status: 400 });
-  }
-
   // Update or Insert the profile document
   const profileData = {
     ...result.data,
-    chapters: preservedChapters, // Overwrite with preserved chapters
-    positions: preservedPositions, // Overwrite with preserved positions
     userId: session.user.id,
     updatedAt: new Date()
   };
 
   await db.collection("profile").updateOne(
-    { email: session.user.email },
+    { userId: session.user.id },
     { $set: profileData },
     { upsert: true }
   );
 
   // Sync basic info to Better Auth user collection
+  const userSyncFields: any = {
+    name: result.data.name,
+    image: result.data.image,
+    updatedAt: new Date()
+  };
+  if (result.data.department !== undefined) {
+    userSyncFields.department = result.data.department;
+  }
+
   await db.collection("user").updateOne(
-    { email: session.user.email },
-    {
-      $set: {
-        name: result.data.name,
-        image: result.data.image,
-        username: result.data.username,
-        skills: result.data.skills,
-        social_links: result.data.social_links,
-        // chapters are not updated here as they are managed by admin/onboarding
-        updatedAt: new Date()
-      }
-    }
+    { _id: session.user.id as any },
+    { $set: userSyncFields }
   );
 
   return NextResponse.json({ message: "Profile updated successfully" });

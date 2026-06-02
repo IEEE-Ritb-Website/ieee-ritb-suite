@@ -12,6 +12,16 @@ export const auth = betterAuth({
   database: mongodbAdapter(db),
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      const { sendResetPasswordEmail } = await import("./email");
+      sendResetPasswordEmail({
+        email: user.email,
+        name: user.name,
+        resetUrl: url,
+      }).catch((err) => {
+        console.error("Failed to send password reset email to", user.email, err);
+      });
+    },
   },
   user: {
     additionalFields: {
@@ -28,15 +38,15 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
-      social_links: {
-        type: "json",
-        required: false,
-      },
       chapters: {
         type: "json",
         required: false,
       },
       batch: {
+        type: "string",
+        required: false,
+      },
+      batch_of: {
         type: "string",
         required: false,
       },
@@ -64,13 +74,9 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
-      positions: {
-        type: "json",
-        defaultValue: [],
-      },
-      skills: {
-        type: "json",
-        defaultValue: [],
+      term: {
+        type: "string",
+        required: true,
       }
     }
   },

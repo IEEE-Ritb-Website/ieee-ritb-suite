@@ -9,13 +9,22 @@ import { ScanlineOverlay, HeaderBar } from "@/components/layout/Common";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ProfileView } from "@/components/views/ProfileView";
 import { profileSchema, projectSchema, type ProfileFormData } from "@/lib/schema";
+import { DebouncedSelect } from "@/components/ui/DebouncedSelect";
+import { DEPARTMENTS } from "@/lib/departments";
 import { Modal } from "@/components/ui";
 import { useToast } from "@/components/ui/use-toast";
 import {
   ChevronDown, Lock, Pen, X,
   Globe, Brain, Terminal, ShieldAlert, FileText, Cpu, Smartphone, Gamepad2, Wrench, Lightbulb,
-  UploadCloud,
-  type LucideIcon
+  Github, UploadCloud, Eye, EyeOff,
+  type LucideIcon,
+  Plus,
+  Pin,
+  Medal,
+  Code,
+  EyeIcon,
+  PencilIcon,
+  LogOut
 } from "lucide-react";
 import { z } from "zod";
 
@@ -74,7 +83,6 @@ function safeParseArray(val: any): any[] {
 function safeNormalizeProfile(data: any): ProfileFormData {
   return {
     ...data,
-    chapters: safeParseArray(data.chapters),
     skills: safeParseArray(data.skills),
     social_links: safeParseArray(data.social_links),
     achievements: safeParseArray(data.achievements),
@@ -86,7 +94,6 @@ function safeNormalizeProfile(data: any): ProfileFormData {
 function areProfilesEqual(a: Partial<ProfileFormData>, b: Partial<ProfileFormData>): boolean {
   const s = (v: any) => (v === null || v === undefined ? "" : String(v).trim());
   if (s(a.name) !== s(b.name)) return false;
-  if (s(a.username) !== s(b.username)) return false;
   if (s(a.image) !== s(b.image)) return false;
   if (s(a.current_status) !== s(b.current_status)) return false;
   if (s(a.bio) !== s(b.bio)) return false;
@@ -140,7 +147,7 @@ function areProfilesEqual(a: Partial<ProfileFormData>, b: Partial<ProfileFormDat
 // ─── Field error helper ───────────────────────────────────────────────────────
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null;
-  return <p className="text-[10px] text-[#ff4fd8] mt-1 tracking-wide">{msg}</p>;
+  return <p className="text-xs text-[#ff4fd8] mt-1 tracking-wide">{msg}</p>;
 }
 
 const errCls = (hasErr: boolean) =>
@@ -172,7 +179,7 @@ interface ProjectModalProps {
   defaultValues: Partial<ProjectFormValues>;
   onSave: (data: ProjectFormValues, editIdx: number | null) => void;
   onDelete: (idx: number) => void;
-  onRequestClose: () => void; // only called if form is clean
+  onRequestClose: () => void;
 }
 
 function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onRequestClose }: ProjectModalProps) {
@@ -182,7 +189,6 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
     watch,
     setValue,
     reset,
-    trigger,
     formState: { errors },
   } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectModalSchema as any),
@@ -205,18 +211,11 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
     onSave(data, editIdx);
   };
 
-  const attemptClose = async () => {
-    const isValid = await trigger(undefined, { shouldFocus: true });
-    if (isValid) {
-      onRequestClose();
-    }
-  };
-
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-start justify-center p-4 overflow-y-auto">
-      <div className="absolute inset-0 bg-[#0d0d1a]/90 backdrop-blur-md" onClick={() => { void attemptClose(); }} />
+      <div className="absolute inset-0 bg-[#0d0d1a]/90 backdrop-blur-md" onClick={onRequestClose} />
       <div className="relative w-full max-w-2xl bg-[#0d0d1a] border border-[#ff4fd8] rounded-[4px] shadow-[0_0_50px_rgba(255,79,216,0.15)] overflow-hidden my-8 animate-in zoom-in-95 duration-200">
         <div className="pointer-events-none absolute inset-0 z-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.03)_2px,rgba(0,0,0,0.03)_4px)]" />
         <div className="flex justify-between items-center px-5 py-3 border-b border-[rgba(255,79,216,0.25)] bg-[rgba(255,79,216,0.05)] relative z-10">
@@ -225,7 +224,7 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
           </h3>
           <button
             type="button"
-            onClick={() => { void attemptClose(); }}
+            onClick={onRequestClose}
             className="text-[#ff4fd8] hover:text-[#ffb700] transition-colors font-bold uppercase text-xs"
           >
             Close [X]
@@ -285,7 +284,7 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
             />
             <div className="flex justify-between mt-0.5">
               <FieldError msg={errors.short_description?.message} />
-              <span className="text-[10px] text-[rgba(200,255,232,0.3)] ml-auto">
+              <span className="text-xs text-[rgba(200,255,232,0.3)] ml-auto">
                 {shortDesc.trim().split(/\s+/).filter(Boolean).length} / 50 words
               </span>
             </div>
@@ -305,7 +304,7 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
             />
             <div className="flex justify-between mt-0.5">
               <FieldError msg={errors.long_description?.message} />
-              <span className="text-[10px] text-[rgba(200,255,232,0.3)] ml-auto">
+              <span className="text-xs text-[rgba(200,255,232,0.3)] ml-auto">
                 {longDesc.trim().split(/\s+/).filter(Boolean).length} / 200 words
               </span>
             </div>
@@ -398,6 +397,7 @@ export default function ProfilePage() {
   const router = useRouter();
 
   const [session, setSession] = useState<any>(null);
+  const [fullProfile, setFullProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -405,6 +405,86 @@ export default function ProfilePage() {
   const [stagedImageFile, setStagedImageFile] = useState<File | null>(null);
   const [stagedImagePreview, setStagedImagePreview] = useState<string | null>(null);
   const [originalData, setOriginalData] = useState<Partial<ProfileFormData>>({});
+
+  // Security and Password change states
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+  // GitHub / LeetCode linking state
+  const [showGitHubModal, setShowGitHubModal] = useState(false);
+  const [showLeetCodeModal, setShowLeetCodeModal] = useState(false);
+  const [gitHubInput, setGitHubInput] = useState("");
+  const [leetCodeInput, setLeetCodeInput] = useState("");
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      toast({
+        title: "Validation Error",
+        description: "All password fields are required.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast({
+        title: "Security Warning",
+        description: "New password must be at least 8 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      toast({
+        title: "Validation Error",
+        description: "Passwords do not match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      const { error } = await authClient.changePassword({
+        newPassword: newPassword,
+        currentPassword: currentPassword,
+        revokeOtherSessions: true,
+      });
+
+      if (error) {
+        toast({
+          title: "Update Denied",
+          description: error.message || "Failed to update security key.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Registry Updated",
+          description: "System password updated and other sessions revoked.",
+          variant: "success",
+        });
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmNewPassword("");
+        setShowPasswordModal(false);
+      }
+    } catch (err) {
+      console.error("Change password error:", err);
+      toast({
+        title: "Connection Failure",
+        description: "Security telemetry update timed out.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
 
   // Project modal state — just tracks open/editIdx; data flows via reset()
   const [projectModal, setProjectModal] = useState<{
@@ -425,9 +505,9 @@ export default function ProfilePage() {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema as any),
     defaultValues: {
-      name: "", username: "", email: "", image: "",
+      name: "", image: "",
       current_status: "", bio: "",
-      chapters: [], skills: [], social_links: [], stats: {}, achievements: [], projects: [],
+      skills: [], social_links: [], stats: {}, achievements: [], projects: [],
     },
   });
 
@@ -461,12 +541,13 @@ export default function ProfilePage() {
       }
       setSession(data);
       try {
-        const response = await fetch(`/api/profile?username=${(data.user as any).username}`);
+        const response = await fetch(`/api/profile?email=${data.user.email}`);
         const profile = response.ok ? await response.json() : {
           name: data.user.name, email: data.user.email,
           username: (data.user as any).username,
           chapters: [], social_links: [], stats: {}, achievements: [], projects: [],
         };
+        setFullProfile(profile);
         const normalized = safeNormalizeProfile(profile);
         reset(normalized);
         setOriginalData(normalized);
@@ -520,7 +601,7 @@ export default function ProfilePage() {
           body: JSON.stringify(dataToSave),
         });
         if (response.ok) {
-          const refresh = await fetch(`/api/profile?username=${data.username}`);
+          const refresh = await fetch(`/api/profile?email=${session.user.email}`);
           if (refresh.ok) {
             const updated = await refresh.json();
             const normalized = safeNormalizeProfile(updated);
@@ -582,24 +663,40 @@ export default function ProfilePage() {
         <div className="flex gap-4 items-center">
           <button
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`text-sm px-3 py-1 border transition-all uppercase tracking-widest ${isEditMode
+            className={`text-sm flex gap-2 items-center px-3 py-1 border transition-all uppercase tracking-widest ${isEditMode
               ? "bg-[#00ff9d] text-[#0d0d1a] border-[#00ff9d]"
               : "border-[rgba(0,255,157,0.4)] text-[#00ff9d] hover:bg-[rgba(0,255,157,0.1)]"
               }`}
           >
-            {isEditMode ? "View Profile" : "Edit Profile"}
+            {isEditMode ?
+              <>
+                <EyeIcon size={14} /> View Profile
+              </> : <>
+                <PencilIcon size={14} /> Edit Profile
+              </>
+            }
           </button>
         </div>
         <button
           onClick={() => authClient.signOut().then(() => router.push("/auth/sign-in"))}
-          className="text-sm text-[#ff4fd8] border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest"
+          className="text-sm text-[#ff4fd8] flex gap-2 items-center border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest"
         >
+          <LogOut size={12} />
           Logout
         </button>
       </div>
 
       <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)]">
-        <Sidebar user={formData as any} isEditMode={isEditMode} openModal={() => setIsModalOpen(true)} />
+        <Sidebar
+          user={{
+            ...fullProfile,
+            name: formData.name || fullProfile?.name,
+            image: formData.image || fullProfile?.image,
+            social_links: formData.social_links || fullProfile?.social_links,
+          } as any}
+          isEditMode={isEditMode}
+          openModal={() => setIsModalOpen(true)}
+        />
 
         <main className="flex-1 p-6 flex flex-col gap-6 max-w-5xl relative z-10 pb-24">
           {isEditMode ? (
@@ -643,6 +740,15 @@ export default function ProfilePage() {
                   <FieldError msg={errors.bio?.message} />
                 </div>
               </div>
+              <div>
+                <label className="block text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)] mb-1">Department <Pen size={12} /></label>
+                <DebouncedSelect
+                  options={DEPARTMENTS}
+                  value={formData.department || ""}
+                  onChange={(val) => setValue("department", val, { shouldDirty: true })}
+                  placeholder="Select department..."
+                />
+              </div>
 
               {/* ── System Information (readonly) ───────────────────────────── */}
               <div className="border-t border-[rgba(0,255,157,0.1)] pt-6 space-y-4">
@@ -655,12 +761,12 @@ export default function ProfilePage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {[
-                    ["USN", formData.usn],
-                    ["Department", formData.department],
-                    ["Year of Study", formData.year],
-                    ["IEEE Membership ID", formData.membershipId],
-                    ["Phone Number", formData.phoneNumber],
-                    ["Email", formData.email],
+                    ["Email", fullProfile?.email],
+                    ["USN", fullProfile?.usn || formData.usn],
+                    ["Phone Number", fullProfile?.phoneNumber || formData.phoneNumber],
+                    ["Batch Of", fullProfile?.batch_of || fullProfile?.batch],
+                    ["Year of Study", fullProfile?.year || formData.year],
+                    ["IEEE Membership ID", fullProfile?.membershipId],
                   ].map(([label, value]) => (
                     <div key={label as string}>
                       <label className="block text-xs uppercase text-[rgba(200,255,232,0.35)] mb-1">{label}</label>
@@ -672,32 +778,21 @@ export default function ProfilePage() {
 
               {/* ── Tech Stack & Skills ─────────────────────────────────────── */}
               <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
-                <label className="text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)]">
-                  Tech Stack &amp; Skills <Pen size={12} />
+                <Terminal size={22} className="text-[#00ff9d]" />
+                <label className="text-sm uppercase flex gap-2">
+                  Tech Stack &amp; Skills
                 </label>
-                <div className="relative max-w-xl">
-                  <select
-                    value=""
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      const current = formData.skills || [];
-                      if (val && !current.includes(val)) {
-                        setValue("skills", [...current, val], { shouldDirty: true });
-                      }
-                    }}
-                    className="w-full appearance-none bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-2.5 pr-10 text-xs outline-none focus:border-[#00ff9d] text-[rgba(200,255,232,0.45)] cursor-pointer transition-all"
-                  >
-                    <option value="" disabled className="bg-[#0d0d1a] italic">
-                      Select from a list of hardware / software skills...
-                    </option>
-                    {AVAILABLE_SKILLS.filter(s => !(formData.skills || []).includes(s)).map(skill => (
-                      <option key={skill} value={skill} className="text-[#00ff9d] bg-[#0d0d1a]">{skill}</option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#00ff9d]">
-                    <ChevronDown size={14} className="opacity-70" />
-                  </div>
-                </div>
+                <DebouncedSelect
+                  options={AVAILABLE_SKILLS.filter(s => !(formData.skills || []).includes(s)).map(s => ({ acronym: s, name: s }))}
+                  value=""
+                  onChange={(val) => {
+                    const current = formData.skills || [];
+                    if (val && !current.includes(val)) {
+                      setValue("skills", [...current, val], { shouldDirty: true });
+                    }
+                  }}
+                  placeholder="Search hardware / software skills..."
+                />
 
                 <div className="flex flex-wrap gap-2 pt-3 bg-[rgba(0,255,157,0.01)] border border-dashed border-[rgba(0,255,157,0.15)] p-4 rounded min-h-[60px] items-center">
                   {(formData.skills || []).length > 0 ? (formData.skills || []).map((skill) => (
@@ -716,14 +811,15 @@ export default function ProfilePage() {
 
               {/* ── Social Links ────────────────────────────────────────────── */}
               <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
+                <Pin size={22} className="text-[#00ff9d]" />
                 <div className="flex justify-between items-center">
-                  <label className="text-xs uppercase tracking-widest text-[rgba(200,255,232,0.45)]">Links</label>
+                  <label className="text-sm uppercase tracking-widest">Links</label>
                   <button
                     type="button"
                     onClick={() => appendLink({ label: "", link: "" })}
-                    className="text-xs border border-[#00ff9d] px-2 py-1 hover:bg-[rgba(0,255,157,0.1)] transition-colors"
+                    className="text-sm flex items-center gap-2 border border-[#00ff9d] px-2 py-1 hover:bg-[rgba(0,255,157,0.1)] transition-colors"
                   >
-                    + Add Link
+                    <Plus size={14} /> Add Link
                   </button>
                 </div>
                 <div className="grid grid-cols-1 gap-3">
@@ -752,14 +848,15 @@ export default function ProfilePage() {
 
               {/* ── Achievements ────────────────────────────────────────────── */}
               <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
+                <Medal size={22} className="text-[#00ff9d]" />
                 <div className="flex justify-between items-center">
-                  <label className="text-xs uppercase tracking-widest text-[rgba(200,255,232,0.45)]">Honors &amp; Achievements</label>
+                  <label className="text-sm uppercase tracking-widest">Honors &amp; Achievements</label>
                   <button
                     type="button"
                     onClick={() => appendAch({ title: "", badge_type: "hackathon", date: "", description: "", link: "" })}
-                    className="text-xs border border-[#00ff9d] px-2 py-1 hover:bg-[rgba(0,255,157,0.1)] transition-colors"
+                    className="text-sm flex items-center gap-2 border border-[#00ff9d] px-2 py-1 hover:bg-[rgba(0,255,157,0.1)] transition-colors"
                   >
-                    + Add Achievement
+                    <Plus size={14} /> Add Achievement
                   </button>
                 </div>
                 <div className="grid grid-cols-1 gap-3">
@@ -825,14 +922,15 @@ export default function ProfilePage() {
 
               {/* ── Projects ────────────────────────────────────────────────── */}
               <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
+                <Code size={22} className="text-[#00ff9d]" />
                 <div className="flex justify-between items-center">
-                  <label className="text-xs uppercase tracking-widest text-[rgba(200,255,232,0.45)]">Projects</label>
+                  <label className="text-sm uppercase tracking-widest text-[rgba(200,255,232,0.45)]">Projects</label>
                   <button
                     type="button"
                     onClick={() => setProjectModal({ open: true, editIdx: null, defaultValues: { type: "other", tags: [] } })}
-                    className="text-xs border border-[#ff4fd8] text-[#ff4fd8] px-2 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-colors"
+                    className="text-sm flex items-center gap-2 border border-[#ff4fd8] text-[#ff4fd8] px-2 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-colors"
                   >
-                    + Add Project
+                    <Plus size={14} />Add Project
                   </button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -862,18 +960,18 @@ export default function ProfilePage() {
                           </div>
                           <div className="min-w-0">
                             <div className="text-xs font-bold text-[#00ff9d] uppercase truncate">{proj.title || "Untitled Project"}</div>
-                            <div className="text-[10px]" style={{ color: iconColor, opacity: 0.55 }}>{typeLabel}</div>
+                            <div className="text-xs" style={{ color: iconColor, opacity: 0.55 }}>{typeLabel}</div>
                           </div>
                         </div>
                         {proj.short_description && (
-                          <p className="text-[10px] text-[rgba(200,255,232,0.5)] line-clamp-2">{proj.short_description}</p>
+                          <p className="text-sm text-[rgba(200,255,232,0.5)] line-clamp-2">{proj.short_description}</p>
                         )}
                         {proj.tags && proj.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {proj.tags.slice(0, 3).map(tag => (
-                              <span key={tag} className="text-xs opacity-40" style={{ color: iconColor }}>#{tag}</span>
+                              <span key={tag} className="text-sm opacity-40" style={{ color: iconColor }}>#{tag}</span>
                             ))}
-                            {proj.tags.length > 3 && <span className="text-xs opacity-30 text-[rgba(200,255,232,0.4)]">+{proj.tags.length - 3}</span>}
+                            {proj.tags.length > 3 && <span className="text-sm opacity-30 text-[rgba(200,255,232,0.4)]">+{proj.tags.length - 3}</span>}
                           </div>
                         )}
                       </div>
@@ -884,9 +982,84 @@ export default function ProfilePage() {
                   )}
                 </div>
               </div>
+
+              {/* ── Connected Accounts (GitHub / LeetCode) ──────────────────── */}
+              <div className="border-t border-[rgba(0,255,157,0.1)] pt-6 space-y-4">
+                <label className="text-xs uppercase tracking-widest text-[rgba(200,255,232,0.45)]">Connected Accounts</label>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] p-3 rounded">
+                    <div className="flex items-center gap-3">
+                      <Github size={16} className="text-[rgba(200,255,232,0.4)]" />
+                      <div>
+                        <div className="text-xs uppercase tracking-wider text-[rgba(200,255,232,0.6)]">GitHub</div>
+                        {formData.github_username ? (
+                          <div className="text-xs text-[#00ff9d] mt-0.5">@{formData.github_username}</div>
+                        ) : (
+                          <div className="text-xs text-[rgba(200,255,232,0.25)] mt-0.5 italic">Not connected</div>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGitHubInput(formData.github_username || "");
+                        setShowGitHubModal(true);
+                      }}
+                      className="text-xs border border-[#ff4fd8] text-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-colors uppercase tracking-wider"
+                    >
+                      {formData.github_username ? "Edit" : "Connect"}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] p-3 rounded">
+                    <div className="flex items-center gap-3">
+                      <Terminal size={16} className="text-[rgba(200,255,232,0.4)]" />
+                      <div>
+                        <div className="text-xs uppercase tracking-wider text-[rgba(200,255,232,0.6)]">LeetCode</div>
+                        {formData.leetcode_username ? (
+                          <div className="text-xs text-[#ffb700] mt-0.5">@{formData.leetcode_username}</div>
+                        ) : (
+                          <div className="text-xs text-[rgba(200,255,232,0.25)] mt-0.5 italic">Not connected</div>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLeetCodeInput(formData.leetcode_username || "");
+                        setShowLeetCodeModal(true);
+                      }}
+                      className="text-xs border border-[#ff4fd8] text-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-colors uppercase tracking-wider"
+                    >
+                      {formData.leetcode_username ? "Edit" : "Connect"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Security & System Access (Change Password) ────────────────── */}
+              <div className="border-t border-[rgba(0,255,157,0.1)] pt-6 space-y-4">
+                <div className="flex items-center gap-2">
+                  <Lock size={16} className="text-[#ff4fd8]" />
+                  <span className="uppercase text-sm">Security &amp; System Access</span>
+                </div>
+                <div className="text-xs max-w-2xl tracking-widest text-[rgba(200,255,232,0.45)]">
+                  update your access key to secure your profile telemetry. establishing a new key will terminate other active sessions.
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordModal(true)}
+                  className="bg-[rgba(255,79,216,0.1)] border border-[#ff4fd8] text-[#ff4fd8] px-4 py-2 rounded uppercase tracking-widest hover:bg-[rgba(255,79,216,0.2)] transition-all font-bold text-xs"
+                >
+                  Change Password
+                </button>
+              </div>
             </div>
           ) : (
-            <ProfileView data={formData as any} />
+            <ProfileView data={{
+              ...formData,
+              batch_of: fullProfile?.batch_of,
+              department: fullProfile?.department
+            } as any} />
           )}
         </main>
       </div>
@@ -946,6 +1119,146 @@ export default function ProfilePage() {
         }}
         onRequestClose={() => setProjectModal({ open: false, editIdx: null, defaultValues: {} })}
       />
+
+      {/* Password Change Modal */}
+      <Modal isOpen={showPasswordModal} onClose={() => { setShowPasswordModal(false); setCurrentPassword(""); setNewPassword(""); setConfirmNewPassword(""); }} title="Change Password">
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">current password</label>
+              <div className="relative">
+                <input
+                  type={showCurrentPassword ? "text" : "password"}
+                  placeholder="********"
+                  className="w-full bg-[rgba(255,79,216,0.05)] border border-[rgba(255,79,216,0.2)] rounded pl-3 pr-10 py-1.5 text-sm text-[#c8ffe8] outline-none focus:border-[#ff4fd8] transition-colors"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                />
+                <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,255,232,0.45)] hover:text-[#ff4fd8] transition-colors">
+                  {showCurrentPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">new secure password</label>
+              <div className="relative">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  placeholder="Min. 8 characters"
+                  className="w-full bg-[rgba(255,79,216,0.05)] border border-[rgba(255,79,216,0.2)] rounded pl-3 pr-10 py-1.5 text-sm text-[#c8ffe8] outline-none focus:border-[#ff4fd8] transition-colors"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,255,232,0.45)] hover:text-[#ff4fd8] transition-colors">
+                  {showNewPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">confirm new password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmNewPassword ? "text" : "password"}
+                  placeholder="********"
+                  className="w-full bg-[rgba(255,79,216,0.05)] border border-[rgba(255,79,216,0.2)] rounded pl-3 pr-10 py-1.5 text-sm text-[#c8ffe8] outline-none focus:border-[#ff4fd8] transition-colors"
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                />
+                <button type="button" onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,255,232,0.45)] hover:text-[#ff4fd8] transition-colors">
+                  {showConfirmNewPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+            </div>
+          </div>
+          <button
+            type="submit"
+            disabled={isChangingPassword}
+            className="w-full bg-[rgba(255,79,216,0.1)] border border-[#ff4fd8] text-[#ff4fd8] py-2 rounded uppercase tracking-widest hover:bg-[rgba(255,79,216,0.2)] transition-all disabled:opacity-50 mt-2 font-bold text-xs"
+          >
+            {isChangingPassword ? "Updating Keys..." : "Establish New Access Key"}
+          </button>
+        </form>
+      </Modal>
+
+      {/* GitHub Username Modal */}
+      <Modal isOpen={showGitHubModal} onClose={() => setShowGitHubModal(false)} title="Link GitHub Account">
+        <div className="space-y-4">
+          <p className="text-xs text-[rgba(200,255,232,0.6)] uppercase tracking-wider">
+            Enter your GitHub username to display your contribution graph on the profile.
+          </p>
+          <input
+            value={gitHubInput}
+            onChange={(e) => setGitHubInput(e.target.value)}
+            placeholder="e.g. octocat"
+            className="w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d] text-sm text-[#c8ffe8] placeholder:text-[rgba(200,255,232,0.2)] transition-colors"
+          />
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setValue("github_username", gitHubInput.trim(), { shouldDirty: true });
+                setShowGitHubModal(false);
+              }}
+              className="flex-1 bg-[#00ff9d] text-[#0d0d1a] py-2 font-bold uppercase tracking-[0.15em] text-sm hover:opacity-90 transition-opacity rounded"
+            >
+              Save
+            </button>
+            {formData.github_username && (
+              <button
+                type="button"
+                onClick={() => {
+                  setValue("github_username", "", { shouldDirty: true });
+                  setGitHubInput("");
+                  setShowGitHubModal(false);
+                }}
+                className="px-4 border border-[rgba(255,79,216,0.4)] text-[#ff4fd8] text-xs uppercase hover:bg-[rgba(255,79,216,0.1)] transition-colors rounded"
+              >
+                Disconnect
+              </button>
+            )}
+          </div>
+        </div>
+      </Modal>
+
+      {/* LeetCode Username Modal */}
+      <Modal isOpen={showLeetCodeModal} onClose={() => setShowLeetCodeModal(false)} title="Link LeetCode Account">
+        <div className="space-y-4">
+          <p className="text-xs text-[rgba(200,255,232,0.6)] uppercase tracking-wider">
+            Enter your LeetCode username to display your submission graph on the profile.
+          </p>
+          <input
+            value={leetCodeInput}
+            onChange={(e) => setLeetCodeInput(e.target.value)}
+            placeholder="e.g. leetcoder"
+            className="w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d] text-sm text-[#c8ffe8] placeholder:text-[rgba(200,255,232,0.2)] transition-colors"
+          />
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setValue("leetcode_username", leetCodeInput.trim(), { shouldDirty: true });
+                setShowLeetCodeModal(false);
+              }}
+              className="flex-1 bg-[#00ff9d] text-[#0d0d1a] py-2 font-bold uppercase tracking-[0.15em] text-sm hover:opacity-90 transition-opacity rounded"
+            >
+              Save
+            </button>
+            {formData.leetcode_username && (
+              <button
+                type="button"
+                onClick={() => {
+                  setValue("leetcode_username", "", { shouldDirty: true });
+                  setLeetCodeInput("");
+                  setShowLeetCodeModal(false);
+                }}
+                className="px-4 border border-[rgba(255,79,216,0.4)] text-[#ff4fd8] text-xs uppercase hover:bg-[rgba(255,79,216,0.1)] transition-colors rounded"
+              >
+                Disconnect
+              </button>
+            )}
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
