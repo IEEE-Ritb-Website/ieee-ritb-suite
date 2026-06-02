@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export const StatBox = ({ num, label }: { num: string, label: string }) => (
   <div className="bg-[rgba(0,255,157,0.03)] border border-[rgba(0,255,157,0.25)] rounded-[3px] p-2.5 text-center">
@@ -123,6 +123,13 @@ export const LinkItem = ({ label, icon, href = "#" }: { label: string, icon: Rea
 );
 
 export const Modal = ({ isOpen, onClose, title, children }: { isOpen: boolean, onClose: () => void, title: string, children: React.ReactNode }) => {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (

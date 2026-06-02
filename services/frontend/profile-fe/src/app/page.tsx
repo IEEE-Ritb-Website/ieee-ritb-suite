@@ -14,7 +14,7 @@ import { DEPARTMENTS } from "@/lib/departments";
 import { Modal } from "@/components/ui";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  ChevronDown, Lock, Pen, X,
+  ChevronDown, GripVertical, Lock, Pen, X,
   Globe, Brain, Terminal, ShieldAlert, FileText, Cpu, Smartphone, Gamepad2, Wrench, Lightbulb,
   Github, UploadCloud, Eye, EyeOff,
   type LucideIcon,
@@ -196,6 +196,14 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
     reValidateMode: "onChange",
     defaultValues: { type: "other", tags: [], ...defaultValues },
   });
+
+  // Disable body scroll when modal is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
 
   // Reset form when modal opens with new data
   useEffect(() => {
@@ -511,8 +519,8 @@ export default function ProfilePage() {
     },
   });
 
-  const { fields: linkFields, append: appendLink, remove: removeLink } = useFieldArray({ control, name: "social_links" });
-  const { fields: achFields, append: appendAch, remove: removeAch } = useFieldArray({ control, name: "achievements" });
+  const { fields: linkFields, append: appendLink, remove: removeLink, swap: swapLinks } = useFieldArray({ control, name: "social_links" });
+  const { fields: achFields, append: appendAch, remove: removeAch, swap: swapAch } = useFieldArray({ control, name: "achievements" });
   const { fields: projFields, append: appendProj, remove: removeProj, update: updateProj } = useFieldArray({ control, name: "projects" });
 
   const formData = watch();
@@ -824,7 +832,24 @@ export default function ProfilePage() {
                 </div>
                 <div className="grid grid-cols-1 gap-3">
                   {linkFields.map((field, idx) => (
-                    <div key={field.id} className="flex gap-2 items-start w-full bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] p-3 rounded">
+                    <div
+                      key={field.id}
+                      draggable
+                      onDragStart={(e) => { e.dataTransfer.setData("text/plain", String(idx)); e.currentTarget.classList.add("opacity-40"); }}
+                      onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("border-[#00ff9d]", "border"); }}
+                      onDragLeave={(e) => { e.currentTarget.classList.remove("border-[#00ff9d]", "border"); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove("border-[#00ff9d]", "border");
+                        const from = parseInt(e.dataTransfer.getData("text/plain"));
+                        if (!isNaN(from) && from !== idx) swapLinks(from, idx);
+                      }}
+                      onDragEnd={(e) => { e.currentTarget.classList.remove("opacity-40", "border-[#00ff9d]", "border"); }}
+                      className="flex gap-2 items-start w-full bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] p-3 rounded cursor-grab active:cursor-grabbing"
+                    >
+                      <div className="flex items-center pt-2 text-[rgba(200,255,232,0.25)] hover:text-[#00ff9d] transition-colors flex-shrink-0">
+                        <GripVertical size={16} />
+                      </div>
                       <div className="flex-1 space-y-2">
                         <input
                           {...register(`social_links.${idx}.label`)}
@@ -861,8 +886,25 @@ export default function ProfilePage() {
                 </div>
                 <div className="grid grid-cols-1 gap-3">
                   {achFields.map((field, idx) => (
-                    <div key={field.id} className="bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.12)] rounded p-4">
+                    <div
+                      key={field.id}
+                      draggable
+                      onDragStart={(e) => { e.dataTransfer.setData("text/plain", String(idx)); e.currentTarget.classList.add("opacity-40"); }}
+                      onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("border-[#00ff9d]", "border"); }}
+                      onDragLeave={(e) => { e.currentTarget.classList.remove("border-[#00ff9d]", "border"); }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove("border-[#00ff9d]", "border");
+                        const from = parseInt(e.dataTransfer.getData("text/plain"));
+                        if (!isNaN(from) && from !== idx) swapAch(from, idx);
+                      }}
+                      onDragEnd={(e) => { e.currentTarget.classList.remove("opacity-40", "border-[#00ff9d]", "border"); }}
+                      className="bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.12)] rounded p-4 cursor-grab active:cursor-grabbing"
+                    >
                       <div className="flex gap-2 items-start">
+                        <div className="flex items-center pt-2 text-[rgba(200,255,232,0.25)] hover:text-[#00ff9d] transition-colors flex-shrink-0">
+                          <GripVertical size={16} />
+                        </div>
                         <div className="flex-1 space-y-2">
                           <input
                             {...register(`achievements.${idx}.title`)}
@@ -878,10 +920,11 @@ export default function ProfilePage() {
                                 className="appearance-none bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-1.5 pr-8 text-xs outline-none focus:border-[#00ff9d] text-[rgba(200,255,232,0.6)] cursor-pointer"
                               >
                                 <option value="hackathon" className="bg-[#0d0d1a]">Hackathon</option>
-                                <option value="gsoc" className="bg-[#0d0d1a]">GSoC</option>
+                                <option value="internship" className="bg-[#0d0d1a]">Internship</option>
                                 <option value="open_source" className="bg-[#0d0d1a]">Open Source</option>
                                 <option value="certification" className="bg-[#0d0d1a]">Certification</option>
                                 <option value="award" className="bg-[#0d0d1a]">Award</option>
+                                <option value="other" className="bg-[#0d0d1a]">Other</option>
                               </select>
                               <ChevronDown size={12} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#00ff9d] opacity-60" />
                             </div>

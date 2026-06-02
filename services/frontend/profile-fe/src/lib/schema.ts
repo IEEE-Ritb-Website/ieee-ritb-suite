@@ -7,7 +7,7 @@ export const usernameSchema = z
   .max(20, "Username must be at most 20 characters")
   .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers and underscores");
 
-export const badgeTypeEnum = z.enum(["hackathon", "gsoc", "open_source", "certification", "award"]);
+export const badgeTypeEnum = z.enum(["hackathon", "gsoc", "open_source", "certification", "award", "internship", "other"]);
 
 export const projectTypeEnum = z.enum([
   "website",

@@ -2,12 +2,10 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 
-// Configure Node environment before any database/auth imports to prevent hoisting-based connection issues
 const isProd = process.argv.includes("--production") || process.argv.includes("-p");
 const envMode: "production" | "development" = isProd ? "production" : "development";
 type MutableProcessEnv = Omit<NodeJS.ProcessEnv, "NODE_ENV"> & { NODE_ENV?: string };
 
-// db.ts relies on process.env.NODE_ENV at import time.
 (process.env as MutableProcessEnv).NODE_ENV = envMode;
 
 const loadEnvIfExists = (filePath: string) => {
@@ -16,7 +14,6 @@ const loadEnvIfExists = (filePath: string) => {
   }
 };
 
-// Next-style env precedence: highest priority files first.
 if (isProd) {
   loadEnvIfExists(".env.production.local");
   loadEnvIfExists(".env.local");
@@ -83,6 +80,8 @@ function safeParseArray(val: any): any[] {
   return Array.isArray(val) ? val : [];
 }
 
+const defaultTerm = `${new Date().getFullYear()}-${String(new Date().getFullYear() + 1).slice(-2)}`;
+
 async function main() {
   try {
     const { default: clientPromise, getDbName } = await import("../src/lib/db");
@@ -106,25 +105,20 @@ async function main() {
       }
     }
 
-    // Identify and resolve duplicates by assigning unique identifiers
     const resolvedMembershipIds = new Map<string, string>();
     for (const [mId, dupUsers] of membershipMap.entries()) {
       if (dupUsers.length > 1) {
         console.warn(`WARNING: Found ${dupUsers.length} users sharing the duplicate membership ID '${mId}'!`);
-        
-        // Sort users: keep the membershipId for the user who matches the standard format or has the correct profile first,
-        // or simply keep it for the most recently updated one.
+
         dupUsers.sort((a, b) => {
           const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
           const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
-          return dateB - dateA; // descending order (newest first)
+          return dateB - dateA;
         });
 
-        // The first one keeps the membership ID
         resolvedMembershipIds.set(dupUsers[0]._id.toString(), mId);
         console.log(`- Keeping membership ID '${mId}' for User: ${dupUsers[0].email}`);
 
-        // The others get a suffixed unique membership ID
         for (let i = 1; i < dupUsers.length; i++) {
           const suffixId = `${mId}-${i}`;
           resolvedMembershipIds.set(dupUsers[i]._id.toString(), suffixId);
@@ -141,12 +135,6 @@ async function main() {
 
       const userIdStr = u._id.toString();
 
-      // Resolve unique username
-      const cleanUsername = u.username || generateUsername(u.name || "User", u.email || "user@domain.com");
-
-      // Resolve unique membershipId from our resolved list
-      const cleanMembershipId = resolvedMembershipIds.get(userIdStr) || u.membershipId || "";
-
       // Resolve batch_of
       let cleanBatchOf = u.batch_of || "";
       if (!cleanBatchOf && u.year) {
@@ -156,23 +144,22 @@ async function main() {
         }
       }
 
-      // Resolve chapters
-      const cleanChapters = normalizeChapters(u.chapters);
-
-      // Capture legacy data
+      // Capture legacy data from user doc (might have been stored there before profile existed)
       const legacySkills = safeParseArray(u.skills);
       const legacySocialLinks = safeParseArray(u.social_links);
 
-      // Update user document
+      // ── User collection: set all current-schema fields, unset legacy fields ──
       const userUpdateFields: any = {
-        username: cleanUsername,
-        membershipId: cleanMembershipId,
+        username: u.username || generateUsername(u.name || "User", u.email || "user@domain.com"),
+        membershipId: resolvedMembershipIds.get(userIdStr) || u.membershipId || "",
         batch_of: cleanBatchOf,
-        chapters: cleanChapters, // Native JSON array of objects!
+        chapters: normalizeChapters(u.chapters),
         role: u.role || "member",
-        updatedAt: u.updatedAt instanceof Date ? u.updatedAt : new Date()
+        term: u.term || defaultTerm,
+        updatedAt: new Date(),
       };
-      
+
+      // Preserve existing values (if they exist) rather than overwriting with empty
       if (u.name) userUpdateFields.name = u.name;
       if (u.email) userUpdateFields.email = u.email;
       if (u.emailVerified !== undefined) userUpdateFields.emailVerified = !!u.emailVerified;
@@ -183,7 +170,6 @@ async function main() {
       if (u.department) userUpdateFields.department = u.department;
       if (u.usn) userUpdateFields.usn = u.usn;
       if (u.phoneNumber) userUpdateFields.phoneNumber = u.phoneNumber;
-      if (u.term) userUpdateFields.term = u.term;
 
       await db.collection("user").updateOne(
         { _id: u._id },
@@ -192,19 +178,19 @@ async function main() {
           $unset: {
             positions: "",
             skills: "",
-            social_links: ""
+            social_links: "",
           }
         }
       );
 
-      // Find or create matching profile document
+      // ── Profile collection: ensure all current-schema fields are present ──
       let profileDoc = await db.collection("profile").findOne({ userId: userIdStr });
-      
-      const cleanSkills = profileDoc && profileDoc.skills && Array.isArray(profileDoc.skills)
+
+      const cleanSkills = profileDoc && Array.isArray(profileDoc.skills)
         ? profileDoc.skills
         : legacySkills;
 
-      const cleanSocialLinks = profileDoc && profileDoc.social_links && Array.isArray(profileDoc.social_links)
+      const cleanSocialLinks = profileDoc && Array.isArray(profileDoc.social_links)
         ? profileDoc.social_links
         : legacySocialLinks;
 
@@ -217,13 +203,16 @@ async function main() {
         stats: profileDoc?.stats || {},
         skills: cleanSkills,
         social_links: cleanSocialLinks,
-        achievements: profileDoc?.achievements || [],
-        projects: profileDoc?.projects || [],
+        achievements: Array.isArray(profileDoc?.achievements) ? profileDoc.achievements : [],
+        projects: Array.isArray(profileDoc?.projects) ? profileDoc.projects : [],
         usn: u.usn || profileDoc?.usn || "",
         year: u.year || profileDoc?.year || "",
         batch: cleanBatchOf || profileDoc?.batch || "",
         phoneNumber: u.phoneNumber || profileDoc?.phoneNumber || "",
-        updatedAt: new Date()
+        department: u.department || profileDoc?.department || "",
+        github_username: profileDoc?.github_username || "",
+        leetcode_username: profileDoc?.leetcode_username || "",
+        updatedAt: new Date(),
       };
 
       await db.collection("profile").updateOne(
@@ -234,9 +223,8 @@ async function main() {
             username: "",
             email: "",
             chapters: "",
-            department: "",
             membershipId: "",
-            positions: ""
+            positions: "",
           }
         },
         { upsert: true }

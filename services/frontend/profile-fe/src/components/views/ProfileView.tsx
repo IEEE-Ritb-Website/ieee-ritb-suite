@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 import {
   StatBox,
   SectionBlock,
@@ -166,20 +167,14 @@ function ProjectDetailModal({ project, onClose }: { project: NonNullable<Profile
 
 type AchievementItem = NonNullable<ProfileViewProps["data"]["achievements"]>[0];
 
-const BADGE_BORDER_COLORS: Record<string, string> = {
-  hackathon: "border-[rgba(255,183,0,0.3)] text-[#ffb700]",
-  gsoc: "border-[rgba(0,255,157,0.3)] text-[#00ff9d]",
-  open_source: "border-[rgba(255,79,216,0.3)] text-[#ff4fd8]",
-  certification: "border-[rgba(0,207,255,0.3)] text-[#00cfff]",
-  award: "border-[rgba(255,183,0,0.3)] text-[#ffb700]",
-};
-
-const BADGE_BG_COLORS: Record<string, string> = {
-  hackathon: "bg-[rgba(255,183,0,0.04)]",
-  gsoc: "bg-[rgba(0,255,157,0.04)]",
-  open_source: "bg-[rgba(255,79,216,0.04)]",
-  certification: "bg-[rgba(0,207,255,0.04)]",
-  award: "bg-[rgba(255,183,0,0.04)]",
+const BADGE_STYLES: Record<string, { border: string; bg: string }> = {
+  hackathon:    { border: "border-[#ffb700] text-[#ffb700]", bg: "bg-[rgba(255,183,0,0.08)]" },
+  gsoc:         { border: "border-[#00ff9d] text-[#00ff9d]", bg: "bg-[rgba(0,255,157,0.08)]" },
+  open_source:  { border: "border-[#ff4fd8] text-[#ff4fd8]", bg: "bg-[rgba(255,79,216,0.08)]" },
+  certification:{ border: "border-[#00cfff] text-[#00cfff]", bg: "bg-[rgba(0,207,255,0.08)]" },
+  award:        { border: "border-[#a78bfa] text-[#a78bfa]", bg: "bg-[rgba(167,139,250,0.08)]" },
+  internship:   { border: "border-[#f97316] text-[#f97316]", bg: "bg-[rgba(249,115,22,0.08)]" },
+  other:        { border: "border-[rgba(200,255,232,0.3)] text-[rgba(200,255,232,0.5)]", bg: "bg-[rgba(200,255,232,0.03)]" },
 };
 
 const BADGE_TYPE_LABEL: Record<string, string> = {
@@ -188,6 +183,8 @@ const BADGE_TYPE_LABEL: Record<string, string> = {
   open_source: "Open Source",
   certification: "Certification",
   award: "Award",
+  internship: "Internship",
+  other: "Other",
 };
 
 function AchievementsAccordion({ achievements }: { achievements: AchievementItem[] }) {
@@ -197,8 +194,7 @@ function AchievementsAccordion({ achievements }: { achievements: AchievementItem
     <div className="flex flex-col divide-y divide-[rgba(0,255,157,0.08)]">
       {achievements.map((ach, idx) => {
         const isOpen = openIdx === idx;
-        const borderColor = BADGE_BORDER_COLORS[ach.badge_type] || BADGE_BORDER_COLORS.hackathon;
-        const bgColor = BADGE_BG_COLORS[ach.badge_type] || BADGE_BG_COLORS.hackathon;
+        const style = BADGE_STYLES[ach.badge_type] || BADGE_STYLES.hackathon;
         const typeLabel = BADGE_TYPE_LABEL[ach.badge_type] || ach.badge_type;
         const hasExtra = !!(ach.description || ach.link);
 
@@ -209,7 +205,7 @@ function AchievementsAccordion({ achievements }: { achievements: AchievementItem
               className={`w-full flex items-center justify-between gap-3 py-2.5 text-left transition-colors ${hasExtra ? 'cursor-pointer hover:opacity-90' : 'cursor-default'}`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className={`flex-shrink-0 text-xs px-1.5 py-0.5 rounded-[2px] border uppercase tracking-widest ${borderColor} ${bgColor}`}>
+                <span className={`flex-shrink-0 text-xs px-1.5 py-0.5 rounded-[2px] border uppercase tracking-widest ${style.border} ${style.bg}`}>
                   {typeLabel}
                 </span>
                 <span className="text-sm text-[#c8ffe8] font-medium truncate">{ach.title}</span>
@@ -229,7 +225,7 @@ function AchievementsAccordion({ achievements }: { achievements: AchievementItem
             <div
               className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-64 opacity-100 pb-3' : 'max-h-0 opacity-0'}`}
             >
-              <div className={`rounded-[3px] border ${borderColor} ${bgColor} px-4 py-3 space-y-2.5`}>
+              <div className={`rounded-[3px] border ${style.border} ${style.bg} px-4 py-3 space-y-2.5`}>
                 {ach.description && (
                   <p className="text-xs text-[rgba(200,255,232,0.6)] leading-[1.7]">{ach.description}</p>
                 )}
@@ -238,7 +234,7 @@ function AchievementsAccordion({ achievements }: { achievements: AchievementItem
                     href={ach.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`inline-flex items-center gap-1.5 text-xs uppercase tracking-wider border px-3 py-1 rounded transition-opacity hover:opacity-80 ${borderColor}`}
+                    className={`inline-flex items-center gap-1.5 text-xs uppercase tracking-wider border px-3 py-1 rounded transition-opacity hover:opacity-80 ${style.border}`}
                     onClick={e => e.stopPropagation()}
                   >
                     <ExternalLink size={10} />
@@ -305,7 +301,7 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
           </div>
         )}
         <div className="text-[12px] text-[rgba(200,255,232,0.45)] leading-[1.7] mt-2.5">
-          {data.bio}
+          <MarkdownRenderer content={data.bio} />
         </div>
       </SectionBlock>
 
@@ -384,7 +380,7 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
                     <div className="flex items-center gap-2.5 min-w-0">
                       {/* Lucide icon in a small rounded box */}
                       <div className="min-w-0">
-                        <div className="text-xs font-bold text-[#00ff9d] uppercase truncate">{project.title}</div>
+                        <div className="text-xs font-bold text-[#00ff9d] truncate">{project.title}</div>
                         <div className="text-xs" style={{ color: iconColor, opacity: 0.6 }}>{label}</div>
                       </div>
                     </div>
@@ -406,7 +402,7 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
                       </div>
                     )}
                     <span className="text-xs flex gap-2 items-center text-[rgba(200,255,232,0.45)] group-hover:text-[rgba(200,255,232,0.5)] transition-colors ml-auto">
-                      view details <MoveRight size={10} />
+                      view details <MoveRight size={12} />
                     </span>
                   </div>
                 </div>

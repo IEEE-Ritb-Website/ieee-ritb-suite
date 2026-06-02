@@ -7,7 +7,7 @@ export const Toaster = () => {
   const { toasts, dismiss } = useToast();
 
   return (
-    <div className="fixed bottom-6 right-6 z-[99999] flex flex-col gap-3 w-full max-w-sm pointer-events-none font-['Share_Tech_Mono',_monospace]">
+    <div className="fixed bottom-0 left-0 right-0 md:bottom-6 md:right-6 md:left-auto z-[99999] flex flex-col gap-3 w-full md:max-w-sm px-4 pb-4 md:px-0 md:pb-0 pointer-events-none font-['Share_Tech_Mono',_monospace]">
       {toasts.map((t) => {
         const isDestructive = t.variant === "destructive";
         const isSuccess = t.variant === "success";
