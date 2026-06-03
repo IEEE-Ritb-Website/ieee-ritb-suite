@@ -398,6 +398,19 @@ Architecture Decision Records (ADRs) are lightweight documents that capture impo
 | `pnpm rs create-be <name>` | Create new Express backend in `services/backend/` |
 | `pnpm rs create-fe <name>` | Create new Vite+React frontend in `services/frontend/` |
 
+### 🤖 AI Command Assistant (astranova-ai)
+
+The suite includes a project-local AI developer assistant wrapper (`astranova-ai`, aliased as `ai`) that calls OpenCode. It runs prompts either headlessly in the terminal or executes them in the Web UI.
+
+| Command | Description |
+|---------|-------------|
+| `pnpm ai` | Starts/detects the server and opens the browser to the latest session |
+| `pnpm ai --fresh` | Starts a fresh browser session |
+| `pnpm ai "your prompt"` | Runs prompt asynchronously in the Web UI, continuing the last session |
+| `pnpm ai --fresh "your prompt"` | Runs prompt asynchronously in the Web UI in a fresh session |
+| `pnpm ai --native "your prompt"` | Runs prompt synchronously directly in the terminal, continuing the last session |
+| `pnpm ai --native --fresh "your prompt"` | Runs prompt synchronously in the terminal as a fresh session |
+
 ### 🖥️ Backend Development
 
 ```bash
@@ -442,6 +455,7 @@ cd services/frontend/<app-name>
 |---------|-------------|--------------|
 | **🔊 astralogger** | Pino-based logging utility | Singleton pattern, env-aware levels, `astralogger.json` config |
 | **⚙️ astranova-cli** | Custom scaffolding tool | Generates Express/Vite apps with TypeScript, ESLint, Zod |
+| **🤖 astranova-ai** | Local AI developer assistant CLI wrapper | Terminal or Web UI execution modes, dynamic project-local binary resolution |
 | **📚 @astranova/catalogues** | IEEE chapter data registry | Zod-validated schemas, 18 chapters (12 tech, 6 non-tech) |
 
 ### Frontend Applications
