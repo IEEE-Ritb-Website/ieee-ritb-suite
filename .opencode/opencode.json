@@ -1,0 +1,34 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "lsp": {
+    "typescript": {
+      "disabled": false
+    }
+  },
+  "instructions": [
+    "packages/*/AGENTS.md",
+    "services/backend/*/AGENTS.md",
+    "services/frontend/*/AGENTS.md",
+    "scripting/AGENTS.md"
+  ],
+  "mcp": {
+    "chrome-devtools": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-chrome-devtools"
+      ],
+      "enabled": true
+    },
+    "fetch": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-fetch"
+      ],
+      "enabled": true
+    }
+  }
+}

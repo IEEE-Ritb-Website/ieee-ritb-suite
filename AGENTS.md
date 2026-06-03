@@ -1,6 +1,53 @@
-# 🚀 Agent onboarding & System Guide (agent.md)
+# 🚀 Agent Onboarding & System Guide
 
 Welcome, Agent! This document is the comprehensive onboarding guide and source of truth for the **IEEE RIT-B Suite** repository. It outlines the monorepo architecture, packages, services, specific versions, design patterns, and development workflows you must adhere to when working on this codebase.
+
+---
+
+## 🛠️ Workspace & Build Operations
+
+### 1. Build and Dependency Synchronization
+After any major change (adding a dependency, modifying package links, creating a package/service, or updating shared package files), you **must** run:
+```bash
+pnpm install && pnpm build-all
+```
+This ensures that the workspace packages are correctly linked and that dependent projects compile without errors.
+
+### 2. Project Execution & Filtering
+When running, building, testing, or launching individual projects within the monorepo, always scope the command using `pnpm --filter`.
+Examples:
+- Run a specific frontend dev server: `pnpm --filter frontend-project dev`
+- Run a specific backend dev server: `pnpm --filter backend-project dev`
+
+---
+
+## 🧼 Code Quality & Linting Compliance
+
+### 3. Automatic Linting and Formatting
+Always run lint and formatting checks after completing code changes using the workspace's default configurations for **ESLint** and **Prettier**:
+- Lint the codebase: `pnpm lint` (or run local ESLint directly on changed files)
+- Format files: `pnpm prettier --write <path-to-file>`
+
+Ensure no warnings or errors exist in the modified files.
+
+---
+
+## 🏗️ Architectural & Coding Guidelines
+
+### 4. Code Reuse and Dependency Management
+Always leverage the existing packages inside the monorepo (`packages/`) to avoid writing redundant logic. Reuse utilities like `astralogger` for logging instead of introducing standard console logs or new logging implementations.
+
+### 5. Proper Abstraction
+Keep your logic modular and clean.
+- Separate core business logic from routing/scaffolding code.
+- Create utility helpers in packages where appropriate so other services can reuse them.
+- Abstract repeating structures into clear functions, classes, or interfaces.
+
+### 6. Readability & Self-Documenting Code
+Write clean, simple, and self-documenting code.
+- Use explicit, meaningful variable, function, and class names (avoid abbreviations or cryptic names).
+- Limit inline comments to non-obvious business logic only; let the structure and naming explain *how* the code works.
+- Keep functions small and focused on a single responsibility.
 
 ---
 
@@ -12,7 +59,7 @@ The **IEEE RIT-B Suite** is a unified, highly optimized monorepo that powers the
 *   **Orchestration:** [Nx](https://nx.dev/) (v21.1.2) is used for run-many command execution, offering intelligent local build caching and dependency graph rendering.
 *   **Package Manager:** [pnpm](https://pnpm.io/) (v10.28.2 or v10.12.3) with standard workspaces configuration.
 *   **Language:** Strict [TypeScript](https://www.typescriptlang.org/) across all shared packages and microservices.
-*   **Workspace Protocoll:** Packages reference each other dynamically inside the workspace using `"workspace:*"` or `"workspace:^"`.
+*   **Workspace Protocol:** Packages reference each other dynamically inside the workspace using `"workspace:*"` or `"workspace:^"`.
 
 ```mermaid
 graph TB
@@ -96,7 +143,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 **Related files:**
 - `src/routes/index.ts` — route definition with header check middleware
-- `src/controllers/cron/cronHandler.ts` — handler logic
+- `src/controllers/cron/cronHandler.ts` — controller logic
 - `src/validators/index.ts` — `CronRequestValidator` / `CronResponseValidator`
 - `src/configs/index.ts` — reads `CRON_SECRET` from env
 - `.env.example` — `CRON_SECRET` placeholder
@@ -341,4 +388,3 @@ For details on the specifications, APIs, and guidelines of key frameworks and li
 ---
 
 *This document serves as the developer handbook for the project. If there are changes to workspace dependencies or architectural patterns, update this file immediately.*
-
