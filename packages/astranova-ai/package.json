@@ -1,0 +1,20 @@
+{
+  "name": "astranova-ai",
+  "version": "1.0.0",
+  "description": "Astranova AI runner package",
+  "main": "dist/index.js",
+  "bin": {
+    "ai": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "opencode": "npm:opencode-ai",
+    "typescript": "^5.8.3"
+  }
+}
