@@ -1,10 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "lsp": {
-    "typescript": {
-      "disabled": false
-    }
-  },
   "instructions": [
     "packages/*/AGENTS.md",
     "services/backend/*/AGENTS.md",
@@ -12,6 +7,15 @@
     "scripting/AGENTS.md"
   ],
   "mcp": {
+    "chrome": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@playwright/mcp"
+      ],
+      "enabled": true
+    },
     "chrome-devtools": {
       "type": "local",
       "command": [
