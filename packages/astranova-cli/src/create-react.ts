@@ -29,18 +29,20 @@ export async function runCreateFE(projectName: string) {
     builder.init();
 
     // Step 2: Scaffold Vite React + TypeScript using direct pnpm dlx approach
-    const viteSpinner = ora("Scaffolding Vite React + TypeScript project...").start();
+    const viteSpinner = ora(
+      "Scaffolding Vite React + TypeScript project...",
+    ).start();
     await new Promise<void>((resolve, reject) => {
       const { exec } = require("child_process");
       const command = `pnpm dlx create-vite@latest ${projectName} --template react-ts`;
 
       const child = exec(command, {
         cwd: baseDir,
-        env: { ...process.env, CI: "true", FORCE_COLOR: "0" }
+        env: { ...process.env, CI: "true", FORCE_COLOR: "0" },
       });
 
       // Handle any prompts by providing default responses
-      child.stdin.write('\n'); // Send enter for any prompts
+      child.stdin.write("\n"); // Send enter for any prompts
       child.stdin.end();
 
       child.on("close", (code: number) => {
@@ -51,7 +53,10 @@ export async function runCreateFE(projectName: string) {
     viteSpinner.succeed("Vite React + TypeScript project created!");
 
     // Step 3: Install Tailwind CSS v4
-    await builder.runCommand("Setup Tailwind", "pnpm add tailwindcss -D @tailwindcss/vite");
+    await builder.runCommand(
+      "Setup Tailwind",
+      "pnpm add tailwindcss -D @tailwindcss/vite",
+    );
 
     // Step 4: Configure vite.config.ts
     const viteConfigContent = `import { defineConfig } from 'vite'
@@ -68,7 +73,7 @@ export default defineConfig({
     },
   },
 })`;
-    builder.createFile("vite.config.ts", viteConfigContent)
+    builder.createFile("vite.config.ts", viteConfigContent);
 
     // Step 5: Replace index.css with Tailwind v4 import
     builder.createFile("src/index.css", '@import "tailwindcss";\n');
@@ -77,7 +82,7 @@ export default defineConfig({
     const mainFilePath = path.join(projectPath, "src", "main.tsx");
     if (fs.existsSync(mainFilePath)) {
       let mainContent = fs.readFileSync(mainFilePath, "utf-8");
-      if (!mainContent.includes('index.css')) {
+      if (!mainContent.includes("index.css")) {
         mainContent = `import './index.css'\n${mainContent}`;
         fs.writeFileSync(mainFilePath, mainContent, "utf-8");
       }
@@ -130,6 +135,47 @@ export default App
 `;
     builder.createFile("src/App.tsx", appContent);
 
+    // Step 8: Add README.md and AGENTS.md
+    const agentsContent = `# Agent Guide: ${projectName}
+
+## Purpose
+Frontend application under the IEEE RIT-B Suite.
+
+## Scope
+- Client-side UI components and page routing.
+- Styled using Tailwind CSS v4.
+
+## Styling & Design Guidelines
+- Design custom, high-fidelity components matching the premium monorepo aesthetic.
+- Use Tailwind CSS v4 utility classes for styling. Avoid writing custom raw CSS files.
+- Ensure all components are written in TypeScript.
+`;
+
+    const readmeContent = `# ${projectName}
+
+Vite + React + TypeScript + Tailwind CSS v4 frontend application for the IEEE RIT-B Suite.
+
+## Getting Started
+
+### Prerequisites
+- Node.js & pnpm
+
+### Run in Development
+From the monorepo root:
+\`\`\`bash
+pnpm --filter ${projectName} dev
+\`\`\`
+
+## Tech Stack
+- React 19
+- Tailwind CSS v4
+- TypeScript
+- Vite
+`;
+
+    builder.createFile("AGENTS.md", agentsContent);
+    builder.createFile("README.md", readmeContent);
+
     // Step 9: Update eslint.config.ts
     const eslintConfigPath = path.join(projectPath, "eslint.config.js");
     if (fs.existsSync(eslintConfigPath)) {
@@ -145,25 +191,23 @@ ${inner}
         project: ['./tsconfig.app.json', './tsconfig.node.json'],
     },
 }`;
-          }
+          },
         );
       }
       fs.writeFileSync(eslintConfigPath, eslintConfig, "utf-8");
     }
 
     // Step 10: Run pnpm install in root directory
-    const rootInstallSpinner = ora("Running pnpm install in root directory...").start();
+    const rootInstallSpinner = ora(
+      "Running pnpm install in root directory...",
+    ).start();
     await new Promise<void>((resolve, reject) => {
       const spawn = require("child_process").spawn;
-      const cmd = spawn(
-        "pnpm",
-        ["install"],
-        { cwd: rootDir, stdio: "pipe" }
-      );
+      const cmd = spawn("pnpm", ["install"], { cwd: rootDir, stdio: "pipe" });
 
-      cmd.stderr.on('data', (data: Buffer) => {
+      cmd.stderr.on("data", (data: Buffer) => {
         const message = data.toString();
-        if (message.includes('ERR') || message.includes('error')) {
+        if (message.includes("ERR") || message.includes("error")) {
           process.stderr.write(message);
         }
       });
@@ -174,19 +218,31 @@ ${inner}
       });
     });
     rootInstallSpinner.succeed("Root dependencies installed!");
-    console.log(chalk.green(`\n✅ Frontend project "${projectName}" created successfully at: ${projectPath}`));
+    console.log(
+      chalk.green(
+        `\n✅ Frontend project "${projectName}" created successfully at: ${projectPath}`,
+      ),
+    );
     console.log(chalk.yellowBright(`\n📁 Project structure:`));
     console.log(chalk.yellowBright(`   ${projectPath}`));
     console.log(chalk.yellowBright(`   ├── src/`));
-    console.log(chalk.yellowBright(`   │   ├── assets/ (custom assets folder)`));
+    console.log(
+      chalk.yellowBright(`   │   ├── assets/ (custom assets folder)`),
+    );
     console.log(chalk.yellowBright(`   │   ├── App.css (custom css file)`));
     console.log(chalk.yellowBright(`   │   ├── App.tsx`));
-    console.log(chalk.yellowBright(`   │   ├── index.css (Tailwind v4 configured)`));
+    console.log(
+      chalk.yellowBright(`   │   ├── index.css (Tailwind v4 configured)`),
+    );
     console.log(chalk.yellowBright(`   │   └── main.tsx`));
-    console.log(chalk.yellowBright(`   ├── vite.config.ts (configured with Tailwind v4)`));
+    console.log(
+      chalk.yellowBright(`   ├── vite.config.ts (configured with Tailwind v4)`),
+    );
     console.log(chalk.yellowBright(`   └── package.json`));
-    console.log(chalk.green(`\nNext steps:\n\tcd services/frontend/${projectName}\n\tpnpm dev
-    `));
+    console.log(
+      chalk.green(`\nNext steps:\n\tcd services/frontend/${projectName}\n\tpnpm dev
+    `),
+    );
   } catch (err) {
     console.error(chalk.red("❌ Project creation failed:", err));
     process.exit(1);
