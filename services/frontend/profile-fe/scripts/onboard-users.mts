@@ -3,6 +3,7 @@ import path from "path";
 import crypto from "crypto";
 import dotenv from "dotenv";
 import { Chapters as CatalogChapters } from "../../../../packages/catalogues/src/chapter-data/index";
+import { DEPARTMENTS } from "../src/lib/departments";
 
 const BATCH_SIZE = 10;
 const DELAY_BETWEEN_EMAILS_MS = 2000;
@@ -156,6 +157,56 @@ function resolveChapter(acronym: string, position: string) {
   };
 }
 
+function normalizeYear(year: string): string {
+  const y = String(year || "")
+    .trim()
+    .toLowerCase();
+  if (!y) return "";
+
+  if (y.includes("1") || y.includes("first")) return "1st Year";
+  if (y.includes("2") || y.includes("second")) return "2nd Year";
+  if (y.includes("3") || y.includes("third")) return "3rd Year";
+  if (y.includes("4") || y.includes("fourth")) return "4th Year";
+
+  // Fallback to extracting digits
+  const digitMatch = y.match(/\d+/);
+  if (digitMatch) {
+    const num = parseInt(digitMatch[0], 10);
+    if (num === 1) return "1st Year";
+    if (num === 2) return "2nd Year";
+    if (num === 3) return "3rd Year";
+    if (num === 4) return "4th Year";
+    return `${num}th Year`;
+  }
+
+  return year.trim();
+}
+
+function resolveDepartment(dept: string): string {
+  const d = String(dept || "")
+    .trim()
+    .toLowerCase();
+  if (!d) return "";
+
+  // 1. Try exact or case-insensitive value match
+  const valueMatch = DEPARTMENTS.find((dep) => dep.value.toLowerCase() === d);
+  if (valueMatch) return valueMatch.value;
+
+  // 2. Try exact or case-insensitive label match
+  const labelMatch = DEPARTMENTS.find((dep) => dep.label.toLowerCase() === d);
+  if (labelMatch) return labelMatch.value;
+
+  // 3. Try partial label match (e.g. "Medical Electronics" matching "Medical Electronics Engineering")
+  const partialMatch = DEPARTMENTS.find((dep) => {
+    const label = dep.label.toLowerCase();
+    return label.includes(d) || d.includes(label);
+  });
+  if (partialMatch) return partialMatch.value;
+
+  // 4. Return as-is if no match
+  return dept.trim();
+}
+
 async function onboardUser(userData: {
   email: string;
   name: string;
@@ -221,107 +272,133 @@ async function onboardUser(userData: {
     };
   }
 
-  // Generate unique username dynamically (verifying uniqueness in database)
-  const username = await generateUniqueUsername(
-    userData.name,
-    userData.email,
-    db,
-  );
-
-  // Map chapters
-  const chapters: any[] = [];
-  if (userData.chapter1) {
-    const pos1 =
-      userData.position && userData.position.trim() !== ""
-        ? userData.position.trim()
-        : "Execom";
-    const resolved = resolveChapter(userData.chapter1, pos1);
-    if (!resolved) {
-      console.error(
-        `Validation Error (${userData.email}): Invalid chapter name/acronym '${userData.chapter1}' for Chapter 1.`,
-      );
-      return {
-        success: false,
-        email: userData.email,
-        error: `Invalid chapter name/acronym '${userData.chapter1}' for Chapter 1.`,
-      };
-    }
-    chapters.push(resolved);
-  }
-  if (userData.chapter2) {
-    const resolved = resolveChapter(userData.chapter2, "Execom");
-    if (!resolved) {
-      console.error(
-        `Validation Error (${userData.email}): Invalid chapter name/acronym '${userData.chapter2}' for Chapter 2.`,
-      );
-      return {
-        success: false,
-        email: userData.email,
-        error: `Invalid chapter name/acronym '${userData.chapter2}' for Chapter 2.`,
-      };
-    }
-    chapters.push(resolved);
-  }
-
-  // Map positions
-  const positions = userData.position ? [userData.position] : [];
-
-  // Calculate batch_of
+  // Parse and normalize Year of Study with fallbacks
+  let cleanYear: string | null = null;
   let batchOfStr = "";
-  if (userData.year) {
-    const yearNum = parseInt(userData.year.replace(/\D/g, "") || "0");
-    if (yearNum > 0) {
-      batchOfStr = String(new Date().getFullYear() - yearNum);
+  const currentYear = new Date().getFullYear();
+
+  if (!userData.year || userData.year.trim() === "") {
+    // If no year of study is set, default to "2nd Year"
+    cleanYear = "2nd Year";
+    batchOfStr = String(currentYear - 2);
+  } else {
+    const normalized = normalizeYear(userData.year);
+    if (
+      normalized &&
+      ["1st Year", "2nd Year", "3rd Year", "4th Year"].includes(normalized)
+    ) {
+      cleanYear = normalized;
+      const yearNum = parseInt(normalized.replace(/\D/g, "") || "0", 10);
+      batchOfStr = String(currentYear - yearNum);
+    } else {
+      // If it is not matching the pattern, set batch_of as current year and year as null
+      cleanYear = null;
+      batchOfStr = String(currentYear);
     }
   }
 
-  console.log(`Creating user: ${userData.email}...`);
+  let username = "";
+  let user: any = null;
 
-  // Create user using Better Auth API
-  const user = await auth.api.signUpEmail({
-    body: {
-      email: userData.email,
-      password: password,
-      name: userData.name,
-      username: username,
-      membershipId: membershipId,
-      usn: userData.usn || "",
-      phoneNumber: userData.phoneNumber || "",
-      year: userData.year || "",
-      department: userData.department || "",
-      chapters: chapters,
-      batch_of: batchOfStr,
-      term: userData.term,
-    } as any,
-  });
+  try {
+    // Generate unique username dynamically (verifying uniqueness in database)
+    username = await generateUniqueUsername(userData.name, userData.email, db);
 
-  if (!user) {
+    // Map chapters
+    const chapters: any[] = [];
+    if (userData.chapter1) {
+      const pos1 =
+        userData.position && userData.position.trim() !== ""
+          ? userData.position.trim()
+          : "Execom";
+      const resolved = resolveChapter(userData.chapter1, pos1);
+      if (!resolved) {
+        console.error(
+          `Validation Error (${userData.email}): Invalid chapter name/acronym '${userData.chapter1}' for Chapter 1.`,
+        );
+        return {
+          success: false,
+          email: userData.email,
+          error: `Invalid chapter name/acronym '${userData.chapter1}' for Chapter 1.`,
+        };
+      }
+      chapters.push(resolved);
+    }
+    if (userData.chapter2) {
+      const resolved = resolveChapter(userData.chapter2, "Execom");
+      if (!resolved) {
+        console.error(
+          `Validation Error (${userData.email}): Invalid chapter name/acronym '${userData.chapter2}' for Chapter 2.`,
+        );
+        return {
+          success: false,
+          email: userData.email,
+          error: `Invalid chapter name/acronym '${userData.chapter2}' for Chapter 2.`,
+        };
+      }
+      chapters.push(resolved);
+    }
+
+    // Map positions
+    const positions = userData.position ? [userData.position] : [];
+
+    console.log(`Creating user: ${userData.email}...`);
+
+    // Create user using Better Auth API
+    user = await auth.api.signUpEmail({
+      body: {
+        email: userData.email,
+        password: password,
+        name: userData.name,
+        username: username,
+        membershipId: membershipId,
+        usn: userData.usn || "",
+        phoneNumber: userData.phoneNumber || "",
+        year: cleanYear,
+        department: resolveDepartment(userData.department || ""),
+        chapters: chapters,
+        batch_of: batchOfStr,
+        term: userData.term,
+      } as any,
+    });
+
+    if (!user) {
+      console.error(
+        `Error (${userData.email}): Failed to create user - no user object returned`,
+      );
+      return {
+        success: false,
+        email: userData.email,
+        error: "Failed to create user - no user object returned",
+      };
+    }
+
+    await db.collection("profile").updateOne(
+      { userId: user.user.id },
+      {
+        $set: {
+          userId: user.user.id,
+          name: userData.name,
+          skills: [],
+          social_links: [],
+          stats: {},
+          achievements: [],
+          projects: [],
+          updatedAt: new Date(),
+        },
+      },
+      { upsert: true },
+    );
+  } catch (dbErr: any) {
     console.error(
-      `Error (${userData.email}): Failed to create user - no user object returned`,
+      `Database/Creation Error (${userData.email}): ${dbErr.message}`,
     );
     return {
       success: false,
       email: userData.email,
-      error: "Failed to create user - no user object returned",
+      error: `Database/Creation error: ${dbErr.message}`,
     };
   }
-
-  await db.collection("profile").updateOne(
-    { userId: user.user.id },
-    {
-      $set: {
-        userId: user.user.id,
-        name: userData.name,
-        skills: [],
-        social_links: [],
-        stats: {},
-        achievements: [],
-        projects: [],
-        updatedAt: new Date(),
-      },
-    },
-    { upsert: true },
-  );
 
   console.log(`User created. Sending welcome email to ${userData.email}...`);
 
@@ -420,7 +497,6 @@ async function main() {
     missingHeaders.push("Chapter 1");
   if (!cleanHeaders.includes("membershipid"))
     missingHeaders.push("Membership ID");
-  if (!hasDept && !hasBranch) missingHeaders.push("Department / Branch");
   if (!cleanHeaders.includes("email")) missingHeaders.push("Email");
 
   if (missingHeaders.length > 0) {
@@ -498,7 +574,6 @@ async function main() {
     if (!user.position) missingFields.push("Position");
     if (!user.chapter1) missingFields.push("Chapter 1");
     if (!user.membershipId) missingFields.push("Membership ID");
-    if (!user.department) missingFields.push("Department / Branch");
     if (!user.email) missingFields.push("Email");
 
     if (missingFields.length > 0) {

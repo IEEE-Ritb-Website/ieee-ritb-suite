@@ -8,16 +8,39 @@ import { useRouter } from "next/navigation";
 import { ScanlineOverlay, HeaderBar } from "@/components/layout/Common";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ProfileView } from "@/components/views/ProfileView";
-import { profileSchema, projectSchema, type ProfileFormData } from "@/lib/schema";
+import {
+  profileSchema,
+  projectSchema,
+  type ProfileFormData,
+} from "@/lib/schema";
 import { DebouncedSelect } from "@/components/ui/DebouncedSelect";
 import { DEPARTMENTS } from "@/lib/departments";
 import { Modal } from "@/components/ui";
 import { useToast } from "@/components/ui/use-toast";
-import { Chapters as CatalogChapters, IEEE_POSITIONS } from "@astranova/catalogues";
 import {
-  ChevronDown, GripVertical, Lock, Pen, X,
-  Globe, Brain, Terminal, ShieldAlert, FileText, Cpu, Smartphone, Gamepad2, Wrench, Lightbulb,
-  Github, UploadCloud, Eye, EyeOff,
+  Chapters as CatalogChapters,
+  IEEE_POSITIONS,
+} from "@astranova/catalogues";
+import {
+  ChevronDown,
+  GripVertical,
+  Lock,
+  Pen,
+  X,
+  Globe,
+  Brain,
+  Terminal,
+  ShieldAlert,
+  FileText,
+  Cpu,
+  Smartphone,
+  Gamepad2,
+  Wrench,
+  Lightbulb,
+  Github,
+  UploadCloud,
+  Eye,
+  EyeOff,
   type LucideIcon,
   Plus,
   Pin,
@@ -25,22 +48,76 @@ import {
   Code,
   EyeIcon,
   PencilIcon,
-  LogOut
+  LogOut,
+  Loader2,
 } from "lucide-react";
 import { z } from "zod";
 
 // ─── Project type metadata ───────────────────────────────────────────────────
-const EDIT_PROJECT_TYPE_META: Record<string, { Icon: LucideIcon; iconColor: string; borderColor: string; bgColor: string }> = {
-  website: { Icon: Globe, iconColor: "#00cfff", borderColor: "rgba(0,207,255,0.3)", bgColor: "rgba(0,207,255,0.06)" },
-  aiml: { Icon: Brain, iconColor: "#ff4fd8", borderColor: "rgba(255,79,216,0.3)", bgColor: "rgba(255,79,216,0.06)" },
-  cli: { Icon: Terminal, iconColor: "#00ff9d", borderColor: "rgba(0,255,157,0.25)", bgColor: "rgba(0,255,157,0.05)" },
-  cybersecurity: { Icon: ShieldAlert, iconColor: "#ffb700", borderColor: "rgba(255,183,0,0.3)", bgColor: "rgba(255,183,0,0.06)" },
-  research: { Icon: FileText, iconColor: "rgba(200,255,232,0.6)", borderColor: "rgba(200,255,232,0.15)", bgColor: "rgba(200,255,232,0.04)" },
-  embedded: { Icon: Cpu, iconColor: "#ff4fd8", borderColor: "rgba(255,79,216,0.25)", bgColor: "rgba(255,79,216,0.05)" },
-  mobile: { Icon: Smartphone, iconColor: "#00cfff", borderColor: "rgba(0,207,255,0.25)", bgColor: "rgba(0,207,255,0.05)" },
-  game: { Icon: Gamepad2, iconColor: "#ffb700", borderColor: "rgba(255,183,0,0.25)", bgColor: "rgba(255,183,0,0.05)" },
-  devtool: { Icon: Wrench, iconColor: "#00ff9d", borderColor: "rgba(0,255,157,0.22)", bgColor: "rgba(0,255,157,0.05)" },
-  other: { Icon: Lightbulb, iconColor: "rgba(200,255,232,0.5)", borderColor: "rgba(200,255,232,0.12)", bgColor: "rgba(200,255,232,0.03)" },
+const EDIT_PROJECT_TYPE_META: Record<
+  string,
+  { Icon: LucideIcon; iconColor: string; borderColor: string; bgColor: string }
+> = {
+  website: {
+    Icon: Globe,
+    iconColor: "#00cfff",
+    borderColor: "rgba(0,207,255,0.3)",
+    bgColor: "rgba(0,207,255,0.06)",
+  },
+  aiml: {
+    Icon: Brain,
+    iconColor: "#ff4fd8",
+    borderColor: "rgba(255,79,216,0.3)",
+    bgColor: "rgba(255,79,216,0.06)",
+  },
+  cli: {
+    Icon: Terminal,
+    iconColor: "#00ff9d",
+    borderColor: "rgba(0,255,157,0.25)",
+    bgColor: "rgba(0,255,157,0.05)",
+  },
+  cybersecurity: {
+    Icon: ShieldAlert,
+    iconColor: "#ffb700",
+    borderColor: "rgba(255,183,0,0.3)",
+    bgColor: "rgba(255,183,0,0.06)",
+  },
+  research: {
+    Icon: FileText,
+    iconColor: "rgba(200,255,232,0.6)",
+    borderColor: "rgba(200,255,232,0.15)",
+    bgColor: "rgba(200,255,232,0.04)",
+  },
+  embedded: {
+    Icon: Cpu,
+    iconColor: "#ff4fd8",
+    borderColor: "rgba(255,79,216,0.25)",
+    bgColor: "rgba(255,79,216,0.05)",
+  },
+  mobile: {
+    Icon: Smartphone,
+    iconColor: "#00cfff",
+    borderColor: "rgba(0,207,255,0.25)",
+    bgColor: "rgba(0,207,255,0.05)",
+  },
+  game: {
+    Icon: Gamepad2,
+    iconColor: "#ffb700",
+    borderColor: "rgba(255,183,0,0.25)",
+    bgColor: "rgba(255,183,0,0.05)",
+  },
+  devtool: {
+    Icon: Wrench,
+    iconColor: "#00ff9d",
+    borderColor: "rgba(0,255,157,0.22)",
+    bgColor: "rgba(0,255,157,0.05)",
+  },
+  other: {
+    Icon: Lightbulb,
+    iconColor: "rgba(200,255,232,0.5)",
+    borderColor: "rgba(200,255,232,0.12)",
+    bgColor: "rgba(200,255,232,0.03)",
+  },
 };
 
 const PROJECT_TYPES = [
@@ -57,31 +134,133 @@ const PROJECT_TYPES = [
 ] as const;
 
 const PROJECT_TAGS = [
-  "web", "ai", "ml", "cli", "security", "hardware", "embedded", "mobile", "game", "research",
-  "open-source", "backend", "frontend", "fullstack", "api", "database", "devops", "cloud",
-  "python", "typescript", "rust", "go", "c++", "react", "next.js", "node.js",
-  "competition", "ieee", "hackathon", "robotics", "iot", "blockchain", "networking",
+  "web",
+  "ai",
+  "ml",
+  "cli",
+  "security",
+  "hardware",
+  "embedded",
+  "mobile",
+  "game",
+  "research",
+  "open-source",
+  "backend",
+  "frontend",
+  "fullstack",
+  "api",
+  "database",
+  "devops",
+  "cloud",
+  "python",
+  "typescript",
+  "rust",
+  "go",
+  "c++",
+  "react",
+  "next.js",
+  "node.js",
+  "competition",
+  "ieee",
+  "hackathon",
+  "robotics",
+  "iot",
+  "blockchain",
+  "networking",
 ];
 
 const AVAILABLE_SKILLS = [
-  "Arduino", "Raspberry Pi", "ESP32", "Verilog", "VHDL", "Embedded C", "FPGA", "ARM Cortex", "PCB Design", "RTOS", "I2C/SPI/UART", "Firmware Development", "Microcontrollers",
-  "C", "C++", "C#", "Java", "Python", "JavaScript", "TypeScript", "Rust", "Go", "Kotlin", "Swift", "SQL", "Bash", "PHP",
-  "HTML5/CSS3", "React", "Next.js", "Vue.js", "TailwindCSS", "Svelte", "Angular", "Flutter", "React Native", "Three.js",
-  "Node.js", "Express", "FastAPI", "Django", "Spring Boot", "GraphQL", "PostgreSQL", "MongoDB", "MySQL", "SQLite", "Redis", "Elasticsearch",
-  "Linux/Unix", "Git", "Docker", "Kubernetes", "AWS", "Google Cloud (GCP)", "Azure", "CI/CD (GitHub Actions)", "Terraform", "Nginx",
-  "PyTorch", "TensorFlow", "OpenCV", "ROS (Robot Operating System)", "Numpy", "Pandas", "Scikit-Learn", "Machine Learning", "Deep Learning", "Computer Vision", "NLP",
-  "Penetration Testing", "Cryptography", "Network Security", "Reverse Engineering", "Linux Kernel", "Web Security",
+  "Arduino",
+  "Raspberry Pi",
+  "ESP32",
+  "Verilog",
+  "VHDL",
+  "Embedded C",
+  "FPGA",
+  "ARM Cortex",
+  "PCB Design",
+  "RTOS",
+  "I2C/SPI/UART",
+  "Firmware Development",
+  "Microcontrollers",
+  "C",
+  "C++",
+  "C#",
+  "Java",
+  "Python",
+  "JavaScript",
+  "TypeScript",
+  "Rust",
+  "Go",
+  "Kotlin",
+  "Swift",
+  "SQL",
+  "Bash",
+  "PHP",
+  "HTML5/CSS3",
+  "React",
+  "Next.js",
+  "Vue.js",
+  "TailwindCSS",
+  "Svelte",
+  "Angular",
+  "Flutter",
+  "React Native",
+  "Three.js",
+  "Node.js",
+  "Express",
+  "FastAPI",
+  "Django",
+  "Spring Boot",
+  "GraphQL",
+  "PostgreSQL",
+  "MongoDB",
+  "MySQL",
+  "SQLite",
+  "Redis",
+  "Elasticsearch",
+  "Linux/Unix",
+  "Git",
+  "Docker",
+  "Kubernetes",
+  "AWS",
+  "Google Cloud (GCP)",
+  "Azure",
+  "CI/CD (GitHub Actions)",
+  "Terraform",
+  "Nginx",
+  "PyTorch",
+  "TensorFlow",
+  "OpenCV",
+  "ROS (Robot Operating System)",
+  "Numpy",
+  "Pandas",
+  "Scikit-Learn",
+  "Machine Learning",
+  "Deep Learning",
+  "Computer Vision",
+  "NLP",
+  "Penetration Testing",
+  "Cryptography",
+  "Network Security",
+  "Reverse Engineering",
+  "Linux Kernel",
+  "Web Security",
 ];
 
 const CHAPTER_OPTIONS: { value: string; label: string }[] = [
-  ...CatalogChapters.map(c => ({ value: c.acronym, label: c.name })),
+  ...CatalogChapters.map((c) => ({ value: c.acronym, label: c.name })),
   { value: "SB", label: "Student Branch" },
 ];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function safeParseArray(val: any): any[] {
   if (typeof val === "string") {
-    try { return JSON.parse(val); } catch { return []; }
+    try {
+      return JSON.parse(val);
+    } catch {
+      return [];
+    }
   }
   return Array.isArray(val) ? val : [];
 }
@@ -98,7 +277,10 @@ function safeNormalizeProfile(data: any): ProfileFormData {
   } as ProfileFormData;
 }
 
-function areProfilesEqual(a: Partial<ProfileFormData>, b: Partial<ProfileFormData>): boolean {
+function areProfilesEqual(
+  a: Partial<ProfileFormData>,
+  b: Partial<ProfileFormData>,
+): boolean {
   const s = (v: any) => (v === null || v === undefined ? "" : String(v).trim());
   if (s(a.name) !== s(b.name)) return false;
   if (s(a.image) !== s(b.image)) return false;
@@ -130,8 +312,10 @@ function areProfilesEqual(a: Partial<ProfileFormData>, b: Partial<ProfileFormDat
   for (let i = 0; i < projA.length; i++) {
     if (s(projA[i]?.type) !== s(projB[i]?.type)) return false;
     if (s(projA[i]?.title) !== s(projB[i]?.title)) return false;
-    if (s(projA[i]?.short_description) !== s(projB[i]?.short_description)) return false;
-    if (s(projA[i]?.long_description) !== s(projB[i]?.long_description)) return false;
+    if (s(projA[i]?.short_description) !== s(projB[i]?.short_description))
+      return false;
+    if (s(projA[i]?.long_description) !== s(projB[i]?.long_description))
+      return false;
     if (s(projA[i]?.primary_link) !== s(projB[i]?.primary_link)) return false;
     if (s(projA[i]?.extra_link) !== s(projB[i]?.extra_link)) return false;
     const tA = (projA[i]?.tags || []).filter((t: string) => s(t) !== "");
@@ -149,8 +333,14 @@ function areProfilesEqual(a: Partial<ProfileFormData>, b: Partial<ProfileFormDat
     if (s(skillsA[i]) !== s(skillsB[i])) return false;
   }
 
-  const tlA = (a.timeline || []).filter((t: any) => s(t?.year) !== "" && s(t?.position) !== "" && s(t?.chapter) !== "");
-  const tlB = (b.timeline || []).filter((t: any) => s(t?.year) !== "" && s(t?.position) !== "" && s(t?.chapter) !== "");
+  const tlA = (a.timeline || []).filter(
+    (t: any) =>
+      s(t?.year) !== "" && s(t?.position) !== "" && s(t?.chapter) !== "",
+  );
+  const tlB = (b.timeline || []).filter(
+    (t: any) =>
+      s(t?.year) !== "" && s(t?.position) !== "" && s(t?.chapter) !== "",
+  );
   if (tlA.length !== tlB.length) return false;
   for (let i = 0; i < tlA.length; i++) {
     if (s(tlA[i]?.year) !== s(tlB[i]?.year)) return false;
@@ -169,24 +359,37 @@ function FieldError({ msg }: { msg?: string }) {
 }
 
 const errCls = (hasErr: boolean) =>
-  hasErr
-    ? "border-[#ff4fd8] shadow-[0_0_0_1px_rgba(255,79,216,0.35)]"
-    : "";
+  hasErr ? "border-[#ff4fd8] shadow-[0_0_0_1px_rgba(255,79,216,0.35)]" : "";
 
-const countWords = (value: string | undefined | null) => (value || "").trim().split(/\s+/).filter(Boolean).length;
+const countWords = (value: string | undefined | null) =>
+  (value || "").trim().split(/\s+/).filter(Boolean).length;
 
 // Stricter schema for the modal, keeping validation centralized in Zod.
-const projectModalSchema = projectSchema.extend({
-  title: z.string().trim().min(1, "Title is required"),
-  primary_link: z.string().trim().min(1, "Primary link is required").url("Must be a valid URL"),
-}).superRefine((data, ctx) => {
-  if (countWords(data.short_description) > 50) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Maximum 50 words allowed", path: ["short_description"] });
-  }
-  if (countWords(data.long_description) > 200) {
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Maximum 200 words allowed", path: ["long_description"] });
-  }
-});
+const projectModalSchema = projectSchema
+  .extend({
+    title: z.string().trim().min(1, "Title is required"),
+    primary_link: z
+      .string()
+      .trim()
+      .min(1, "Primary link is required")
+      .url("Must be a valid URL"),
+  })
+  .superRefine((data, ctx) => {
+    if (countWords(data.short_description) > 50) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Maximum 50 words allowed",
+        path: ["short_description"],
+      });
+    }
+    if (countWords(data.long_description) > 200) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Maximum 200 words allowed",
+        path: ["long_description"],
+      });
+    }
+  });
 
 // ─── Project Modal Form ───────────────────────────────────────────────────────
 type ProjectFormValues = z.infer<typeof projectModalSchema>;
@@ -200,7 +403,14 @@ interface ProjectModalProps {
   onRequestClose: () => void;
 }
 
-function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onRequestClose }: ProjectModalProps) {
+function ProjectModal({
+  open,
+  editIdx,
+  defaultValues,
+  onSave,
+  onDelete,
+  onRequestClose,
+}: ProjectModalProps) {
   const {
     register,
     handleSubmit,
@@ -220,7 +430,9 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
     if (open) {
       document.body.style.overflow = "hidden";
     }
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   // Reset form when modal opens with new data
@@ -241,7 +453,10 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-start justify-center p-4 overflow-y-auto">
-      <div className="absolute inset-0 bg-[#0d0d1a]/90 backdrop-blur-md" onClick={onRequestClose} />
+      <div
+        className="absolute inset-0 bg-[#0d0d1a]/90 backdrop-blur-md"
+        onClick={onRequestClose}
+      />
       <div className="relative w-full max-w-2xl bg-[#0d0d1a] border border-[#ff4fd8] rounded-[4px] shadow-[0_0_50px_rgba(255,79,216,0.15)] overflow-hidden my-8 animate-in zoom-in-95 duration-200">
         <div className="pointer-events-none absolute inset-0 z-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.03)_2px,rgba(0,0,0,0.03)_4px)]" />
         <div className="flex justify-between items-center px-5 py-3 border-b border-[rgba(255,79,216,0.25)] bg-[rgba(255,79,216,0.05)] relative z-10">
@@ -257,25 +472,36 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 relative z-10 space-y-4 max-h-[80vh] overflow-y-auto">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="p-6 relative z-10 space-y-4 max-h-[80vh] overflow-y-auto"
+        >
           {/* Project Type */}
           <div>
-            <label className="block text-xs uppercase text-[rgba(200,255,232,0.45)] mb-2">Project Type</label>
+            <label className="block text-xs uppercase text-[rgba(200,255,232,0.45)] mb-2">
+              Project Type
+            </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {PROJECT_TYPES.map(t => {
+              {PROJECT_TYPES.map((t) => {
                 const meta = EDIT_PROJECT_TYPE_META[t.value];
                 const isSelected = selectedType === t.value;
                 return (
                   <button
                     key={t.value}
                     type="button"
-                    onClick={() => setValue("type", t.value as any, { shouldValidate: true })}
-                    className={`flex items-center gap-2 px-3 py-2 rounded border text-xs transition-all ${isSelected
-                      ? "border-[#ff4fd8] bg-[rgba(255,79,216,0.1)] text-[#ff4fd8]"
-                      : "border-[rgba(255,79,216,0.2)] text-[rgba(200,255,232,0.4)] hover:border-[rgba(255,79,216,0.4)]"
-                      }`}
+                    onClick={() =>
+                      setValue("type", t.value as any, { shouldValidate: true })
+                    }
+                    className={`flex items-center gap-2 px-3 py-2 rounded border text-xs transition-all ${
+                      isSelected
+                        ? "border-[#ff4fd8] bg-[rgba(255,79,216,0.1)] text-[#ff4fd8]"
+                        : "border-[rgba(255,79,216,0.2)] text-[rgba(200,255,232,0.4)] hover:border-[rgba(255,79,216,0.4)]"
+                    }`}
                   >
-                    <meta.Icon size={12} style={{ color: isSelected ? "#ff4fd8" : meta.iconColor }} />
+                    <meta.Icon
+                      size={12}
+                      style={{ color: isSelected ? "#ff4fd8" : meta.iconColor }}
+                    />
                     <span className="truncate">{t.label}</span>
                   </button>
                 );
@@ -300,7 +526,9 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
           <div>
             <label className="block text-xs uppercase text-[rgba(200,255,232,0.45)] mb-1">
               Short Description{" "}
-              <span className="text-[rgba(200,255,232,0.3)] lowercase normal-case">· max 50 words · shown on card</span>
+              <span className="text-[rgba(200,255,232,0.3)] lowercase normal-case">
+                · max 50 words · shown on card
+              </span>
             </label>
             <textarea
               {...register("short_description")}
@@ -311,7 +539,8 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
             <div className="flex justify-between mt-0.5">
               <FieldError msg={errors.short_description?.message} />
               <span className="text-xs text-[rgba(200,255,232,0.3)] ml-auto">
-                {shortDesc.trim().split(/\s+/).filter(Boolean).length} / 50 words
+                {shortDesc.trim().split(/\s+/).filter(Boolean).length} / 50
+                words
               </span>
             </div>
           </div>
@@ -320,7 +549,9 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
           <div>
             <label className="block text-xs uppercase text-[rgba(200,255,232,0.45)] mb-1">
               Long Description{" "}
-              <span className="text-[rgba(200,255,232,0.3)] lowercase normal-case">· max 200 words · shown in detail view</span>
+              <span className="text-[rgba(200,255,232,0.3)] lowercase normal-case">
+                · max 200 words · shown in detail view
+              </span>
             </label>
             <textarea
               {...register("long_description")}
@@ -331,7 +562,8 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
             <div className="flex justify-between mt-0.5">
               <FieldError msg={errors.long_description?.message} />
               <span className="text-xs text-[rgba(200,255,232,0.3)] ml-auto">
-                {longDesc.trim().split(/\s+/).filter(Boolean).length} / 200 words
+                {longDesc.trim().split(/\s+/).filter(Boolean).length} / 200
+                words
               </span>
             </div>
           </div>
@@ -341,7 +573,9 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
             <div>
               <label className="block text-xs uppercase text-[rgba(200,255,232,0.45)] mb-1">
                 Primary Link <span className="text-[#ff4fd8]">*</span>{" "}
-                <span className="text-[rgba(200,255,232,0.3)] lowercase normal-case">· github / demo / paper</span>
+                <span className="text-[rgba(200,255,232,0.3)] lowercase normal-case">
+                  · github / demo / paper
+                </span>
               </label>
               <input
                 {...register("primary_link")}
@@ -353,7 +587,9 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
             <div>
               <label className="block text-xs uppercase text-[rgba(200,255,232,0.45)] mb-1">
                 Extra Link{" "}
-                <span className="text-[rgba(200,255,232,0.3)] lowercase normal-case">· optional · demo / paper / video</span>
+                <span className="text-[rgba(200,255,232,0.3)] lowercase normal-case">
+                  · optional · demo / paper / video
+                </span>
               </label>
               <input
                 {...register("extra_link")}
@@ -366,9 +602,11 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
 
           {/* Tags */}
           <div>
-            <label className="block text-xs uppercase text-[rgba(200,255,232,0.45)] mb-2">Tags</label>
+            <label className="block text-xs uppercase text-[rgba(200,255,232,0.45)] mb-2">
+              Tags
+            </label>
             <div className="flex flex-wrap gap-1.5">
-              {PROJECT_TAGS.map(tag => {
+              {PROJECT_TAGS.map((tag) => {
                 const isSelected = selectedTags.includes(tag);
                 return (
                   <button
@@ -380,10 +618,11 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
                         : [...selectedTags, tag];
                       setValue("tags", next, { shouldValidate: true });
                     }}
-                    className={`text-xs px-2 py-0.5 rounded-[2px] border transition-all ${isSelected
-                      ? "border-[#ff4fd8] bg-[rgba(255,79,216,0.12)] text-[#ff4fd8]"
-                      : "border-[rgba(200,255,232,0.15)] text-[rgba(200,255,232,0.4)] hover:border-[rgba(255,79,216,0.3)]"
-                      }`}
+                    className={`text-xs px-2 py-0.5 rounded-[2px] border transition-all ${
+                      isSelected
+                        ? "border-[#ff4fd8] bg-[rgba(255,79,216,0.12)] text-[#ff4fd8]"
+                        : "border-[rgba(200,255,232,0.15)] text-[rgba(200,255,232,0.4)] hover:border-[rgba(255,79,216,0.3)]"
+                    }`}
                   >
                     #{tag}
                   </button>
@@ -403,7 +642,10 @@ function ProjectModal({ open, editIdx, defaultValues, onSave, onDelete, onReques
             {editIdx !== null && (
               <button
                 type="button"
-                onClick={() => { onDelete(editIdx); onRequestClose(); }}
+                onClick={() => {
+                  onDelete(editIdx);
+                  onRequestClose();
+                }}
                 className="px-4 border border-[rgba(255,79,216,0.4)] text-[#ff4fd8] text-xs uppercase hover:bg-[rgba(255,79,216,0.1)] transition-colors rounded"
               >
                 Delete
@@ -429,8 +671,13 @@ export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [stagedImageFile, setStagedImageFile] = useState<File | null>(null);
-  const [stagedImagePreview, setStagedImagePreview] = useState<string | null>(null);
-  const [originalData, setOriginalData] = useState<Partial<ProfileFormData>>({});
+  const [stagedImagePreview, setStagedImagePreview] = useState<string | null>(
+    null,
+  );
+  const [originalData, setOriginalData] = useState<Partial<ProfileFormData>>(
+    {},
+  );
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Security and Password change states
   const [currentPassword, setCurrentPassword] = useState("");
@@ -512,6 +759,22 @@ export default function ProfilePage() {
     }
   };
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await authClient.signOut();
+      router.push("/auth/sign-in");
+    } catch (e) {
+      console.error("Logout failed", e);
+      toast({
+        title: "Logout Failed",
+        description: "Failed to securely terminate host session.",
+        variant: "destructive",
+      });
+      setIsLoggingOut(false);
+    }
+  };
+
   // Project modal state — just tracks open/editIdx; data flows via reset()
   const [projectModal, setProjectModal] = useState<{
     open: boolean;
@@ -531,16 +794,43 @@ export default function ProfilePage() {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema as any),
     defaultValues: {
-      name: "", image: "",
-      current_status: "", bio: "",
-      skills: [], social_links: [], stats: {}, achievements: [], projects: [], timeline: [],
+      name: "",
+      image: "",
+      current_status: "",
+      bio: "",
+      skills: [],
+      social_links: [],
+      stats: {},
+      achievements: [],
+      projects: [],
+      timeline: [],
     },
   });
 
-  const { fields: linkFields, append: appendLink, remove: removeLink, swap: swapLinks } = useFieldArray({ control, name: "social_links" });
-  const { fields: achFields, append: appendAch, remove: removeAch, swap: swapAch } = useFieldArray({ control, name: "achievements" });
-  const { fields: projFields, append: appendProj, remove: removeProj, update: updateProj } = useFieldArray({ control, name: "projects" });
-  const { fields: tlFields, prepend: prependTl, remove: removeTl, swap: swapTl } = useFieldArray({ control, name: "timeline" });
+  const {
+    fields: linkFields,
+    append: appendLink,
+    remove: removeLink,
+    swap: swapLinks,
+  } = useFieldArray({ control, name: "social_links" });
+  const {
+    fields: achFields,
+    append: appendAch,
+    remove: removeAch,
+    swap: swapAch,
+  } = useFieldArray({ control, name: "achievements" });
+  const {
+    fields: projFields,
+    append: appendProj,
+    remove: removeProj,
+    update: updateProj,
+  } = useFieldArray({ control, name: "projects" });
+  const {
+    fields: tlFields,
+    prepend: prependTl,
+    remove: removeTl,
+    swap: swapTl,
+  } = useFieldArray({ control, name: "timeline" });
 
   const formData = watch();
   const hasChanges = isDirty || !areProfilesEqual(formData, originalData);
@@ -569,11 +859,18 @@ export default function ProfilePage() {
       setSession(data);
       try {
         const response = await fetch(`/api/profile?email=${data.user.email}`);
-        const profile = response.ok ? await response.json() : {
-          name: data.user.name, email: data.user.email,
-          username: (data.user as any).username,
-          chapters: [], social_links: [], stats: {}, achievements: [], projects: [],
-        };
+        const profile = response.ok
+          ? await response.json()
+          : {
+              name: data.user.name,
+              email: data.user.email,
+              username: (data.user as any).username,
+              chapters: [],
+              social_links: [],
+              stats: {},
+              achievements: [],
+              projects: [],
+            };
         setFullProfile(profile);
         const normalized = safeNormalizeProfile(profile);
         reset(normalized);
@@ -603,7 +900,10 @@ export default function ProfilePage() {
   // ─── Save ─────────────────────────────────────────────────────────────────
   const saveProfile = handleSubmit(
     async (data) => {
-      const cleanedLinks = (data.social_links || []).filter((sl: NonNullable<ProfileFormData["social_links"]>[number]) => !!sl.link && sl.link.trim() !== "");
+      const cleanedLinks = (data.social_links || []).filter(
+        (sl: NonNullable<ProfileFormData["social_links"]>[number]) =>
+          !!sl.link && sl.link.trim() !== "",
+      );
       const dataToSave = { ...data, social_links: cleanedLinks };
       setIsUpdating(true);
       try {
@@ -611,10 +911,17 @@ export default function ProfilePage() {
           setIsUploading(true);
           const fd = new FormData();
           fd.append("file", stagedImageFile);
-          const uploadResponse = await fetch("/api/upload", { method: "POST", body: fd });
+          const uploadResponse = await fetch("/api/upload", {
+            method: "POST",
+            body: fd,
+          });
           if (!uploadResponse.ok) {
             const err = await uploadResponse.json();
-            toast({ title: "Upload Failed", description: err.message || "Visual identifier update rejected.", variant: "destructive" });
+            toast({
+              title: "Upload Failed",
+              description: err.message || "Visual identifier update rejected.",
+              variant: "destructive",
+            });
             return;
           }
 
@@ -628,21 +935,35 @@ export default function ProfilePage() {
           body: JSON.stringify(dataToSave),
         });
         if (response.ok) {
-          const refresh = await fetch(`/api/profile?email=${session.user.email}`);
+          const refresh = await fetch(
+            `/api/profile?email=${session.user.email}`,
+          );
           if (refresh.ok) {
             const updated = await refresh.json();
             const normalized = safeNormalizeProfile(updated);
             reset(normalized);
             setOriginalData(normalized);
             clearStagedImage();
-            toast({ title: "System Synced", description: "Telemetry profiles updated successfully.", variant: "success" });
+            toast({
+              title: "System Synced",
+              description: "Telemetry profiles updated successfully.",
+              variant: "success",
+            });
           }
         } else {
           const err = await response.json();
-          toast({ title: "Update Denied", description: err.message || "Database synchronization failed.", variant: "destructive" });
+          toast({
+            title: "Update Denied",
+            description: err.message || "Database synchronization failed.",
+            variant: "destructive",
+          });
         }
       } catch {
-        toast({ title: "Connection Failure", description: "Network error. Database sync interrupted.", variant: "destructive" });
+        toast({
+          title: "Connection Failure",
+          description: "Network error. Database sync interrupted.",
+          variant: "destructive",
+        });
       } finally {
         setIsUpdating(false);
         setIsUploading(false);
@@ -659,7 +980,11 @@ export default function ProfilePage() {
             const k = `${path}:${val.message}`;
             if (!seen.has(k)) {
               seen.add(k);
-              toast({ title: `Error: ${path}`, description: val.message, variant: "destructive" });
+              toast({
+                title: `Error: ${path}`,
+                description: val.message,
+                variant: "destructive",
+              });
             }
           } else if (typeof val === "object" && val !== null) {
             flatten(val, path);
@@ -667,14 +992,16 @@ export default function ProfilePage() {
         }
       };
       flatten(fieldErrors);
-    }
+    },
   );
 
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0d0d1a] text-[#00ff9d] flex items-center justify-center font-mono">
         <ScanlineOverlay />
-        <div className="animate-pulse tracking-[0.2em]">SYNCHRONIZING WITH HOST...</div>
+        <div className="animate-pulse tracking-[0.2em]">
+          SYNCHRONIZING WITH HOST...
+        </div>
       </div>
     );
   }
@@ -690,37 +1017,50 @@ export default function ProfilePage() {
         <div className="flex gap-4 items-center">
           <button
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`text-sm flex gap-2 items-center px-3 py-1 border transition-all uppercase tracking-widest ${isEditMode
-              ? "bg-[#00ff9d] text-[#0d0d1a] border-[#00ff9d]"
-              : "border-[rgba(0,255,157,0.4)] text-[#00ff9d] hover:bg-[rgba(0,255,157,0.1)]"
-              }`}
+            className={`text-sm flex gap-2 items-center px-3 py-1 border transition-all uppercase tracking-widest ${
+              isEditMode
+                ? "bg-[#00ff9d] text-[#0d0d1a] border-[#00ff9d]"
+                : "border-[rgba(0,255,157,0.4)] text-[#00ff9d] hover:bg-[rgba(0,255,157,0.1)]"
+            }`}
           >
-            {isEditMode ?
+            {isEditMode ? (
               <>
                 <EyeIcon size={14} /> View Profile
-              </> : <>
+              </>
+            ) : (
+              <>
                 <PencilIcon size={14} /> Edit Profile
               </>
-            }
+            )}
           </button>
         </div>
         <button
-          onClick={() => authClient.signOut().then(() => router.push("/auth/sign-in"))}
-          className="text-sm text-[#ff4fd8] flex gap-2 items-center border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className={`text-sm text-[#ff4fd8] flex gap-2 items-center border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest ${
+            isLoggingOut ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          <LogOut size={12} />
-          Logout
+          {isLoggingOut ? (
+            <Loader2 size={12} className="animate-spin" />
+          ) : (
+            <LogOut size={12} />
+          )}
+          {isLoggingOut ? "Logging out..." : "Logout"}
         </button>
       </div>
 
       <div className="flex flex-col md:flex-row min-h-[calc(100vh-80px)]">
         <Sidebar
-          user={{
-            ...fullProfile,
-            name: formData.name || fullProfile?.name,
-            image: formData.image || fullProfile?.image,
-            social_links: formData.social_links || fullProfile?.social_links,
-          } as any}
+          user={
+            {
+              ...fullProfile,
+              name: formData.name || fullProfile?.name,
+              image: formData.image || fullProfile?.image,
+              social_links: formData.social_links || fullProfile?.social_links,
+              department: formData.department || fullProfile?.department,
+            } as any
+          }
           isEditMode={isEditMode}
           openModal={() => setIsModalOpen(true)}
         />
@@ -733,10 +1073,17 @@ export default function ProfilePage() {
                 <button
                   onClick={saveProfile}
                   disabled={isUpdating || !hasChanges}
-                  className={`bg-[#00ff9d] text-[#0d0d1a] px-8 py-2 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:scale-105 transition-all ${isUpdating || !hasChanges ? "opacity-50 cursor-not-allowed shadow-none scale-100 hover:scale-100" : ""
-                    }`}
+                  className={`bg-[#00ff9d] text-[#0d0d1a] px-8 py-2 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:scale-105 transition-all ${
+                    isUpdating || !hasChanges
+                      ? "opacity-50 cursor-not-allowed shadow-none scale-100 hover:scale-100"
+                      : ""
+                  }`}
                 >
-                  {isUpdating ? "Synchronizing..." : !hasChanges ? "No changes" : "Update Data"}
+                  {isUpdating
+                    ? "Synchronizing..."
+                    : !hasChanges
+                      ? "No changes"
+                      : "Update Data"}
                 </button>
               </div>
 
@@ -744,11 +1091,19 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)] mb-1">Name <Lock size={12} /></label>
-                    <input {...register("name")} readOnly className="w-full bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] rounded px-3 py-2 outline-none text-[rgba(200,255,232,0.5)] cursor-not-allowed" />
+                    <label className="block text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)] mb-1">
+                      Name <Lock size={12} />
+                    </label>
+                    <input
+                      {...register("name")}
+                      readOnly
+                      className="w-full bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] rounded px-3 py-2 outline-none text-[rgba(200,255,232,0.5)] cursor-not-allowed"
+                    />
                   </div>
                   <div>
-                    <label className="block text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)] mb-1">Status <Pen size={12} /></label>
+                    <label className="block text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)] mb-1">
+                      Status <Pen size={12} />
+                    </label>
                     <input
                       {...register("current_status")}
                       placeholder="writing papers..."
@@ -758,7 +1113,9 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)] mb-1">Bio <Pen size={12} /></label>
+                  <label className="block text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)] mb-1">
+                    Bio <Pen size={12} />
+                  </label>
                   <textarea
                     {...register("bio")}
                     rows={4}
@@ -768,11 +1125,15 @@ export default function ProfilePage() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)] mb-1">Department <Pen size={12} /></label>
+                <label className="block text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)] mb-1">
+                  Department <Pen size={12} />
+                </label>
                 <DebouncedSelect
                   options={DEPARTMENTS}
                   value={formData.department || ""}
-                  onChange={(val) => setValue("department", val, { shouldDirty: true })}
+                  onChange={(val) =>
+                    setValue("department", val, { shouldDirty: true })
+                  }
                   placeholder="Select department..."
                 />
               </div>
@@ -784,20 +1145,30 @@ export default function ProfilePage() {
                   <span className="uppercase text-sm">System Information</span>
                 </div>
                 <div className="text-xs max-w-2xl tracking-widest text-[rgba(200,255,232,0.45)]">
-                  these records are stored on the host system and are not publicly available. contact admins for changes.
+                  these records are stored on the host system and are not
+                  publicly available. contact admins for changes.
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {[
                     ["Email", fullProfile?.email],
                     ["USN", fullProfile?.usn || formData.usn],
-                    ["Phone Number", fullProfile?.phoneNumber || formData.phoneNumber],
+                    [
+                      "Phone Number",
+                      fullProfile?.phoneNumber || formData.phoneNumber,
+                    ],
                     ["Batch Of", fullProfile?.batch_of || fullProfile?.batch],
                     ["Year of Study", fullProfile?.year || formData.year],
                     ["IEEE Membership ID", fullProfile?.membershipId],
                   ].map(([label, value]) => (
                     <div key={label as string}>
-                      <label className="block text-xs uppercase text-[rgba(200,255,232,0.35)] mb-1">{label}</label>
-                      <input value={value || "NOT SET"} readOnly className="w-full bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] rounded px-3 py-2 outline-none text-[rgba(200,255,232,0.5)] cursor-not-allowed text-xs" />
+                      <label className="block text-xs uppercase text-[rgba(200,255,232,0.35)] mb-1">
+                        {label}
+                      </label>
+                      <input
+                        value={value || "NOT SET"}
+                        readOnly
+                        className="w-full bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] rounded px-3 py-2 outline-none text-[rgba(200,255,232,0.5)] cursor-not-allowed text-xs"
+                      />
                     </div>
                   ))}
                 </div>
@@ -810,28 +1181,46 @@ export default function ProfilePage() {
                   Tech Stack &amp; Skills
                 </label>
                 <DebouncedSelect
-                  options={AVAILABLE_SKILLS.filter(s => !(formData.skills || []).includes(s)).map(s => ({ value: s, label: s }))}
+                  options={AVAILABLE_SKILLS.filter(
+                    (s) => !(formData.skills || []).includes(s),
+                  ).map((s) => ({ value: s, label: s }))}
                   value=""
                   onChange={(val) => {
                     const current = formData.skills || [];
                     if (val && !current.includes(val)) {
-                      setValue("skills", [...current, val], { shouldDirty: true });
+                      setValue("skills", [...current, val], {
+                        shouldDirty: true,
+                      });
                     }
                   }}
                   placeholder="Search hardware / software skills..."
                 />
 
                 <div className="flex flex-wrap gap-2 pt-3 bg-[rgba(0,255,157,0.01)] border border-dashed border-[rgba(0,255,157,0.15)] p-4 rounded min-h-[60px] items-center">
-                  {(formData.skills || []).length > 0 ? (formData.skills || []).map((skill) => (
-                    <span
-                      key={skill}
-                      onClick={() => setValue("skills", (formData.skills || []).filter(s => s !== skill), { shouldDirty: true })}
-                      className="flex items-center gap-1.5 p-1 px-2.5 rounded-[2px] text-xs tracking-[0.05em] border border-[rgba(0,207,255,0.35)] text-[#00cfff] bg-[rgba(0,207,255,0.06)] hover:border-[#ff4fd8] hover:text-[#ff4fd8] hover:bg-[rgba(255,79,216,0.05)] transition-all cursor-pointer group"
-                    >
-                      {skill} <X size={10} className="opacity-60 group-hover:opacity-100" />
+                  {(formData.skills || []).length > 0 ? (
+                    (formData.skills || []).map((skill) => (
+                      <span
+                        key={skill}
+                        onClick={() =>
+                          setValue(
+                            "skills",
+                            (formData.skills || []).filter((s) => s !== skill),
+                            { shouldDirty: true },
+                          )
+                        }
+                        className="flex items-center gap-1.5 p-1 px-2.5 rounded-[2px] text-xs tracking-[0.05em] border border-[rgba(0,207,255,0.35)] text-[#00cfff] bg-[rgba(0,207,255,0.06)] hover:border-[#ff4fd8] hover:text-[#ff4fd8] hover:bg-[rgba(255,79,216,0.05)] transition-all cursor-pointer group"
+                      >
+                        {skill}{" "}
+                        <X
+                          size={10}
+                          className="opacity-60 group-hover:opacity-100"
+                        />
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-xs opacity-40 italic uppercase tracking-wider">
+                      // select skills from the dropdown above
                     </span>
-                  )) : (
-                    <span className="text-xs opacity-40 italic uppercase tracking-wider">// select skills from the dropdown above</span>
                   )}
                 </div>
               </div>
@@ -840,7 +1229,9 @@ export default function ProfilePage() {
               <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
                 <Pin size={22} className="text-[#00ff9d]" />
                 <div className="flex justify-between items-center">
-                  <label className="text-sm uppercase tracking-widest">Links</label>
+                  <label className="text-sm uppercase tracking-widest">
+                    Links
+                  </label>
                   <button
                     type="button"
                     onClick={() => appendLink({ label: "", link: "" })}
@@ -854,16 +1245,41 @@ export default function ProfilePage() {
                     <div
                       key={field.id}
                       draggable
-                      onDragStart={(e) => { e.dataTransfer.setData("text/plain", String(idx)); e.currentTarget.classList.add("opacity-40"); }}
-                      onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("border-[#00ff9d]", "border"); }}
-                      onDragLeave={(e) => { e.currentTarget.classList.remove("border-[#00ff9d]", "border"); }}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData("text/plain", String(idx));
+                        e.currentTarget.classList.add("opacity-40");
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add(
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                      }}
+                      onDragLeave={(e) => {
+                        e.currentTarget.classList.remove(
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                      }}
                       onDrop={(e) => {
                         e.preventDefault();
-                        e.currentTarget.classList.remove("border-[#00ff9d]", "border");
-                        const from = parseInt(e.dataTransfer.getData("text/plain"));
+                        e.currentTarget.classList.remove(
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                        const from = parseInt(
+                          e.dataTransfer.getData("text/plain"),
+                        );
                         if (!isNaN(from) && from !== idx) swapLinks(from, idx);
                       }}
-                      onDragEnd={(e) => { e.currentTarget.classList.remove("opacity-40", "border-[#00ff9d]", "border"); }}
+                      onDragEnd={(e) => {
+                        e.currentTarget.classList.remove(
+                          "opacity-40",
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                      }}
                       className="flex gap-2 items-start w-full bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] p-3 rounded cursor-grab active:cursor-grabbing"
                     >
                       <div className="flex items-center pt-2 text-[rgba(200,255,232,0.25)] hover:text-[#00ff9d] transition-colors flex-shrink-0">
@@ -878,11 +1294,17 @@ export default function ProfilePage() {
                         <input
                           {...register(`social_links.${idx}.link`)}
                           placeholder="https://..."
-                          className={`w-full bg-transparent border-b outline-none text-sm transition-colors ${errCls(!!(errors.social_links?.[idx]?.link))}`}
+                          className={`w-full bg-transparent border-b outline-none text-sm transition-colors ${errCls(!!errors.social_links?.[idx]?.link)}`}
                         />
-                        <FieldError msg={errors.social_links?.[idx]?.link?.message} />
+                        <FieldError
+                          msg={errors.social_links?.[idx]?.link?.message}
+                        />
                       </div>
-                      <button type="button" onClick={() => removeLink(idx)} className="text-[#ff4fd8] mt-1 flex-shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => removeLink(idx)}
+                        className="text-[#ff4fd8] mt-1 flex-shrink-0"
+                      >
                         <X size={16} />
                       </button>
                     </div>
@@ -894,10 +1316,20 @@ export default function ProfilePage() {
               <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
                 <Medal size={22} className="text-[#00ff9d]" />
                 <div className="flex justify-between items-center">
-                  <label className="text-sm uppercase tracking-widest">Honors &amp; Achievements</label>
+                  <label className="text-sm uppercase tracking-widest">
+                    Honors &amp; Achievements
+                  </label>
                   <button
                     type="button"
-                    onClick={() => appendAch({ title: "", badge_type: "hackathon", date: "", description: "", link: "" })}
+                    onClick={() =>
+                      appendAch({
+                        title: "",
+                        badge_type: "hackathon",
+                        date: "",
+                        description: "",
+                        link: "",
+                      })
+                    }
                     className="text-sm flex items-center gap-2 border border-[#00ff9d] px-2 py-1 hover:bg-[rgba(0,255,157,0.1)] transition-colors"
                   >
                     <Plus size={14} /> Add Achievement
@@ -908,16 +1340,41 @@ export default function ProfilePage() {
                     <div
                       key={field.id}
                       draggable
-                      onDragStart={(e) => { e.dataTransfer.setData("text/plain", String(idx)); e.currentTarget.classList.add("opacity-40"); }}
-                      onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("border-[#00ff9d]", "border"); }}
-                      onDragLeave={(e) => { e.currentTarget.classList.remove("border-[#00ff9d]", "border"); }}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData("text/plain", String(idx));
+                        e.currentTarget.classList.add("opacity-40");
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add(
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                      }}
+                      onDragLeave={(e) => {
+                        e.currentTarget.classList.remove(
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                      }}
                       onDrop={(e) => {
                         e.preventDefault();
-                        e.currentTarget.classList.remove("border-[#00ff9d]", "border");
-                        const from = parseInt(e.dataTransfer.getData("text/plain"));
+                        e.currentTarget.classList.remove(
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                        const from = parseInt(
+                          e.dataTransfer.getData("text/plain"),
+                        );
                         if (!isNaN(from) && from !== idx) swapAch(from, idx);
                       }}
-                      onDragEnd={(e) => { e.currentTarget.classList.remove("opacity-40", "border-[#00ff9d]", "border"); }}
+                      onDragEnd={(e) => {
+                        e.currentTarget.classList.remove(
+                          "opacity-40",
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                      }}
                       className="bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.12)] rounded p-4 cursor-grab active:cursor-grabbing"
                     >
                       <div className="flex gap-2 items-start">
@@ -928,9 +1385,14 @@ export default function ProfilePage() {
                           <input
                             {...register(`achievements.${idx}.title`)}
                             placeholder="Achievement title (e.g. 1st Place — HackMIT 2024)"
-                            className={`w-full bg-transparent border-b border-[rgba(0,255,157,0.2)] outline-none text-sm text-[#c8ffe8] placeholder:text-[rgba(200,255,232,0.25)] pb-1 transition-colors ${errCls(!!(errors.achievements?.[idx]?.title))}`}
+                            className={`w-full bg-transparent border-b border-[rgba(0,255,157,0.2)] outline-none text-sm text-[#c8ffe8] placeholder:text-[rgba(200,255,232,0.25)] pb-1 transition-colors ${errCls(!!errors.achievements?.[idx]?.title)}`}
                           />
-                          <FieldError msg={(errors.achievements?.[idx]?.title as any)?.message} />
+                          <FieldError
+                            msg={
+                              (errors.achievements?.[idx]?.title as any)
+                                ?.message
+                            }
+                          />
 
                           <div className="flex gap-2 flex-wrap items-center">
                             <div className="relative">
@@ -938,14 +1400,41 @@ export default function ProfilePage() {
                                 {...register(`achievements.${idx}.badge_type`)}
                                 className="appearance-none bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-1.5 pr-8 text-xs outline-none focus:border-[#00ff9d] text-[rgba(200,255,232,0.6)] cursor-pointer"
                               >
-                                <option value="hackathon" className="bg-[#0d0d1a]">Hackathon</option>
-                                <option value="internship" className="bg-[#0d0d1a]">Internship</option>
-                                <option value="open_source" className="bg-[#0d0d1a]">Open Source</option>
-                                <option value="certification" className="bg-[#0d0d1a]">Certification</option>
-                                <option value="award" className="bg-[#0d0d1a]">Award</option>
-                                <option value="other" className="bg-[#0d0d1a]">Other</option>
+                                <option
+                                  value="hackathon"
+                                  className="bg-[#0d0d1a]"
+                                >
+                                  Hackathon
+                                </option>
+                                <option
+                                  value="internship"
+                                  className="bg-[#0d0d1a]"
+                                >
+                                  Internship
+                                </option>
+                                <option
+                                  value="open_source"
+                                  className="bg-[#0d0d1a]"
+                                >
+                                  Open Source
+                                </option>
+                                <option
+                                  value="certification"
+                                  className="bg-[#0d0d1a]"
+                                >
+                                  Certification
+                                </option>
+                                <option value="award" className="bg-[#0d0d1a]">
+                                  Award
+                                </option>
+                                <option value="other" className="bg-[#0d0d1a]">
+                                  Other
+                                </option>
                               </select>
-                              <ChevronDown size={12} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#00ff9d] opacity-60" />
+                              <ChevronDown
+                                size={12}
+                                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#00ff9d] opacity-60"
+                              />
                             </div>
                             <input
                               {...register(`achievements.${idx}.date`)}
@@ -959,25 +1448,40 @@ export default function ProfilePage() {
                             placeholder="Brief description (optional, max 200 chars)"
                             maxLength={200}
                             rows={2}
-                            className={`w-full bg-transparent border-b border-[rgba(0,255,157,0.1)] py-1 outline-none focus:border-[rgba(0,255,157,0.3)] text-sm text-[rgba(200,255,232,0.6)] placeholder:text-[rgba(200,255,232,0.2)] resize-none transition-colors ${errCls(!!(errors.achievements?.[idx]?.description))}`}
+                            className={`w-full bg-transparent border-b border-[rgba(0,255,157,0.1)] py-1 outline-none focus:border-[rgba(0,255,157,0.3)] text-sm text-[rgba(200,255,232,0.6)] placeholder:text-[rgba(200,255,232,0.2)] resize-none transition-colors ${errCls(!!errors.achievements?.[idx]?.description)}`}
                           />
-                          <FieldError msg={(errors.achievements?.[idx]?.description as any)?.message} />
+                          <FieldError
+                            msg={
+                              (errors.achievements?.[idx]?.description as any)
+                                ?.message
+                            }
+                          />
 
                           <input
                             {...register(`achievements.${idx}.link`)}
                             placeholder="Link (certificate URL, project, etc.)"
-                            className={`w-full bg-transparent border-b border-[rgba(0,255,157,0.2)] outline-none text-sm text-[rgba(200,255,232,0.6)] placeholder:text-[rgba(200,255,232,0.2)] transition-colors ${errCls(!!(errors.achievements?.[idx]?.link))}`}
+                            className={`w-full bg-transparent border-b border-[rgba(0,255,157,0.2)] outline-none text-sm text-[rgba(200,255,232,0.6)] placeholder:text-[rgba(200,255,232,0.2)] transition-colors ${errCls(!!errors.achievements?.[idx]?.link)}`}
                           />
-                          <FieldError msg={(errors.achievements?.[idx]?.link as any)?.message} />
+                          <FieldError
+                            msg={
+                              (errors.achievements?.[idx]?.link as any)?.message
+                            }
+                          />
                         </div>
-                        <button type="button" onClick={() => removeAch(idx)} className="text-[#ff4fd8] flex-shrink-0 mt-1">
+                        <button
+                          type="button"
+                          onClick={() => removeAch(idx)}
+                          className="text-[#ff4fd8] flex-shrink-0 mt-1"
+                        >
                           <X size={14} />
                         </button>
                       </div>
                     </div>
                   ))}
                   {achFields.length === 0 && (
-                    <div className="text-xs opacity-30 italic uppercase tracking-wider text-center py-4">// hackathons, certifications, awards, contributions</div>
+                    <div className="text-xs opacity-30 italic uppercase tracking-wider text-center py-4">
+                      // hackathons, certifications, awards, contributions
+                    </div>
                   )}
                 </div>
               </div>
@@ -986,61 +1490,118 @@ export default function ProfilePage() {
               <div className="space-y-4 border-t border-[rgba(0,255,157,0.1)] pt-6">
                 <Code size={22} className="text-[#00ff9d]" />
                 <div className="flex justify-between items-center">
-                  <label className="text-sm uppercase tracking-widest text-[rgba(200,255,232,0.45)]">Projects</label>
+                  <label className="text-sm uppercase tracking-widest text-[rgba(200,255,232,0.45)]">
+                    Projects
+                  </label>
                   <button
                     type="button"
-                    onClick={() => setProjectModal({ open: true, editIdx: null, defaultValues: { type: "other", tags: [] } })}
+                    onClick={() =>
+                      setProjectModal({
+                        open: true,
+                        editIdx: null,
+                        defaultValues: { type: "other", tags: [] },
+                      })
+                    }
                     className="text-sm flex items-center gap-2 border border-[#ff4fd8] text-[#ff4fd8] px-2 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-colors"
                   >
-                    <Plus size={14} />Add Project
+                    <Plus size={14} />
+                    Add Project
                   </button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {projFields.map((field, idx) => {
                     const proj = formData.projects?.[idx];
                     if (!proj) return null;
-                    const typeMeta = EDIT_PROJECT_TYPE_META[proj.type || "other"] || EDIT_PROJECT_TYPE_META["other"];
-                    const { Icon: ProjIcon, iconColor, borderColor, bgColor } = typeMeta;
-                    const typeLabel = PROJECT_TYPES.find(t => t.value === proj.type)?.label || "Other";
+                    const typeMeta =
+                      EDIT_PROJECT_TYPE_META[proj.type || "other"] ||
+                      EDIT_PROJECT_TYPE_META["other"];
+                    const {
+                      Icon: ProjIcon,
+                      iconColor,
+                      borderColor,
+                      bgColor,
+                    } = typeMeta;
+                    const typeLabel =
+                      PROJECT_TYPES.find((t) => t.value === proj.type)?.label ||
+                      "Other";
                     return (
                       <div
                         key={field.id}
-                        onClick={() => setProjectModal({ open: true, editIdx: idx, defaultValues: { ...proj } })}
+                        onClick={() =>
+                          setProjectModal({
+                            open: true,
+                            editIdx: idx,
+                            defaultValues: { ...proj },
+                          })
+                        }
                         className="rounded p-3 cursor-pointer transition-all group relative hover:brightness-110"
-                        style={{ background: bgColor, border: `1px solid ${borderColor}` }}
+                        style={{
+                          background: bgColor,
+                          border: `1px solid ${borderColor}`,
+                        }}
                       >
                         <button
                           type="button"
-                          onClick={(e) => { e.stopPropagation(); removeProj(idx); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeProj(idx);
+                          }}
                           className="absolute top-2 right-2 text-[#ff4fd8] opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X size={12} />
                         </button>
                         <div className="flex items-center gap-2 mb-1.5">
-                          <div className="flex-shrink-0 w-7 h-7 rounded-[3px] flex items-center justify-center" style={{ background: bgColor, border: `1px solid ${borderColor}` }}>
+                          <div
+                            className="flex-shrink-0 w-7 h-7 rounded-[3px] flex items-center justify-center"
+                            style={{
+                              background: bgColor,
+                              border: `1px solid ${borderColor}`,
+                            }}
+                          >
                             <ProjIcon size={12} style={{ color: iconColor }} />
                           </div>
                           <div className="min-w-0">
-                            <div className="text-xs font-bold text-[#00ff9d] uppercase truncate">{proj.title || "Untitled Project"}</div>
-                            <div className="text-xs" style={{ color: iconColor, opacity: 0.55 }}>{typeLabel}</div>
+                            <div className="text-xs font-bold text-[#00ff9d] uppercase truncate">
+                              {proj.title || "Untitled Project"}
+                            </div>
+                            <div
+                              className="text-xs"
+                              style={{ color: iconColor, opacity: 0.55 }}
+                            >
+                              {typeLabel}
+                            </div>
                           </div>
                         </div>
                         {proj.short_description && (
-                          <p className="text-sm text-[rgba(200,255,232,0.5)] line-clamp-2">{proj.short_description}</p>
+                          <p className="text-sm text-[rgba(200,255,232,0.5)] line-clamp-2">
+                            {proj.short_description}
+                          </p>
                         )}
                         {proj.tags && proj.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {proj.tags.slice(0, 3).map(tag => (
-                              <span key={tag} className="text-sm opacity-40" style={{ color: iconColor }}>#{tag}</span>
+                            {proj.tags.slice(0, 3).map((tag) => (
+                              <span
+                                key={tag}
+                                className="text-sm opacity-40"
+                                style={{ color: iconColor }}
+                              >
+                                #{tag}
+                              </span>
                             ))}
-                            {proj.tags.length > 3 && <span className="text-sm opacity-30 text-[rgba(200,255,232,0.4)]">+{proj.tags.length - 3}</span>}
+                            {proj.tags.length > 3 && (
+                              <span className="text-sm opacity-30 text-[rgba(200,255,232,0.4)]">
+                                +{proj.tags.length - 3}
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>
                     );
                   })}
                   {projFields.length === 0 && (
-                    <div className="text-xs opacity-30 italic uppercase tracking-wider text-center py-4 col-span-2">// Add the projects that you&apos;re working on</div>
+                    <div className="text-xs opacity-30 italic uppercase tracking-wider text-center py-4 col-span-2">
+                      // Add the projects that you&apos;re working on
+                    </div>
                   )}
                 </div>
               </div>
@@ -1052,10 +1613,19 @@ export default function ProfilePage() {
                   <span className="uppercase text-sm">Timeline</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <label className="text-xs uppercase tracking-widest text-[rgba(200,255,232,0.45)]">IEEE Journey</label>
+                  <label className="text-xs uppercase tracking-widest text-[rgba(200,255,232,0.45)]">
+                    IEEE Journey
+                  </label>
                   <button
                     type="button"
-                    onClick={() => prependTl({ year: "", position: "", chapter: "", description: "" })}
+                    onClick={() =>
+                      prependTl({
+                        year: "",
+                        position: "",
+                        chapter: "",
+                        description: "",
+                      })
+                    }
                     className="text-sm flex items-center gap-2 border border-[#00ff9d] px-2 py-1 hover:bg-[rgba(0,255,157,0.1)] transition-colors"
                   >
                     <Plus size={14} /> Add Entry
@@ -1066,16 +1636,41 @@ export default function ProfilePage() {
                     <div
                       key={field.id}
                       draggable
-                      onDragStart={(e) => { e.dataTransfer.setData("text/plain", String(idx)); e.currentTarget.classList.add("opacity-40"); }}
-                      onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add("border-[#00ff9d]", "border"); }}
-                      onDragLeave={(e) => { e.currentTarget.classList.remove("border-[#00ff9d]", "border"); }}
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData("text/plain", String(idx));
+                        e.currentTarget.classList.add("opacity-40");
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add(
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                      }}
+                      onDragLeave={(e) => {
+                        e.currentTarget.classList.remove(
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                      }}
                       onDrop={(e) => {
                         e.preventDefault();
-                        e.currentTarget.classList.remove("border-[#00ff9d]", "border");
-                        const from = parseInt(e.dataTransfer.getData("text/plain"));
+                        e.currentTarget.classList.remove(
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                        const from = parseInt(
+                          e.dataTransfer.getData("text/plain"),
+                        );
                         if (!isNaN(from) && from !== idx) swapTl(from, idx);
                       }}
-                      onDragEnd={(e) => { e.currentTarget.classList.remove("opacity-40", "border-[#00ff9d]", "border"); }}
+                      onDragEnd={(e) => {
+                        e.currentTarget.classList.remove(
+                          "opacity-40",
+                          "border-[#00ff9d]",
+                          "border",
+                        );
+                      }}
                       className="bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.12)] rounded p-4 cursor-grab active:cursor-grabbing"
                     >
                       <div className="flex gap-2 items-start">
@@ -1085,28 +1680,47 @@ export default function ProfilePage() {
                         <div className="flex-1 space-y-2">
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <div>
-                              <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">Year</label>
+                              <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">
+                                Year
+                              </label>
                               <input
                                 {...register(`timeline.${idx}.year`)}
                                 placeholder="e.g. 2024-25"
-                                className={`w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-1.5 text-xs outline-none focus:border-[#00ff9d] text-[#00ff9d] transition-colors ${errCls(!!(errors.timeline?.[idx]?.year))}`}
+                                className={`w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-1.5 text-xs outline-none focus:border-[#00ff9d] text-[#00ff9d] transition-colors ${errCls(!!errors.timeline?.[idx]?.year)}`}
                               />
-                              <FieldError msg={(errors.timeline?.[idx]?.year as any)?.message} />
+                              <FieldError
+                                msg={
+                                  (errors.timeline?.[idx]?.year as any)?.message
+                                }
+                              />
                             </div>
                             <div>
-                              <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">Position / Role</label>
+                              <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">
+                                Position / Role
+                              </label>
                               <Controller
                                 control={control}
                                 name={`timeline.${idx}.position`}
                                 render={({ field }) => (
                                   <DebouncedSelect
-                                    options={IEEE_POSITIONS.map(p => ({ value: p.value, label: p.name }))}
+                                    options={IEEE_POSITIONS.map((p) => ({
+                                      value: p.value,
+                                      label: p.name,
+                                    }))}
                                     value={field.value || ""}
                                     onChange={(val) => {
                                       field.onChange(val);
-                                      setValue(`timeline.${idx}.position`, val, { shouldDirty: true });
+                                      setValue(
+                                        `timeline.${idx}.position`,
+                                        val,
+                                        { shouldDirty: true },
+                                      );
                                       if (val === "volunteer") {
-                                        setValue(`timeline.${idx}.chapter`, "", { shouldDirty: true });
+                                        setValue(
+                                          `timeline.${idx}.chapter`,
+                                          "",
+                                          { shouldDirty: true },
+                                        );
                                       }
                                     }}
                                     placeholder="Select position..."
@@ -1114,9 +1728,12 @@ export default function ProfilePage() {
                                 )}
                               />
                             </div>
-                            {formData.timeline?.[idx]?.position !== "volunteer" && (
+                            {formData.timeline?.[idx]?.position !==
+                              "volunteer" && (
                               <div>
-                                <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">Chapter</label>
+                                <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">
+                                  Chapter
+                                </label>
                                 <Controller
                                   control={control}
                                   name={`timeline.${idx}.chapter`}
@@ -1124,7 +1741,14 @@ export default function ProfilePage() {
                                     <DebouncedSelect
                                       options={CHAPTER_OPTIONS}
                                       value={field.value || ""}
-                                      onChange={(val) => { field.onChange(val); setValue(`timeline.${idx}.chapter`, val, { shouldDirty: true }); }}
+                                      onChange={(val) => {
+                                        field.onChange(val);
+                                        setValue(
+                                          `timeline.${idx}.chapter`,
+                                          val,
+                                          { shouldDirty: true },
+                                        );
+                                      }}
                                       placeholder="Select chapter..."
                                     />
                                   )}
@@ -1139,31 +1763,48 @@ export default function ProfilePage() {
                             className="w-full bg-transparent border-b border-[rgba(0,255,157,0.1)] py-1 outline-none focus:border-[rgba(0,255,157,0.3)] text-sm text-[rgba(200,255,232,0.6)] placeholder:text-[rgba(200,255,232,0.2)] resize-none transition-colors"
                           />
                         </div>
-                        <button type="button" onClick={() => removeTl(idx)} className="text-[#ff4fd8] flex-shrink-0 mt-1">
+                        <button
+                          type="button"
+                          onClick={() => removeTl(idx)}
+                          className="text-[#ff4fd8] flex-shrink-0 mt-1"
+                        >
                           <X size={14} />
                         </button>
                       </div>
                     </div>
                   ))}
                   {tlFields.length === 0 && (
-                    <div className="text-xs opacity-30 italic uppercase tracking-wider text-center py-4">// Add your IEEE journey timeline entries</div>
+                    <div className="text-xs opacity-30 italic uppercase tracking-wider text-center py-4">
+                      // Add your IEEE journey timeline entries
+                    </div>
                   )}
                 </div>
               </div>
 
               {/* ── Connected Accounts (GitHub / LeetCode) ──────────────────── */}
               <div className="border-t border-[rgba(0,255,157,0.1)] pt-6 space-y-4">
-                <label className="text-xs uppercase tracking-widest text-[rgba(200,255,232,0.45)]">Connected Accounts</label>
+                <label className="text-xs uppercase tracking-widest text-[rgba(200,255,232,0.45)]">
+                  Connected Accounts
+                </label>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] p-3 rounded">
                     <div className="flex items-center gap-3">
-                      <Github size={16} className="text-[rgba(200,255,232,0.4)]" />
+                      <Github
+                        size={16}
+                        className="text-[rgba(200,255,232,0.4)]"
+                      />
                       <div>
-                        <div className="text-xs uppercase tracking-wider text-[rgba(200,255,232,0.6)]">GitHub</div>
+                        <div className="text-xs uppercase tracking-wider text-[rgba(200,255,232,0.6)]">
+                          GitHub
+                        </div>
                         {formData.github_username ? (
-                          <div className="text-xs text-[#00ff9d] mt-0.5">@{formData.github_username}</div>
+                          <div className="text-xs text-[#00ff9d] mt-0.5">
+                            @{formData.github_username}
+                          </div>
                         ) : (
-                          <div className="text-xs text-[rgba(200,255,232,0.25)] mt-0.5 italic">Not connected</div>
+                          <div className="text-xs text-[rgba(200,255,232,0.25)] mt-0.5 italic">
+                            Not connected
+                          </div>
                         )}
                       </div>
                     </div>
@@ -1180,13 +1821,22 @@ export default function ProfilePage() {
                   </div>
                   <div className="flex items-center justify-between bg-[rgba(0,255,157,0.02)] border border-[rgba(0,255,157,0.1)] p-3 rounded">
                     <div className="flex items-center gap-3">
-                      <Terminal size={16} className="text-[rgba(200,255,232,0.4)]" />
+                      <Terminal
+                        size={16}
+                        className="text-[rgba(200,255,232,0.4)]"
+                      />
                       <div>
-                        <div className="text-xs uppercase tracking-wider text-[rgba(200,255,232,0.6)]">LeetCode</div>
+                        <div className="text-xs uppercase tracking-wider text-[rgba(200,255,232,0.6)]">
+                          LeetCode
+                        </div>
                         {formData.leetcode_username ? (
-                          <div className="text-xs text-[#ffb700] mt-0.5">@{formData.leetcode_username}</div>
+                          <div className="text-xs text-[#ffb700] mt-0.5">
+                            @{formData.leetcode_username}
+                          </div>
                         ) : (
-                          <div className="text-xs text-[rgba(200,255,232,0.25)] mt-0.5 italic">Not connected</div>
+                          <div className="text-xs text-[rgba(200,255,232,0.25)] mt-0.5 italic">
+                            Not connected
+                          </div>
                         )}
                       </div>
                     </div>
@@ -1208,10 +1858,13 @@ export default function ProfilePage() {
               <div className="border-t border-[rgba(0,255,157,0.1)] pt-6 space-y-4">
                 <div className="flex items-center gap-2">
                   <Lock size={16} className="text-[#ff4fd8]" />
-                  <span className="uppercase text-sm">Security &amp; System Access</span>
+                  <span className="uppercase text-sm">
+                    Security &amp; System Access
+                  </span>
                 </div>
                 <div className="text-xs max-w-2xl tracking-widest text-[rgba(200,255,232,0.45)]">
-                  update your access key to secure your profile telemetry. establishing a new key will terminate other active sessions.
+                  update your access key to secure your profile telemetry.
+                  establishing a new key will terminate other active sessions.
                 </div>
                 <button
                   type="button"
@@ -1223,11 +1876,15 @@ export default function ProfilePage() {
               </div>
             </div>
           ) : (
-            <ProfileView data={{
-              ...formData,
-              batch_of: fullProfile?.batch_of,
-              department: fullProfile?.department
-            } as any} />
+            <ProfileView
+              data={
+                {
+                  ...formData,
+                  batch_of: fullProfile?.batch_of,
+                  department: fullProfile?.department,
+                } as any
+              }
+            />
           )}
         </main>
       </div>
@@ -1239,26 +1896,47 @@ export default function ProfilePage() {
             <button
               onClick={saveProfile}
               disabled={isUpdating || !hasChanges}
-              className={`w-full bg-[#00ff9d] text-[#0d0d1a] py-3 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] transition-all rounded-[2px] ${isUpdating || !hasChanges ? "opacity-40 cursor-not-allowed shadow-none" : "hover:opacity-90 active:scale-[0.98]"
-                }`}
+              className={`w-full bg-[#00ff9d] text-[#0d0d1a] py-3 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] transition-all rounded-[2px] ${
+                isUpdating || !hasChanges
+                  ? "opacity-40 cursor-not-allowed shadow-none"
+                  : "hover:opacity-90 active:scale-[0.98]"
+              }`}
             >
-              {isUpdating ? "Synchronizing..." : !hasChanges ? "No changes yet" : "Update Data"}
+              {isUpdating
+                ? "Synchronizing..."
+                : !hasChanges
+                  ? "No changes yet"
+                  : "Update Data"}
             </button>
           </div>
         </div>
       )}
 
       {/* Image Upload Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Biometric Update">
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Biometric Update"
+      >
         <div className="space-y-4">
           <p className="text-xs text-[rgba(200,255,232,0.6)] uppercase leading-relaxed tracking-wider">
             Select a visual identifier for system-wide recognition.
           </p>
           <div className="relative border border-dashed border-[rgba(0,255,157,0.3)] rounded p-8 flex flex-col items-center justify-center gap-4 bg-[rgba(0,255,157,0.02)] hover:bg-[rgba(0,255,157,0.05)] transition-all cursor-pointer group">
-            <input type="file" accept="image/*" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer z-10" />
-            <UploadCloud size={28} className="text-[#00ff9d] group-hover:scale-110 transition-transform" />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
+            />
+            <UploadCloud
+              size={28}
+              className="text-[#00ff9d] group-hover:scale-110 transition-transform"
+            />
             <div className="text-xs uppercase text-[#00ff9d] font-bold">
-              {isUploading ? "Processing Data..." : "Choose File or Drag & Drop"}
+              {isUploading
+                ? "Processing Data..."
+                : "Choose File or Drag & Drop"}
             </div>
           </div>
           <div className="text-xs text-[rgba(255,79,216,0.6)] uppercase text-center mt-2">
@@ -1285,15 +1963,28 @@ export default function ProfilePage() {
           removeProj(idx);
           setValue("projects", watch("projects"), { shouldDirty: true });
         }}
-        onRequestClose={() => setProjectModal({ open: false, editIdx: null, defaultValues: {} })}
+        onRequestClose={() =>
+          setProjectModal({ open: false, editIdx: null, defaultValues: {} })
+        }
       />
 
       {/* Password Change Modal */}
-      <Modal isOpen={showPasswordModal} onClose={() => { setShowPasswordModal(false); setCurrentPassword(""); setNewPassword(""); setConfirmNewPassword(""); }} title="Change Password">
+      <Modal
+        isOpen={showPasswordModal}
+        onClose={() => {
+          setShowPasswordModal(false);
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmNewPassword("");
+        }}
+        title="Change Password"
+      >
         <form onSubmit={handleChangePassword} className="space-y-4">
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">current password</label>
+              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">
+                current password
+              </label>
               <div className="relative">
                 <input
                   type={showCurrentPassword ? "text" : "password"}
@@ -1302,13 +1993,23 @@ export default function ProfilePage() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                 />
-                <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,255,232,0.45)] hover:text-[#ff4fd8] transition-colors">
-                  {showCurrentPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,255,232,0.45)] hover:text-[#ff4fd8] transition-colors"
+                >
+                  {showCurrentPassword ? (
+                    <EyeOff size={14} />
+                  ) : (
+                    <Eye size={14} />
+                  )}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">new secure password</label>
+              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">
+                new secure password
+              </label>
               <div className="relative">
                 <input
                   type={showNewPassword ? "text" : "password"}
@@ -1317,13 +2018,19 @@ export default function ProfilePage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
-                <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,255,232,0.45)] hover:text-[#ff4fd8] transition-colors">
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,255,232,0.45)] hover:text-[#ff4fd8] transition-colors"
+                >
                   {showNewPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">confirm new password</label>
+              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">
+                confirm new password
+              </label>
               <div className="relative">
                 <input
                   type={showConfirmNewPassword ? "text" : "password"}
@@ -1332,8 +2039,18 @@ export default function ProfilePage() {
                   value={confirmNewPassword}
                   onChange={(e) => setConfirmNewPassword(e.target.value)}
                 />
-                <button type="button" onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,255,232,0.45)] hover:text-[#ff4fd8] transition-colors">
-                  {showConfirmNewPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowConfirmNewPassword(!showConfirmNewPassword)
+                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,255,232,0.45)] hover:text-[#ff4fd8] transition-colors"
+                >
+                  {showConfirmNewPassword ? (
+                    <EyeOff size={14} />
+                  ) : (
+                    <Eye size={14} />
+                  )}
                 </button>
               </div>
             </div>
@@ -1343,16 +2060,23 @@ export default function ProfilePage() {
             disabled={isChangingPassword}
             className="w-full bg-[rgba(255,79,216,0.1)] border border-[#ff4fd8] text-[#ff4fd8] py-2 rounded uppercase tracking-widest hover:bg-[rgba(255,79,216,0.2)] transition-all disabled:opacity-50 mt-2 font-bold text-xs"
           >
-            {isChangingPassword ? "Updating Keys..." : "Establish New Access Key"}
+            {isChangingPassword
+              ? "Updating Keys..."
+              : "Establish New Access Key"}
           </button>
         </form>
       </Modal>
 
       {/* GitHub Username Modal */}
-      <Modal isOpen={showGitHubModal} onClose={() => setShowGitHubModal(false)} title="Link GitHub Account">
+      <Modal
+        isOpen={showGitHubModal}
+        onClose={() => setShowGitHubModal(false)}
+        title="Link GitHub Account"
+      >
         <div className="space-y-4">
           <p className="text-xs text-[rgba(200,255,232,0.6)] uppercase tracking-wider">
-            Enter your GitHub username to display your contribution graph on the profile.
+            Enter your GitHub username to display your contribution graph on the
+            profile.
           </p>
           <input
             value={gitHubInput}
@@ -1364,7 +2088,9 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => {
-                setValue("github_username", gitHubInput.trim(), { shouldDirty: true });
+                setValue("github_username", gitHubInput.trim(), {
+                  shouldDirty: true,
+                });
                 setShowGitHubModal(false);
               }}
               className="flex-1 bg-[#00ff9d] text-[#0d0d1a] py-2 font-bold uppercase tracking-[0.15em] text-sm hover:opacity-90 transition-opacity rounded"
@@ -1389,10 +2115,15 @@ export default function ProfilePage() {
       </Modal>
 
       {/* LeetCode Username Modal */}
-      <Modal isOpen={showLeetCodeModal} onClose={() => setShowLeetCodeModal(false)} title="Link LeetCode Account">
+      <Modal
+        isOpen={showLeetCodeModal}
+        onClose={() => setShowLeetCodeModal(false)}
+        title="Link LeetCode Account"
+      >
         <div className="space-y-4">
           <p className="text-xs text-[rgba(200,255,232,0.6)] uppercase tracking-wider">
-            Enter your LeetCode username to display your submission graph on the profile.
+            Enter your LeetCode username to display your submission graph on the
+            profile.
           </p>
           <input
             value={leetCodeInput}
@@ -1404,7 +2135,9 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => {
-                setValue("leetcode_username", leetCodeInput.trim(), { shouldDirty: true });
+                setValue("leetcode_username", leetCodeInput.trim(), {
+                  shouldDirty: true,
+                });
                 setShowLeetCodeModal(false);
               }}
               className="flex-1 bg-[#00ff9d] text-[#0d0d1a] py-2 font-bold uppercase tracking-[0.15em] text-sm hover:opacity-90 transition-opacity rounded"

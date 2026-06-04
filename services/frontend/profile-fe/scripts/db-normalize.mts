@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
+import { DEPARTMENTS } from "../src/lib/departments";
 
 const isProd =
   process.argv.includes("--production") || process.argv.includes("-p");
@@ -96,6 +97,56 @@ function safeParseArray(val: any): any[] {
   return Array.isArray(val) ? val : [];
 }
 
+function normalizeYear(year: string): string {
+  const y = String(year || "")
+    .trim()
+    .toLowerCase();
+  if (!y) return "";
+
+  if (y.includes("1") || y.includes("first")) return "1st Year";
+  if (y.includes("2") || y.includes("second")) return "2nd Year";
+  if (y.includes("3") || y.includes("third")) return "3rd Year";
+  if (y.includes("4") || y.includes("fourth")) return "4th Year";
+
+  // Fallback to extracting digits
+  const digitMatch = y.match(/\d+/);
+  if (digitMatch) {
+    const num = parseInt(digitMatch[0], 10);
+    if (num === 1) return "1st Year";
+    if (num === 2) return "2nd Year";
+    if (num === 3) return "3rd Year";
+    if (num === 4) return "4th Year";
+    return `${num}th Year`;
+  }
+
+  return year.trim();
+}
+
+function resolveDepartment(dept: string): string {
+  const d = String(dept || "")
+    .trim()
+    .toLowerCase();
+  if (!d) return "";
+
+  // 1. Try exact or case-insensitive value match
+  const valueMatch = DEPARTMENTS.find((dep) => dep.value.toLowerCase() === d);
+  if (valueMatch) return valueMatch.value;
+
+  // 2. Try exact or case-insensitive label match
+  const labelMatch = DEPARTMENTS.find((dep) => dep.label.toLowerCase() === d);
+  if (labelMatch) return labelMatch.value;
+
+  // 3. Try partial label match (e.g. "Medical Electronics" matching "Medical Electronics Engineering")
+  const partialMatch = DEPARTMENTS.find((dep) => {
+    const label = dep.label.toLowerCase();
+    return label.includes(d) || d.includes(label);
+  });
+  if (partialMatch) return partialMatch.value;
+
+  // 4. Return as-is if no match
+  return dept.trim();
+}
+
 const defaultTerm = `${new Date().getFullYear()}-${String(new Date().getFullYear() + 1).slice(-2)}`;
 
 async function main() {
@@ -162,7 +213,8 @@ async function main() {
       // Resolve batch_of
       let cleanBatchOf = u.batch_of || "";
       if (!cleanBatchOf && u.year) {
-        const yearNum = parseInt(u.year.replace(/\D/g, "") || "0");
+        const cleanYear = normalizeYear(u.year);
+        const yearNum = parseInt(cleanYear.replace(/\D/g, "") || "0", 10);
         if (yearNum > 0) {
           cleanBatchOf = String(new Date().getFullYear() - yearNum);
         }
@@ -194,8 +246,9 @@ async function main() {
       if (u.image) userUpdateFields.image = u.image;
       if (u.tagline) userUpdateFields.tagline = u.tagline;
       if (u.bio) userUpdateFields.bio = u.bio;
-      if (u.year) userUpdateFields.year = u.year;
-      if (u.department) userUpdateFields.department = u.department;
+      if (u.year) userUpdateFields.year = normalizeYear(u.year);
+      if (u.department)
+        userUpdateFields.department = resolveDepartment(u.department);
       if (u.usn) userUpdateFields.usn = u.usn;
       if (u.phoneNumber) userUpdateFields.phoneNumber = u.phoneNumber;
 
