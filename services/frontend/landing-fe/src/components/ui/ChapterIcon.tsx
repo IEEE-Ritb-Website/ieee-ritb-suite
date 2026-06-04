@@ -225,7 +225,7 @@ export default function ChapterIcon({ acronym, size = 32, className = '' }: Chap
     ),
 
     // IEEEXtreme
-    IX: (
+    XTRM: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width={size}
