@@ -2,9 +2,14 @@ import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
 
-const isProd = process.argv.includes("--production") || process.argv.includes("-p");
-const envMode: "production" | "development" = isProd ? "production" : "development";
-type MutableProcessEnv = Omit<NodeJS.ProcessEnv, "NODE_ENV"> & { NODE_ENV?: string };
+const isProd =
+  process.argv.includes("--production") || process.argv.includes("-p");
+const envMode: "production" | "development" = isProd
+  ? "production"
+  : "development";
+type MutableProcessEnv = Omit<NodeJS.ProcessEnv, "NODE_ENV"> & {
+  NODE_ENV?: string;
+};
 
 (process.env as MutableProcessEnv).NODE_ENV = envMode;
 
@@ -31,11 +36,14 @@ console.log(`Ultimate Database Normalizer Bootstrapping in ${envMode} mode...`);
 const ChaptersCatalog = [
   { name: "Computer Society", acronym: "CS" },
   { name: "Computational Intelligence Society", acronym: "CIS" },
-  { name: "Student Branch", acronym: "SB" }
+  { name: "Student Branch", acronym: "SB" },
 ];
 
 function generateUsername(name: string, email: string): string {
-  let base = email.split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, "");
+  let base = email
+    .split("@")[0]
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "");
   if (base.length < 3) {
     base = name.toLowerCase().replace(/[^a-z0-9_]/g, "");
   }
@@ -57,16 +65,24 @@ function normalizeChapters(rawChapters: any): any[] {
     parsed = rawChapters;
   }
 
-  return parsed.map((ch: any) => {
-    const acronym = typeof ch === "string" ? ch.trim().toUpperCase() : (ch.acronym || "").trim().toUpperCase();
-    const pos = typeof ch === "string" ? "Execom" : (ch.position || "Execom").trim();
-    const match = ChaptersCatalog.find(c => c.acronym.toUpperCase() === acronym);
-    return {
-      acronym,
-      name: match ? match.name : acronym,
-      position: pos || "Execom"
-    };
-  }).filter(c => c.acronym.length > 0);
+  return parsed
+    .map((ch: any) => {
+      const acronym =
+        typeof ch === "string"
+          ? ch.trim().toUpperCase()
+          : (ch.acronym || "").trim().toUpperCase();
+      const pos =
+        typeof ch === "string" ? "Execom" : (ch.position || "Execom").trim();
+      const match = ChaptersCatalog.find(
+        (c) => c.acronym.toUpperCase() === acronym,
+      );
+      return {
+        acronym,
+        name: match ? match.name : acronym,
+        position: pos || "Execom",
+      };
+    })
+    .filter((c) => c.acronym.length > 0);
 }
 
 function safeParseArray(val: any): any[] {
@@ -91,7 +107,9 @@ async function main() {
     console.log(`Connected successfully. Target Database: ${getDbName()}`);
 
     const users = await db.collection("user").find({}).toArray();
-    console.log(`Analyzing ${users.length} user records for normalization & duplicate checks...`);
+    console.log(
+      `Analyzing ${users.length} user records for normalization & duplicate checks...`,
+    );
 
     // 1. Group users by membershipId to resolve duplicates
     const membershipMap = new Map<string, any[]>();
@@ -108,7 +126,9 @@ async function main() {
     const resolvedMembershipIds = new Map<string, string>();
     for (const [mId, dupUsers] of membershipMap.entries()) {
       if (dupUsers.length > 1) {
-        console.warn(`WARNING: Found ${dupUsers.length} users sharing the duplicate membership ID '${mId}'!`);
+        console.warn(
+          `WARNING: Found ${dupUsers.length} users sharing the duplicate membership ID '${mId}'!`,
+        );
 
         dupUsers.sort((a, b) => {
           const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
@@ -117,12 +137,16 @@ async function main() {
         });
 
         resolvedMembershipIds.set(dupUsers[0]._id.toString(), mId);
-        console.log(`- Keeping membership ID '${mId}' for User: ${dupUsers[0].email}`);
+        console.log(
+          `- Keeping membership ID '${mId}' for User: ${dupUsers[0].email}`,
+        );
 
         for (let i = 1; i < dupUsers.length; i++) {
           const suffixId = `${mId}-${i}`;
           resolvedMembershipIds.set(dupUsers[i]._id.toString(), suffixId);
-          console.warn(`- Assisting User ${dupUsers[i].email} with new unique membership ID '${suffixId}'`);
+          console.warn(
+            `- Assisting User ${dupUsers[i].email} with new unique membership ID '${suffixId}'`,
+          );
         }
       } else {
         resolvedMembershipIds.set(dupUsers[0]._id.toString(), mId);
@@ -150,8 +174,11 @@ async function main() {
 
       // ── User collection: set all current-schema fields, unset legacy fields ──
       const userUpdateFields: any = {
-        username: u.username || generateUsername(u.name || "User", u.email || "user@domain.com"),
-        membershipId: resolvedMembershipIds.get(userIdStr) || u.membershipId || "",
+        username:
+          u.username ||
+          generateUsername(u.name || "User", u.email || "user@domain.com"),
+        membershipId:
+          resolvedMembershipIds.get(userIdStr) || u.membershipId || "",
         batch_of: cleanBatchOf,
         chapters: normalizeChapters(u.chapters),
         role: u.role || "member",
@@ -162,7 +189,8 @@ async function main() {
       // Preserve existing values (if they exist) rather than overwriting with empty
       if (u.name) userUpdateFields.name = u.name;
       if (u.email) userUpdateFields.email = u.email;
-      if (u.emailVerified !== undefined) userUpdateFields.emailVerified = !!u.emailVerified;
+      if (u.emailVerified !== undefined)
+        userUpdateFields.emailVerified = !!u.emailVerified;
       if (u.image) userUpdateFields.image = u.image;
       if (u.tagline) userUpdateFields.tagline = u.tagline;
       if (u.bio) userUpdateFields.bio = u.bio;
@@ -179,20 +207,24 @@ async function main() {
             positions: "",
             skills: "",
             social_links: "",
-          }
-        }
+          },
+        },
       );
 
       // ── Profile collection: ensure all current-schema fields are present ──
-      let profileDoc = await db.collection("profile").findOne({ userId: userIdStr });
+      const profileDoc = await db
+        .collection("profile")
+        .findOne({ userId: userIdStr });
 
-      const cleanSkills = profileDoc && Array.isArray(profileDoc.skills)
-        ? profileDoc.skills
-        : legacySkills;
+      const cleanSkills =
+        profileDoc && Array.isArray(profileDoc.skills)
+          ? profileDoc.skills
+          : legacySkills;
 
-      const cleanSocialLinks = profileDoc && Array.isArray(profileDoc.social_links)
-        ? profileDoc.social_links
-        : legacySocialLinks;
+      const cleanSocialLinks =
+        profileDoc && Array.isArray(profileDoc.social_links)
+          ? profileDoc.social_links
+          : legacySocialLinks;
 
       const newProfileData = {
         userId: userIdStr,
@@ -203,13 +235,12 @@ async function main() {
         stats: profileDoc?.stats || {},
         skills: cleanSkills,
         social_links: cleanSocialLinks,
-        achievements: Array.isArray(profileDoc?.achievements) ? profileDoc.achievements : [],
-        projects: Array.isArray(profileDoc?.projects) ? profileDoc.projects : [],
-        usn: u.usn || profileDoc?.usn || "",
-        year: u.year || profileDoc?.year || "",
-        batch: cleanBatchOf || profileDoc?.batch || "",
-        phoneNumber: u.phoneNumber || profileDoc?.phoneNumber || "",
-        department: u.department || profileDoc?.department || "",
+        achievements: Array.isArray(profileDoc?.achievements)
+          ? profileDoc.achievements
+          : [],
+        projects: Array.isArray(profileDoc?.projects)
+          ? profileDoc.projects
+          : [],
         github_username: profileDoc?.github_username || "",
         leetcode_username: profileDoc?.leetcode_username || "",
         updatedAt: new Date(),
@@ -225,13 +256,20 @@ async function main() {
             chapters: "",
             membershipId: "",
             positions: "",
-          }
+            usn: "",
+            year: "",
+            batch: "",
+            phoneNumber: "",
+            department: "",
+          },
         },
-        { upsert: true }
+        { upsert: true },
       );
     }
 
-    console.log("Ultimate Normalization complete. Verification and sanitization successful!");
+    console.log(
+      "Ultimate Normalization complete. Verification and sanitization successful!",
+    );
     await client.close();
   } catch (err) {
     console.error("FATAL Normalization Error:", err);

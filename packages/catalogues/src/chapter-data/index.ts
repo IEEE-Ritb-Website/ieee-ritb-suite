@@ -51,7 +51,7 @@ export const Chapters = [
     },
     {
         name: "IEEE Xtreme",
-        acronym: "IX",
+        acronym: "XTRM",
         type: ChapterType.TECH,
         shortDescription: "IEEEXtreme is a global 24-hour coding competition for IEEE student members. In our college, we conduct regular coding challenges and share strategies to enhance  coding and problem-solving skills.",
         color: "#0FFF50",
