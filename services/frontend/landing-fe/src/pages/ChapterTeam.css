@@ -318,8 +318,8 @@
 
 .ct-card-link-icon {
   position: absolute;
-  top: var(--space-3.5);
-  right: var(--space-3.5);
+  top: var(--space-3);
+  right: var(--space-3);
   color: var(--color-text-disabled);
   opacity: 0;
   transition:
