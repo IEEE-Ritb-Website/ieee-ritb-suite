@@ -9,7 +9,7 @@ import SEO from '../components/common/SEO';
 import { usePerformance } from '../contexts/PerformanceContext';
 import PerformanceMonitor from '../components/debug/PerformanceMonitor';
 import { ToastProvider } from '../contexts/ToastContext';
-import { initSmoothScroll, initParallax, initMagneticElements } from '../utils/smoothScroll';
+import { initSmoothScroll, initParallax, initMagneticElements, scrollToTop } from '../utils/smoothScroll';
 import { ErrorBoundary } from '../components/common/ErrorBoundary';
 import type { AnimationPhase } from '../components/effects/HeroStarfield';
 
@@ -121,13 +121,13 @@ export default function MainLayout() {
 
 
 
-    // Scroll Reset Logic: Land on Hero every refresh
+    // Scroll Reset Logic: Land on top on every route change
     useEffect(() => {
         if ('scrollRestoration' in window.history) {
             window.history.scrollRestoration = 'manual';
         }
-        window.scrollTo(0, 0);
-    }, []);
+        scrollToTop();
+    }, [location.pathname]);
 
     // Lock scroll during loader and warp animation
     useEffect(() => {
