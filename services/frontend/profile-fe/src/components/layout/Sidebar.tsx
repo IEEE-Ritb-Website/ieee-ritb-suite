@@ -131,18 +131,18 @@ export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: Sideb
           const isTermOver = termEndYear ? new Date().getFullYear() > termEndYear : false;
           return (
             <div className="inline-block bg-[rgba(0,255,157,0.08)] border border-[rgba(0,255,157,0.3)] text-[#00ff9d] text-sm px-2 py-0.5 rounded-[2px] tracking-[0.08em] mt-1.5 uppercase">
-              {isTermOver ? `Term: ${user.term}` : `Year of Study: ${user.year || "N/A"}`}
+              {isTermOver ? `Term: ${user.term}` : `${user.year || "N/A"}`}
             </div>
           );
         })()}
         <div className="flex pt-2 text-sm text-[rgba(200,255,232,0.65)] font-mono leading-relaxed">
           <span className="text-[rgba(200,255,232,0.35)]">BATCH OF: </span>
-          <span className="text-[#00ff9d]">{user.batch_of || user.batch || "N/A"}</span>
+          <span className="text-[#00ff9d]">{" " + user.batch_of || user.batch || "N/A"}</span>
         </div>
         {/* Official Registry Data (System-Locked) */}
         <div className="flex pt-2 text-sm text-[rgba(200,255,232,0.65)] font-mono leading-relaxed">
           <span className="text-[rgba(200,255,232,0.35)]">DEPT: </span>
-          <span className="text-[#00ff9d]">{user.department || "N/A"}</span>
+          <span className="text-[#00ff9d]">{" " + user.department || "N/A"}</span>
         </div>
       </div>
 
