@@ -18,10 +18,26 @@ interface NavItem {
   href: string;
   isBack?: boolean;
   isAnchor?: boolean;
+  /** Renders as <Link> for SPA route navigation (not an anchor scroll) */
+  isRoute?: boolean;
 }
 
 // Get navigation items based on current route
 function getNavItems(pathname: string): NavItem[] {
+  // Chapter team page
+  if (/^\/team\/[^/]+/.test(pathname)) {
+    return [
+      { label: '← Team', href: '/team', isBack: true },
+    ];
+  }
+
+  // Main team page
+  if (pathname === '/team') {
+    return [
+      { label: '← Home', href: '/', isBack: true },
+    ];
+  }
+
   // Chapter details page
   if (pathname.startsWith('/chapters/')) {
     return [
@@ -47,6 +63,7 @@ function getNavItems(pathname: string): NavItem[] {
     { label: 'Features', href: '#features', isAnchor: true },
     { label: 'Events', href: '#events', isAnchor: true },
     { label: 'Chapters', href: '#chapters', isAnchor: true },
+    { label: 'Team', href: '/team', isRoute: true },
     { label: 'Contact', href: '#contact', isAnchor: true },
   ];
 }
@@ -207,6 +224,14 @@ export default function Navigation({ showNavigation, warpComplete }: { showNavig
                     <Link
                       to={item.href}
                       className="nav-link nav-link-back"
+                      onClick={closeMenu}
+                    >
+                      {item.label}
+                    </Link>
+                  ) : item.isRoute ? (
+                    <Link
+                      to={item.href}
+                      className={`nav-link ${location.pathname === item.href ? 'active' : ''}`}
                       onClick={closeMenu}
                     >
                       {item.label}

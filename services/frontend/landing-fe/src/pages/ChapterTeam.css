@@ -1,0 +1,459 @@
+/* =====================================================================
+   Chapter Team Page — /team/:chapterId
+   IEEE RIT-B · Design System Foundation
+   ===================================================================== */
+
+/* ── Page Shell ───────────────────────────────────────────────────── */
+.ct-page {
+    position: relative;
+    min-height: 100vh;
+    padding-top: 100px;
+    overflow: hidden;
+}
+
+.ct-bg-orb {
+    position: fixed;
+    width: 700px;
+    height: 700px;
+    top: -100px;
+    right: -150px;
+    border-radius: 50%;
+    filter: blur(140px);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.4;
+}
+
+/* ── Back Link ────────────────────────────────────────────────────── */
+.ct-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-6) var(--space-8);
+    color: var(--color-ieee-primary);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    transition: gap var(--duration-fast) var(--ease-default),
+                opacity var(--duration-fast) var(--ease-default);
+}
+
+.ct-back-link:hover {
+    gap: var(--space-3);
+    opacity: 0.8;
+}
+
+@media (max-width: 767px) {
+    .ct-back-link { margin: var(--space-4) var(--space-4); }
+}
+
+/* ── Chapter Hero ─────────────────────────────────────────────────── */
+.ct-hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-10) var(--space-5) var(--space-10);
+    gap: var(--space-6);
+}
+
+/* Pulsating glow rings around icon */
+.ct-hero-rings {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -40%);
+    pointer-events: none;
+}
+
+.ct-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid;
+    transform: translate(-50%, -50%);
+}
+
+.ct-ring-1 {
+    width: 200px;
+    height: 200px;
+    animation: ringPulse 3s ease-in-out infinite;
+}
+
+.ct-ring-2 {
+    width: 300px;
+    height: 300px;
+    animation: ringPulse 3s ease-in-out infinite 0.6s;
+}
+
+.ct-ring-3 {
+    width: 420px;
+    height: 420px;
+    animation: ringPulse 3s ease-in-out infinite 1.2s;
+}
+
+@keyframes ringPulse {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.2; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+/* Hero Icon */
+.ct-hero-icon {
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 24px var(--glow, rgba(77,127,255,0.5)));
+    transition: filter var(--duration-moderate) var(--ease-smooth);
+}
+
+/* Hero Text */
+.ct-hero-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+}
+
+.ct-chapter-type-badge {
+    display: inline-block;
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    padding: var(--space-1) var(--space-4);
+    border-radius: 999px;
+    border: 1px solid;
+}
+
+.ct-hero-title {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    color: var(--color-text-primary);
+    line-height: var(--leading-tight);
+    margin: 0;
+    letter-spacing: var(--tracking-tight);
+}
+
+.ct-hero-desc {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+    max-width: 500px;
+    margin: 0;
+}
+
+/* ── Section Scaffolding ──────────────────────────────────────────── */
+.ct-section {
+    padding: var(--space-8) 0;
+}
+
+.ct-execom-section {
+    padding-bottom: var(--space-12);
+}
+
+.ct-section-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 var(--space-5);
+}
+
+@media (min-width: 768px) {
+    .ct-section-container { padding: 0 var(--space-8); }
+}
+
+.ct-section-header {
+    text-align: center;
+    margin-bottom: var(--space-8);
+}
+
+.ct-section-title {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-text-primary);
+    margin: var(--space-2) 0 0;
+}
+
+/* ── Avatar ───────────────────────────────────────────────────────── */
+.ct-avatar-ring {
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(77, 127, 255, 0.5), rgba(77, 127, 255, 0.2));
+    flex-shrink: 0;
+}
+
+.ct-avatar-ring-md {
+    width: 96px;
+    height: 96px;
+}
+
+.ct-avatar-ring-sm {
+    width: 60px;
+    height: 60px;
+}
+
+.ct-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--color-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ct-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.ct-avatar-initials {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--color-ieee-primary);
+    user-select: none;
+}
+
+.ct-avatar-ring-sm .ct-avatar-initials {
+    font-size: var(--text-sm);
+}
+
+/* ── Officer Card ─────────────────────────────────────────────────── */
+.ct-officers-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    justify-content: center;
+}
+
+.ct-officer-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-7) var(--space-5);
+    width: 190px;
+    border-radius: 20px;
+    border: 1px solid var(--color-border);
+    background: rgba(10, 11, 20, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    text-decoration: none;
+    color: inherit;
+    transition:
+        border-color var(--duration-moderate) var(--ease-smooth),
+        background var(--duration-moderate) var(--ease-smooth),
+        box-shadow var(--duration-moderate) var(--ease-smooth);
+    cursor: pointer;
+}
+
+.ct-officer-card:hover {
+    border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+    background: color-mix(in srgb, var(--accent) 6%, rgba(10, 11, 20, 0.75));
+    box-shadow: 0 10px 40px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.ct-card-link-icon {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    color: var(--color-text-disabled);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-default);
+}
+
+.ct-officer-card:hover .ct-card-link-icon {
+    opacity: 1;
+    color: var(--accent);
+}
+
+.ct-officer-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    text-align: center;
+}
+
+.ct-officer-name {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--leading-snug);
+}
+
+.ct-officer-position {
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+}
+
+.ct-officer-meta {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+/* ── Execom Divider ───────────────────────────────────────────────── */
+.ct-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    max-width: 1100px;
+    margin: var(--space-6) auto var(--space-2);
+    padding: 0 var(--space-8);
+}
+
+.ct-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+}
+
+.ct-divider-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    border-radius: 999px;
+    border: 1px solid;
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    white-space: nowrap;
+    background: rgba(5, 6, 15, 0.8);
+}
+
+.ct-divider-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 var(--space-2);
+    border-radius: 999px;
+    font-size: var(--text-2xs);
+    font-weight: var(--font-bold);
+}
+
+/* ── Execom Grid ──────────────────────────────────────────────────── */
+.ct-execom-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+    .ct-execom-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+    .ct-execom-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+/* ── Execom Card ──────────────────────────────────────────────────── */
+.ct-execom-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-3);
+    border-radius: 16px;
+    border: 1px solid var(--color-border);
+    background: rgba(10, 11, 20, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    text-decoration: none;
+    color: inherit;
+    text-align: center;
+    transition:
+        border-color var(--duration-moderate) var(--ease-smooth),
+        background var(--duration-moderate) var(--ease-smooth),
+        box-shadow var(--duration-moderate) var(--ease-smooth);
+}
+
+.ct-execom-card:hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: color-mix(in srgb, var(--accent) 5%, rgba(10, 11, 20, 0.65));
+    box-shadow: 0 6px 24px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.ct-execom-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.ct-execom-name {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--leading-snug);
+}
+
+.ct-execom-meta {
+    font-size: var(--text-2xs);
+    color: var(--color-text-muted);
+}
+
+/* ── Empty State ──────────────────────────────────────────────────── */
+.ct-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+    padding: var(--space-12) var(--space-5);
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+/* ── Footer Spacer ────────────────────────────────────────────────── */
+.ct-footer-spacer {
+    height: var(--space-12);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+    .ct-hero {
+        padding: var(--space-8) var(--space-4) var(--space-8);
+    }
+
+    .ct-hero-title { font-size: var(--text-2xl); }
+
+    .ct-officer-card { width: 155px; padding: var(--space-5) var(--space-3); }
+
+    .ct-ring-1 { width: 140px; height: 140px; }
+    .ct-ring-2 { width: 210px; height: 210px; }
+    .ct-ring-3 { width: 290px; height: 290px; }
+
+    .ct-divider {
+        padding: 0 var(--space-4);
+        gap: var(--space-3);
+    }
+
+    .ct-execom-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ── Performance Adaptations ──────────────────────────────────────── */
+[data-perf-tier="LOW"] .ct-officer-card,
+[data-perf-tier="LOW"] .ct-execom-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+[data-perf-tier="LOW"] .ct-ring-1,
+[data-perf-tier="LOW"] .ct-ring-2,
+[data-perf-tier="LOW"] .ct-ring-3 {
+    animation: none;
+}

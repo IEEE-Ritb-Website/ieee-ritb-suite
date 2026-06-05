@@ -1,6 +1,25 @@
 import Lenis from 'lenis';
 
 /**
+ * Module-level Lenis instance — held here so scrollToTop() can reach it
+ * without having to thread the ref through every component.
+ */
+let lenisInstance: Lenis | null = null;
+
+/**
+ * Scroll to the top of the page, honouring Lenis smooth scroll when active.
+ * Use this instead of window.scrollTo(0, 0) so Lenis doesn't fight the reset
+ * on its next requestAnimationFrame tick.
+ */
+export function scrollToTop(): void {
+    if (lenisInstance) {
+        lenisInstance.scrollTo(0, { immediate: true });
+    } else {
+        window.scrollTo(0, 0);
+    }
+}
+
+/**
  * Initialize Lenis for smooth scrolling
  * Replaces native smooth scroll behavior
  */
@@ -20,6 +39,9 @@ export function initSmoothScroll() {
     smoothWheel: true,
     touchMultiplier: 2,
   });
+
+  // Expose instance so scrollToTop() can reach it
+  lenisInstance = lenis;
 
   function raf(time: number) {
     lenis.raf(time);
@@ -54,6 +76,7 @@ export function initSmoothScroll() {
   const originalDestroy = lenis.destroy.bind(lenis);
   lenis.destroy = () => {
     document.removeEventListener('click', handleAnchorClick);
+    lenisInstance = null;
     originalDestroy();
   };
 
