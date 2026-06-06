@@ -106,6 +106,7 @@ export async function GET(req: NextRequest) {
     ...profile,
     name: user.name || profile.name,
     email: user.email,
+    image: user.image,
     username: user.username,
     membershipId: user.membershipId,
     usn: user.usn,
@@ -306,6 +307,7 @@ export async function POST(req: NextRequest) {
   const existingProfile: any = currentProfile || {};
   const mergedCurrentProfile = {
     ...existingProfile,
+    image: user.image,
     department: user.department || existingProfile.department,
   };
 
@@ -316,8 +318,15 @@ export async function POST(req: NextRequest) {
   }
 
   // Update or Insert the profile document
-  const { usn, year, batch, phoneNumber, department, ...profileSaveData } =
-    result.data;
+  const {
+    usn,
+    year,
+    batch,
+    phoneNumber,
+    department,
+    image,
+    ...profileSaveData
+  } = result.data;
 
   const profileData = {
     ...profileSaveData,
@@ -325,13 +334,14 @@ export async function POST(req: NextRequest) {
     updatedAt: new Date(),
   };
 
-  await db
-    .collection("profile")
-    .updateOne(
-      { userId: session.user.id },
-      { $set: profileData },
-      { upsert: true },
-    );
+  await db.collection("profile").updateOne(
+    { userId: session.user.id },
+    {
+      $set: profileData,
+      $unset: { image: "" },
+    },
+    { upsert: true },
+  );
 
   // Sync basic info to Better Auth user collection
   const userSyncFields: any = {

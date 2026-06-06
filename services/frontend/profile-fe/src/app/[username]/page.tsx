@@ -4,7 +4,9 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { ProfileView } from "@/components/views/ProfileView";
 import { notFound } from "next/navigation";
 
-export default async function PublicProfilePage(props: { params: Promise<{ username: string }> }) {
+export default async function PublicProfilePage(props: {
+  params: Promise<{ username: string }>;
+}) {
   const params = await props.params;
   const username = params.username;
 
@@ -18,7 +20,9 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
   }
 
   // Find corresponding profile record by userId
-  let profileDoc = await db.collection("profile").findOne({ userId: user._id.toString() });
+  let profileDoc = await db
+    .collection("profile")
+    .findOne({ userId: user._id.toString() });
 
   if (!profileDoc) {
     // Create minimal profile doc on the fly
@@ -33,9 +37,13 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
     };
   }
 
-  const safeParseJson = (val: any) => {
+  const safeParseJson = (val: unknown) => {
     if (typeof val === "string") {
-      try { return JSON.parse(val); } catch (e) { return []; }
+      try {
+        return JSON.parse(val);
+      } catch {
+        return [];
+      }
     }
     return Array.isArray(val) ? val : [];
   };
@@ -46,6 +54,7 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
     ...JSON.parse(JSON.stringify(profileDoc)),
     name: user.name || profileDoc.name,
     username: user.username,
+    image: user.image,
     membershipId: user.membershipId,
     department: user.department,
     year: user.year,
@@ -69,7 +78,10 @@ export default async function PublicProfilePage(props: { params: Promise<{ usern
       <HeaderBar />
 
       <div className="flex flex-col md:flex-row min-h-[calc(100vh-40px)]">
-        <Sidebar user={profile as any} isPublic={true} />
+        <Sidebar
+          user={profile as unknown as Parameters<typeof Sidebar>[0]["user"]}
+          isPublic={true}
+        />
 
         <main className="flex-1 p-6 flex flex-col gap-6 max-w-5xl relative z-10 pb-20">
           <ProfileView data={profile} />
