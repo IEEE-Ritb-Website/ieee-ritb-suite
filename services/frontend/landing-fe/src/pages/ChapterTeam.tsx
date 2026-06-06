@@ -22,28 +22,6 @@ import ChapterIcon from "@/components/ui/ChapterIcon";
 import SEO from "@/components/common/SEO";
 import "./ChapterTeam.css";
 
-// ── Chapter color map (kept in sync with ChapterDetails.tsx) ──────
-const CHAPTER_COLORS: Record<string, string> = {
-  CS: "#4d7fff",
-  RAS: "#D22B2B",
-  CIS: "#FFEA00",
-  SC: "#ADF802",
-  WIE: "#d946ef",
-  MTTS: "#f97316",
-  PES: "#10b981",
-  SPS: "#8b5cf6",
-  ComSoc: "#f59e0b",
-  APS: "#ef4444",
-  EMBS: "#6366f1",
-  IX: "#0FFF50",
-  Web: "#D22B2B",
-  CRTY: "#FFEA00",
-  COVR: "#ADF802",
-  DIGI: "#d946ef",
-  PRSP: "#6366f1",
-  TEMS: "#00ccff",
-};
-
 // ==================== SUB-COMPONENTS ====================
 
 interface AvatarProps {
@@ -247,7 +225,7 @@ export default function ChapterTeam() {
   const safeItem = orchestrate(itemVariants);
   const safeCard = orchestrate(cardVariants);
 
-  const accentColor = CHAPTER_COLORS[chapter.acronym] ?? "#4d7fff";
+  const accentColor = chapter.color ?? "#4d7fff";
 
   const { officers, execoms } = useMemo(() => {
     const positionIndex = (pos: string) => {
