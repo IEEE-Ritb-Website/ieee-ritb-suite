@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "onboard": "tsx scripts/onboard-users.mts",
-    "normalize": "tsx scripts/db-normalize.mts"
+    "normalize": "tsx scripts/db-normalize.mts",
+    "cleanup-profiles": "tsx scripts/cleanup-profiles.mts"
   },
   "dependencies": {
     "@astranova/catalogues": "workspace:*",
