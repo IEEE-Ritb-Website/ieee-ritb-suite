@@ -58,9 +58,14 @@ function ResetPasswordForm() {
       });
 
       if (error) {
+        const isRateLimit =
+          error.status === 429 ||
+          error.message?.toLowerCase().includes("too many");
         toast({
-          title: "Telemetry Refused",
-          description: error.message || "Failed to finalize new password.",
+          title: isRateLimit ? "Access Suspended" : "Telemetry Refused",
+          description: isRateLimit
+            ? "You have made too many authentication attempts. Please try again later."
+            : error.message || "Failed to finalize new password.",
           variant: "destructive",
         });
       } else {
@@ -93,7 +98,8 @@ function ResetPasswordForm() {
           Access Token Expired or Invalid
         </div>
         <p className="text-sm text-[rgba(200,255,232,0.65)] leading-relaxed">
-          Please initiate a new password reset procedure. Token validation is mandatory.
+          Please initiate a new password reset procedure. Token validation is
+          mandatory.
         </p>
         <div className="pt-4">
           <Link

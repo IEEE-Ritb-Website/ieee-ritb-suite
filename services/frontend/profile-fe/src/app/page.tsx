@@ -492,10 +492,11 @@ function ProjectModal({
                     onClick={() =>
                       setValue("type", t.value as any, { shouldValidate: true })
                     }
-                    className={`flex items-center gap-2 px-3 py-2 rounded border text-xs transition-all ${isSelected
+                    className={`flex items-center gap-2 px-3 py-2 rounded border text-xs transition-all ${
+                      isSelected
                         ? "border-[#ff4fd8] bg-[rgba(255,79,216,0.1)] text-[#ff4fd8]"
                         : "border-[rgba(255,79,216,0.2)] text-[rgba(200,255,232,0.4)] hover:border-[rgba(255,79,216,0.4)]"
-                      }`}
+                    }`}
                   >
                     <meta.Icon
                       size={12}
@@ -617,10 +618,11 @@ function ProjectModal({
                         : [...selectedTags, tag];
                       setValue("tags", next, { shouldValidate: true });
                     }}
-                    className={`text-xs px-2 py-0.5 rounded-[2px] border transition-all ${isSelected
+                    className={`text-xs px-2 py-0.5 rounded-[2px] border transition-all ${
+                      isSelected
                         ? "border-[#ff4fd8] bg-[rgba(255,79,216,0.12)] text-[#ff4fd8]"
                         : "border-[rgba(200,255,232,0.15)] text-[rgba(200,255,232,0.4)] hover:border-[rgba(255,79,216,0.3)]"
-                      }`}
+                    }`}
                   >
                     #{tag}
                   </button>
@@ -860,15 +862,15 @@ export default function ProfilePage() {
         const profile = response.ok
           ? await response.json()
           : {
-            name: data.user.name,
-            email: data.user.email,
-            username: (data.user as any).username,
-            chapters: [],
-            social_links: [],
-            stats: {},
-            achievements: [],
-            projects: [],
-          };
+              name: data.user.name,
+              email: data.user.email,
+              username: (data.user as any).username,
+              chapters: [],
+              social_links: [],
+              stats: {},
+              achievements: [],
+              projects: [],
+            };
         setFullProfile(profile);
         const normalized = safeNormalizeProfile(profile);
         reset(normalized);
@@ -1015,10 +1017,11 @@ export default function ProfilePage() {
         <div className="flex gap-4 items-center">
           <button
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`text-sm flex gap-2 items-center px-3 py-1 border transition-all uppercase tracking-widest ${isEditMode
+            className={`text-sm flex gap-2 items-center px-3 py-1 border transition-all uppercase tracking-widest ${
+              isEditMode
                 ? "bg-[#00ff9d] text-[#0d0d1a] border-[#00ff9d]"
                 : "border-[rgba(0,255,157,0.4)] text-[#00ff9d] hover:bg-[rgba(0,255,157,0.1)]"
-              }`}
+            }`}
           >
             {isEditMode ? (
               <>
@@ -1034,8 +1037,9 @@ export default function ProfilePage() {
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className={`text-sm text-[#ff4fd8] flex gap-2 items-center border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest ${isLoggingOut ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+          className={`text-sm text-[#ff4fd8] flex gap-2 items-center border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest ${
+            isLoggingOut ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           {isLoggingOut ? (
             <Loader2 size={12} className="animate-spin" />
@@ -1069,10 +1073,11 @@ export default function ProfilePage() {
                 <button
                   onClick={saveProfile}
                   disabled={isUpdating || !hasChanges}
-                  className={`bg-[#00ff9d] text-[#0d0d1a] px-8 py-2 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:scale-105 transition-all ${isUpdating || !hasChanges
+                  className={`bg-[#00ff9d] text-[#0d0d1a] px-8 py-2 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:scale-105 transition-all ${
+                    isUpdating || !hasChanges
                       ? "opacity-50 cursor-not-allowed shadow-none scale-100 hover:scale-100"
                       : ""
-                    }`}
+                  }`}
                 >
                   {isUpdating
                     ? "Synchronizing..."
@@ -1725,31 +1730,31 @@ export default function ProfilePage() {
                             </div>
                             {formData.timeline?.[idx]?.position !==
                               "volunteer" && (
-                                <div>
-                                  <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">
-                                    Chapter
-                                  </label>
-                                  <Controller
-                                    control={control}
-                                    name={`timeline.${idx}.chapter`}
-                                    render={({ field }) => (
-                                      <DebouncedSelect
-                                        options={CHAPTER_OPTIONS}
-                                        value={field.value || ""}
-                                        onChange={(val) => {
-                                          field.onChange(val);
-                                          setValue(
-                                            `timeline.${idx}.chapter`,
-                                            val,
-                                            { shouldDirty: true },
-                                          );
-                                        }}
-                                        placeholder="Select chapter..."
-                                      />
-                                    )}
-                                  />
-                                </div>
-                              )}
+                              <div>
+                                <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">
+                                  Chapter
+                                </label>
+                                <Controller
+                                  control={control}
+                                  name={`timeline.${idx}.chapter`}
+                                  render={({ field }) => (
+                                    <DebouncedSelect
+                                      options={CHAPTER_OPTIONS}
+                                      value={field.value || ""}
+                                      onChange={(val) => {
+                                        field.onChange(val);
+                                        setValue(
+                                          `timeline.${idx}.chapter`,
+                                          val,
+                                          { shouldDirty: true },
+                                        );
+                                      }}
+                                      placeholder="Select chapter..."
+                                    />
+                                  )}
+                                />
+                              </div>
+                            )}
                           </div>
                           <textarea
                             {...register(`timeline.${idx}.description`)}
@@ -1887,10 +1892,11 @@ export default function ProfilePage() {
       {/* Mobile sticky/fixed save bar */}
       {isEditMode && (
         <div
-          className={`md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(0,255,157,0.25)] bg-[#0d0d1a]/95 backdrop-blur-md px-4 py-4 flex items-center justify-between gap-4 transition-all duration-300 ease-in-out transform ${hasChanges
+          className={`md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(0,255,157,0.25)] bg-[#0d0d1a]/95 backdrop-blur-md px-4 py-4 flex items-center justify-between gap-4 transition-all duration-300 ease-in-out transform ${
+            hasChanges
               ? "translate-y-0 opacity-100 pointer-events-auto"
               : "translate-y-full opacity-0 pointer-events-none"
-            }`}
+          }`}
         >
           <div className="flex items-center gap-2 text-xs font-mono text-[#ff4fd8] uppercase tracking-wider">
             <span className="w-2.5 h-2.5 rounded-full bg-[#ff4fd8] animate-pulse" />
@@ -1919,7 +1925,7 @@ export default function ProfilePage() {
           <div className="relative border border-dashed border-[rgba(0,255,157,0.3)] rounded p-8 flex flex-col items-center justify-center gap-4 bg-[rgba(0,255,157,0.02)] hover:bg-[rgba(0,255,157,0.05)] transition-all cursor-pointer group">
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               onChange={handleFileChange}
               className="absolute inset-0 opacity-0 cursor-pointer z-10"
             />
@@ -1934,7 +1940,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="text-xs text-[rgba(255,79,216,0.6)] uppercase text-center mt-2">
-            Supported formats: JPG, PNG, GIF. Max size: 2MB.
+            Supported formats: JPEG, PNG, WEBP. Max size: 5MB.
           </div>
         </div>
       </Modal>

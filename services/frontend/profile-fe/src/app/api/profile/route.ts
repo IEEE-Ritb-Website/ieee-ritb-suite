@@ -4,6 +4,36 @@ import { profileSchema } from "@/lib/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { ObjectId } from "mongodb";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+// Initialize Upstash Redis and Ratelimit only if the environment variables are present
+// to avoid breaking local development/testing if they are not set.
+let profileUpdateRatelimit: Ratelimit | null = null;
+
+if (
+  process.env.UPSTASH_REDIS_REST_URL &&
+  process.env.UPSTASH_REDIS_REST_TOKEN
+) {
+  try {
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+    profileUpdateRatelimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(15, "5 m"), // 15 updates per 5 minutes
+      analytics: true,
+      prefix: "profile-fe/profile-update",
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(
+      "Failed to initialize profile update Upstash Ratelimit:",
+      message,
+    );
+  }
+}
 
 export const dynamic = "force-dynamic";
 
@@ -266,6 +296,36 @@ export async function POST(req: NextRequest) {
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
+  // Apply rate limiting if initialized
+  if (profileUpdateRatelimit) {
+    try {
+      const identifier = session.user.id;
+      const { success, limit, reset, remaining } =
+        await profileUpdateRatelimit.limit(identifier);
+
+      if (!success) {
+        return NextResponse.json(
+          {
+            message:
+              "Please wait for some time, you've tried to update your profile too many times.",
+          },
+          {
+            status: 429,
+            headers: {
+              "X-RateLimit-Limit": limit.toString(),
+              "X-RateLimit-Remaining": remaining.toString(),
+              "X-RateLimit-Reset": reset.toString(),
+            },
+          },
+        );
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("Profile update rate limiting error:", message);
+      // Fail-open: proceed with update even if rate limit check fails
+    }
   }
 
   const body = await req.json();

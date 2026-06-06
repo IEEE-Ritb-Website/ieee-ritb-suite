@@ -10,6 +10,11 @@ const db = client.db(getDbName());
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
+  rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 5,
+  },
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
@@ -19,7 +24,11 @@ export const auth = betterAuth({
         name: user.name,
         resetUrl: url,
       }).catch((err) => {
-        console.error("Failed to send password reset email to", user.email, err);
+        console.error(
+          "Failed to send password reset email to",
+          user.email,
+          err,
+        );
       });
     },
   },
@@ -77,8 +86,8 @@ export const auth = betterAuth({
       term: {
         type: "string",
         required: true,
-      }
-    }
+      },
+    },
   },
   plugins: [nextCookies()],
 });

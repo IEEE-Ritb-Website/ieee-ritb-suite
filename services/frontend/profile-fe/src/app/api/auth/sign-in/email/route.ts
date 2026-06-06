@@ -1,17 +1,73 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise, { getDbName } from "@/lib/db";
 import { auth } from "@/lib/auth";
-
 import { headers } from "next/headers";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+let signInRatelimit: Ratelimit | null = null;
+
+if (
+  process.env.UPSTASH_REDIS_REST_URL &&
+  process.env.UPSTASH_REDIS_REST_TOKEN
+) {
+  try {
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+    signInRatelimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, "1 m"), // 5 attempts per 1 minute
+      analytics: true,
+      prefix: "profile-fe/sign-in",
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Failed to initialize Sign-in Upstash Ratelimit:", message);
+  }
+}
 
 export async function POST(req: NextRequest) {
+  if (signInRatelimit) {
+    try {
+      const ip =
+        (req as any).ip ||
+        req.headers.get("x-forwarded-for")?.split(",")[0] ||
+        "127.0.0.1";
+      const { success, limit, reset, remaining } =
+        await signInRatelimit.limit(ip);
+
+      if (!success) {
+        return NextResponse.json(
+          {
+            message:
+              "Too many authentication attempts. Please try again later.",
+          },
+          {
+            status: 429,
+            headers: {
+              "X-RateLimit-Limit": limit.toString(),
+              "X-RateLimit-Remaining": remaining.toString(),
+              "X-RateLimit-Reset": reset.toString(),
+            },
+          },
+        );
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("Sign-in rate limiting error:", message);
+      // Fail-open
+    }
+  }
+
   try {
     const { email: identifier, password } = await req.json();
 
     if (!identifier || !password) {
       return NextResponse.json(
         { message: "Email and password are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -23,14 +79,14 @@ export async function POST(req: NextRequest) {
       $or: [
         { email: identifier.trim() },
         { membershipId: identifier.trim() },
-        { username: identifier.trim() }
-      ]
+        { username: identifier.trim() },
+      ],
     });
 
     if (!user || !user.email) {
       return NextResponse.json(
         { message: "Invalid email or password" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -51,7 +107,7 @@ export async function POST(req: NextRequest) {
     console.error("Custom sign-in override error:", error);
     return NextResponse.json(
       { message: error.message || "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
