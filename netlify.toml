@@ -1,3 +1,0 @@
-[build]
-  command = "pnpm nx run landing-fe:build"
-  publish = "services/frontend/landing-fe/dist"
