@@ -1,0 +1,452 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "IEEE RIT Bangalore - Root Service API",
+    "description": "Root API microservice serving public endpoints for the IEEE RIT-B student branch suite. Offers chapter metadata lists, active term member query lookups, and secure scheduler cron integrations.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "IEEE RIT-B Development Team",
+      "url": "https://ritb.in"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Local Development Server"
+    },
+    {
+      "url": "https://api.ritb.in",
+      "description": "Production Server"
+    }
+  ],
+  "paths": {
+    "/chapters": {
+      "get": {
+        "summary": "Retrieve IEEE Chapters",
+        "description": "Fetches a collection of all active technical and non-technical IEEE chapters (societies and affinity groups) within the RIT Bangalore Student Branch.",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Filter chapters by full name (case-insensitive substring/match).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "acronym",
+            "in": "query",
+            "description": "Filter chapters by acronym (e.g. CS, SPS, ComSoc).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Filter chapters by category (tech for technical societies, non-tech for affinity/operation groups).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["tech", "non-tech"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved chapters list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Chapter"
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Chapters retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "Retrieve Active Branch Members",
+        "description": "Fetches a list of active student branch members for the current active term. Supports robust filters including comma-separated chapter filtering and specific role/hierarchy categories.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of user records to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of user records to skip for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "description": "Filter users by a specific position name case-insensitively (e.g. Chair, Secretary).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chapters",
+            "in": "query",
+            "description": "Comma-separated list of chapter names or acronyms (e.g. `Computer Society,ComSoc`) to filter team members.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "onlySeniorPositions",
+            "in": "query",
+            "description": "Filter for senior position holders (excludes 'vice' prefixes and volunteers).",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "onlyJuniorPositions",
+            "in": "query",
+            "description": "Filter for junior position holders (matches positions containing the 'vice' prefix).",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "onlyExecoms",
+            "in": "query",
+            "description": "Filter for Execom positions specifically.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved users list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Users retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cron": {
+      "get": {
+        "summary": "Trigger Scheduler Cron Maintenance",
+        "description": "Endpoint intended for scheduling services (like cron-job.org) to execute routine maintenance. Requires a custom authorization header token for verification.",
+        "parameters": [
+          {
+            "name": "x-cron-secret",
+            "in": "header",
+            "description": "Custom authentication secret key matching the environment's CRON_SECRET value.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cron job completed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Cron job executed successfully"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Cron job completed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access due to missing or invalid cron secret header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "unauthorized"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid cron secret"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Chapter": {
+        "type": "object",
+        "required": ["name", "type", "acronym", "shortDescription", "logoUrl"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Computer Society"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["tech", "non-tech"],
+            "example": "tech"
+          },
+          "acronym": {
+            "type": "string",
+            "example": "CS"
+          },
+          "shortDescription": {
+            "type": "string",
+            "example": "IEEE Computer Society (IEEE CS) is a technical society of IEEE that focuses on computing..."
+          },
+          "logoUrl": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://res.cloudinary.com/.../logo.png"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": ["name", "image", "username", "chapters"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "example": "https://lh3.googleusercontent.com/a/ALm5wu..."
+          },
+          "username": {
+            "type": "string",
+            "example": "johndoe"
+          },
+          "chapters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "acronym"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Computer Society"
+                },
+                "acronym": {
+                  "type": "string",
+                  "example": "CS"
+                },
+                "position": {
+                  "type": "string",
+                  "example": "Chair"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["success", "error"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "required": ["type", "message"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "validation",
+                  "not_found",
+                  "unauthorized",
+                  "forbidden",
+                  "fatal"
+                ],
+                "example": "validation"
+              },
+              "message": {
+                "type": "string",
+                "example": "Validation failed"
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string",
+                      "example": "query.chapters"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid chapter name or acronym in chapters list"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
