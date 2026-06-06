@@ -6,6 +6,8 @@ import GlowText from "../components/effects/GlowText";
 import type { IChapter, IChapterAcronyms } from "@astranova/catalogues";
 import type { LayoutContext } from "../layouts/MainLayout";
 import { RECRUITMENT_CONFIG, isRecruitmentOpen } from "@/data/recruitment";
+import { SB_SENIOR_POSITIONS, PROFILE_BASE_URL } from "@/data/teamData";
+import type { ITeamMember } from "@/types/team";
 import SEO from "../components/common/SEO";
 import "./ChapterDetails.css";
 
@@ -21,7 +23,10 @@ import "./ChapterDetails.css";
  */
 export default function ChapterDetails() {
   // Data is pre-loaded by router loader - no loading states needed
-  const chapter = useLoaderData() as IChapter;
+  const { chapter, members } = useLoaderData() as {
+    chapter: IChapter;
+    members: ITeamMember[];
+  };
   const { warpComplete } = useOutletContext<LayoutContext>();
   const { orchestrate, shouldReduceMotion } = useMotion();
 
@@ -57,6 +62,11 @@ export default function ChapterDetails() {
   });
 
   const color = chapter.color || "#4d7fff";
+
+  // Filter senior officers showing
+  const seniorOfficers = members.filter((m) =>
+    SB_SENIOR_POSITIONS.has(m.position),
+  );
 
   // Stat card data
   const statCards = [
@@ -249,6 +259,77 @@ export default function ChapterDetails() {
             </div>
           </div>
         </m.section>
+
+        {/* ===== SENIOR OFFICERS SECTION ===== */}
+        {seniorOfficers.length > 0 && (
+          <m.section
+            id="team"
+            className="chapter-team-preview"
+            variants={itemVariants}
+          >
+            <div className="chapter-section-container">
+              <h2 className="team-preview-heading" style={{ color }}>
+                Leadership
+              </h2>
+              <p className="team-preview-subheading">
+                Meet the officers leading the chapter.
+              </p>
+
+              <div className="team-preview-grid">
+                {seniorOfficers.map((member) => (
+                  <a
+                    key={member.username}
+                    href={`${PROFILE_BASE_URL}/${member.username}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="officer-preview-card"
+                    style={{ "--accent-color": color } as React.CSSProperties}
+                  >
+                    <div className="officer-avatar-wrapper">
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="officer-avatar-img"
+                        loading="lazy"
+                      />
+                      <div
+                        className="avatar-glow"
+                        style={{ background: color }}
+                      />
+                    </div>
+                    <div className="officer-info">
+                      <h3 className="officer-name">{member.name}</h3>
+                      <span className="officer-role" style={{ color }}>
+                        {member.position}
+                      </span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+
+              <div className="team-view-all-container">
+                <Link
+                  to={`/team/${chapter.acronym.toLowerCase()}`}
+                  className="btn-view-all-team"
+                  style={{ "--btn-color": color } as React.CSSProperties}
+                >
+                  <span>View Entire Team</span>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          </m.section>
+        )}
 
         {/* ===== CTA SECTION ===== */}
         <m.section
