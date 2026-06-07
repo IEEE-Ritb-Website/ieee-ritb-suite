@@ -17,8 +17,13 @@ export const corsOptions: CorsOptions = {
     try {
       const parsed = new URL(origin);
       const hostname = parsed.hostname;
-      // Allow ritb.in and any subdomain under ritb.in
-      if (hostname === "ritb.in" || hostname.endsWith(".ritb.in")) {
+      // Allow ritb.in and subdomains, plus Netlify/Vercel preview hostnames
+      if (
+        hostname === "ritb.in" ||
+        hostname.endsWith(".ritb.in") ||
+        hostname.endsWith(".netlify.app") ||
+        hostname.endsWith(".vercel.app")
+      ) {
         callback(null, true);
       } else {
         callback(null, false);
