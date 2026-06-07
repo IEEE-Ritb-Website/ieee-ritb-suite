@@ -10,6 +10,8 @@ export const IEEE_POSITIONS = [
     { value: "documentation-head", name: "Documentation Head" },
     { value: "head", name: "Head" },
     { value: "co-head", name: "Co-Head" },
+    { value: "vice-head", name: "Vice Head" },
+    { value: "vice-co-head", name: "Vice Co-Head" },
     { value: "vice-chair", name: "Vice Chair" },
     { value: "vice-secretary", name: "Vice Secretary" },
     { value: "vice-treasurer", name: "Vice Treasurer" },

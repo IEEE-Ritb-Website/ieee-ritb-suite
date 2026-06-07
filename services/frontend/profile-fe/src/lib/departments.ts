@@ -6,7 +6,10 @@ export const DEPARTMENTS = [
   { value: "Civil", label: "Civil Engineering" },
   { value: "CSE", label: "Computer Science & Engineering" },
   { value: "CSE(AIML)", label: "Computer Science & Engineering (AI & ML)" },
-  { value: "CSE(CY)", label: "Computer Science & Engineering (Cyber Security)" },
+  {
+    value: "CSE(CY)",
+    label: "Computer Science & Engineering (Cyber Security)",
+  },
   { value: "ECE", label: "Electronics & Communication Engineering" },
   { value: "EIE", label: "Electronics & Instrumentation Engineering" },
   { value: "EEE", label: "Electrical & Electronics Engineering" },
@@ -17,6 +20,7 @@ export const DEPARTMENTS = [
   { value: "MD", label: "Medical Electronics Engineering" },
   { value: "MCA", label: "Master of Computer Applications" },
   { value: "MBA", label: "Management Studies (MBA)" },
+  { value: "M.Tech", label: "Master of Technology" },
   { value: "Aerospace", label: "Aerospace Engineering" },
   { value: "Arch", label: "Architecture" },
 ];
