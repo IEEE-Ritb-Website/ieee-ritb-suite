@@ -474,7 +474,7 @@ export function ProjectsSection() {
               defaultValues: { type: "other", tags: [] },
             })
           }
-          className="text-sm flex items-center gap-2 border border-[#ff4fd8] text-[#ff4fd8] px-2 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-colors"
+          className="text-sm flex items-center gap-2 border border-[#00ff9d] px-2 py-1 hover:bg-[rgba(0,255,157,0.1)] transition-colors"
         >
           <Plus size={14} /> Add Project
         </button>
@@ -839,20 +839,20 @@ export function SecuritySection() {
         update your profile credentials and security settings to secure your
         profile telemetry.
       </div>
-      <div className="flex gap-4">
-        <button
-          type="button"
-          onClick={() => setShowPasswordModal(true)}
-          className="bg-[rgba(255,79,216,0.1)] border border-[#ff4fd8] text-[#ff4fd8] px-4 py-2 rounded uppercase tracking-widest hover:bg-[rgba(255,79,216,0.2)] transition-all font-bold text-xs"
-        >
-          Change Password
-        </button>
+      <div className="flex flex-col items-start justify-start gap-4">
         <button
           type="button"
           onClick={() => setShowEmailModal(true)}
           className="bg-[rgba(255,79,216,0.1)] border border-[#ff4fd8] text-[#ff4fd8] px-4 py-2 rounded uppercase tracking-widest hover:bg-[rgba(255,79,216,0.2)] transition-all font-bold text-xs"
         >
           Change Email
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowPasswordModal(true)}
+          className="bg-[rgba(255,79,216,0.1)] border border-[#ff4fd8] text-[#ff4fd8] px-4 py-2 rounded uppercase tracking-widest hover:bg-[rgba(255,79,216,0.2)] transition-all font-bold text-xs"
+        >
+          Change Password
         </button>
       </div>
     </div>

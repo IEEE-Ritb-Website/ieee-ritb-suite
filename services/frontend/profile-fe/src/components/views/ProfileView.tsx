@@ -8,7 +8,7 @@ import {
   SkillTag,
   TimelineItem
 } from "@/components/ui";
-import { Chapters as CatalogChapters } from "@astranova/catalogues";
+import { OrganizationStructure } from "@astranova/catalogues";
 import { ContributionGraph } from "@/components/ui/ContributionGraph";
 import { IconCloud } from "@/components/ui/IconCloud";
 import { SKILL_TO_SLUG } from "@/lib/skill-slugs";
@@ -283,8 +283,7 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
   const validTimeline = (data.timeline || []).filter(t => t.year?.trim() && t.position?.trim());
 
   const getChapterName = (acronym: string) => {
-    if (acronym === "SB") return "Student Branch";
-    const match = CatalogChapters.find(c => c.acronym === acronym);
+    const match = OrganizationStructure.find(c => c.acronym === acronym);
     return match?.name || acronym;
   };
 

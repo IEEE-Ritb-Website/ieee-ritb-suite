@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { AvatarFrame } from './Common';
 import { ChapterChip, LinkItem, Modal } from '../ui';
 import { ExternalIcon } from '../icons';
-import { Chapters as CatalogChapters } from "@astranova/catalogues";
+import { Chapters as CatalogChapters, OrganizationStructure } from "@astranova/catalogues";
 import { useToast } from '../ui/use-toast';
 import { Share2 } from 'lucide-react';
 
@@ -27,17 +27,7 @@ interface SidebarProps {
   isPublic?: boolean;
 }
 
-const Chapters = [
-  ...CatalogChapters,
-  {
-    name: "Student Branch",
-    acronym: "SB",
-    type: null,
-    color: "#ef4444",
-    shortDescription: "The IEEE Student Branch (SB) is the foundational student community within our campus, serving as the central hub for coordination, student activities, leadership, and professional growth across all technical and non-technical societies."
-  }
-];
-
+const Chapters = OrganizationStructure;
 
 export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: SidebarProps) => {
   const { toast } = useToast();
@@ -185,7 +175,7 @@ export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: Sideb
             </div>
             {activeChapterDetails.type ?
               <div className="inline-block px-2 py-0.5 rounded-[2px] border border-[rgba(0,255,157,0.3)] bg-[rgba(0,255,157,0.06)] text-[#00ff9d] uppercase text-xs">
-                {activeChapterDetails.type} society
+                {activeChapterDetails.type} chapter
               </div>
               : null}
             {activeChapterDetails.position && (

@@ -4,6 +4,7 @@ import crypto from "crypto";
 import dotenv from "dotenv";
 import { Chapters as CatalogChapters } from "../../../../packages/catalogues/src/chapter-data/index";
 import { DEPARTMENTS } from "../src/lib/departments";
+import { OrganizationStructure } from "@astranova/catalogues";
 
 const BATCH_SIZE = 10;
 const DELAY_BETWEEN_EMAILS_MS = 2000;
@@ -12,15 +13,7 @@ const DELAY_BETWEEN_BATCHES_MS = 45000;
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const jitter = () => Math.random() * 1500;
 
-const Chapters = [
-  ...CatalogChapters,
-  {
-    name: "Student Branch",
-    acronym: "SB",
-    type: null as any,
-    color: "#ef4444",
-  },
-];
+const Chapters = OrganizationStructure;
 
 // Configure Node environment before any database/auth imports to prevent hoisting-based connection issues
 const isProd =
@@ -646,7 +639,7 @@ async function main() {
         const clientPromise = (await import("../src/lib/db")).default;
         const client = await clientPromise;
         await client.close();
-      } catch {}
+      } catch { }
 
       process.exit(1);
     }

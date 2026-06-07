@@ -157,8 +157,8 @@ export const OrganizationStructure = [
         name: "Student Branch",
         acronym: "SB",
         type: null,
-        shortDescription: "Student Branch is the coordinating authority to make sure all the chapter's ideas are valued and we live up to the IEEE values",
-        color: "#00ccff"
+        shortDescription: "The IEEE Student Branch (SB) is the foundational student community within our campus, serving as the central hub for coordination, student activities, leadership, and professional growth across all technical and non-technical societies.",
+        color: "#ef4444",
     },
 ];
 

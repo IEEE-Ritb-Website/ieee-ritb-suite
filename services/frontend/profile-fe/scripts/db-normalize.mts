@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import fs from "fs";
-import { Chapters as CatalogChapters } from "../../../../packages/catalogues/src/chapter-data/index";
 import { DEPARTMENTS } from "../src/lib/departments";
+import { OrganizationStructure } from "@astranova/catalogues";
 
 const isProd =
   process.argv.includes("--production") || process.argv.includes("-p");
@@ -34,10 +34,7 @@ if (isProd) {
 
 console.log(`Ultimate Database Normalizer Bootstrapping in ${envMode} mode...`);
 
-const ChaptersCatalog = [
-  ...CatalogChapters,
-  { name: "Student Branch", acronym: "SB" },
-];
+const ChaptersCatalog = OrganizationStructure;
 
 function generateUsername(name: string, email: string): string {
   let base = email

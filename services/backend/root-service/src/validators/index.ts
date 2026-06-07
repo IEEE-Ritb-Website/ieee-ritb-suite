@@ -6,7 +6,7 @@ import {
 } from "@/types";
 import {
   ChapterType,
-  Chapters as ChaptersCatalogue,
+  OrganizationStructure,
 } from "@astranova/catalogues";
 import { z, ZodObject } from "zod";
 
@@ -113,9 +113,7 @@ export const GetUsersRequestValidator = defineRequestSchema(
               const items = val.split(",").map((i) => i.trim());
               return items.every(
                 (item) =>
-                  item.toLowerCase() === "sb" ||
-                  item.toLowerCase() === "student branch" ||
-                  ChaptersCatalogue.some(
+                  OrganizationStructure.some(
                     (c) =>
                       c.name.toLowerCase() === item.toLowerCase() ||
                       c.acronym.toLowerCase() === item.toLowerCase(),
