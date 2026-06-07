@@ -111,12 +111,15 @@ export const GetUsersRequestValidator = defineRequestSchema(
             (val) => {
               if (!val) return true;
               const items = val.split(",").map((i) => i.trim());
-              return items.every((item) =>
-                ChaptersCatalogue.some(
-                  (c) =>
-                    c.name.toLowerCase() === item.toLowerCase() ||
-                    c.acronym.toLowerCase() === item.toLowerCase(),
-                ),
+              return items.every(
+                (item) =>
+                  item.toLowerCase() === "sb" ||
+                  item.toLowerCase() === "student branch" ||
+                  ChaptersCatalogue.some(
+                    (c) =>
+                      c.name.toLowerCase() === item.toLowerCase() ||
+                      c.acronym.toLowerCase() === item.toLowerCase(),
+                  ),
               );
             },
             {
@@ -147,6 +150,9 @@ export const GetUsersResponseValidator = defineResponseSchema(
             position: z.string().optional(),
           }),
         ),
+        department: z.string().optional().nullable(),
+        year: z.string().optional().nullable(),
+        term: z.string().optional().nullable(),
       }),
     ),
     message: z.string().optional(),

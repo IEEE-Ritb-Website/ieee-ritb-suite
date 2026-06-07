@@ -23,6 +23,9 @@ interface IDBUser {
     acronym?: string;
     position?: string;
   }>;
+  department?: string;
+  year?: string;
+  term?: string;
 }
 
 export async function GetUsersController(
@@ -69,6 +72,8 @@ export async function GetUsersController(
         );
         if (matched) {
           chapterNamesToFilter.push(matched.name);
+        } else if (item === "sb" || item === "student branch") {
+          chapterNamesToFilter.push("Student Branch");
         }
       }
     }
@@ -122,6 +127,9 @@ export async function GetUsersController(
         image: 1,
         username: 1,
         chapters: 1,
+        department: 1,
+        year: 1,
+        term: 1,
       })
       .skip(offset)
       .limit(limit)
@@ -137,6 +145,9 @@ export async function GetUsersController(
         acronym: ch.acronym || "",
         position: ch.position || "",
       })),
+      department: u.department || "",
+      year: u.year || "",
+      term: u.term || "",
     }));
 
     return responseCreator.ok({

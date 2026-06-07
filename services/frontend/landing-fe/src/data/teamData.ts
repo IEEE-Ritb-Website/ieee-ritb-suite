@@ -326,29 +326,113 @@ const MOCK_CHAPTER_TEAMS: Record<string, ITeamMember[]> = {
 
 // ==================== API FUNCTIONS ====================
 
+interface IApiResponse {
+  success: boolean;
+  data: Array<{
+    name: string;
+    image: string | null;
+    username: string;
+    chapters: Array<{
+      name: string;
+      acronym: string;
+      position?: string;
+    }>;
+    department?: string | null;
+    year?: string | null;
+    term?: string | null;
+  }>;
+  message?: string;
+}
+
 /**
  * Fetch Student Branch officers for the current term.
  * Returns members ordered: senior officers first, then vice officers.
- *
- * TODO: Replace mock with:
- *   const res = await fetch(`${PROFILE_API_BASE}/api/team/sb`);
- *   return res.json();
  */
 export async function fetchSBOfficers(): Promise<ITeamMember[]> {
+  try {
+    const res = await fetch(
+      "https://ieee-ritb-root-service.onrender.com/api/users?chapters=sb&limit=100",
+    );
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    const json = (await res.json()) as IApiResponse;
+    if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+      return json.data.map((user) => {
+        const sbChapter = user.chapters.find(
+          (ch) =>
+            ch.acronym.toUpperCase() === "SB" ||
+            ch.name.toLowerCase() === "student branch",
+        );
+        return {
+          username: user.username,
+          name: user.name,
+          image:
+            user.image ||
+            `https://api.dicebear.com/9.x/avataaars/svg?seed=${user.username}&backgroundColor=0a0b14`,
+          position: sbChapter?.position || "Execom",
+          chapter: {
+            acronym: "SB",
+            name: "Student Branch",
+          },
+          department: user.department || "CSE",
+          year: user.year || "3rd",
+          term: user.term || "2026-27",
+        };
+      });
+    }
+  } catch (error) {
+    console.error(
+      "Failed to fetch SB officers from API, falling back to mock data:",
+      error,
+    );
+  }
   return Promise.resolve(MOCK_SB_OFFICERS);
 }
 
 /**
  * Fetch all members for a given chapter (officers + execoms) for the current term.
  * Returns a flat array — split by position === "Execom" on the consumer side.
- *
- * TODO: Replace mock with:
- *   const res = await fetch(`${PROFILE_API_BASE}/api/team/${acronym.toLowerCase()}`);
- *   return res.json();
  */
 export async function fetchChapterTeam(
   acronym: string,
 ): Promise<ITeamMember[]> {
+  try {
+    const res = await fetch(
+      `https://ieee-ritb-root-service.onrender.com/api/users?chapters=${acronym.toLowerCase()}&limit=100`,
+    );
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    const json = (await res.json()) as IApiResponse;
+    if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+      return json.data.map((user) => {
+        const targetChapter = user.chapters.find(
+          (ch) => ch.acronym.toLowerCase() === acronym.toLowerCase(),
+        );
+        return {
+          username: user.username,
+          name: user.name,
+          image:
+            user.image ||
+            `https://api.dicebear.com/9.x/avataaars/svg?seed=${user.username}&backgroundColor=0a0b14`,
+          position: targetChapter?.position || "Execom",
+          chapter: {
+            acronym: acronym.toUpperCase(),
+            name: targetChapter?.name || acronym.toUpperCase(),
+          },
+          department: user.department || "CSE",
+          year: user.year || "3rd",
+          term: user.term || "2026-27",
+        };
+      });
+    }
+  } catch (error) {
+    console.error(
+      `Failed to fetch chapter team for ${acronym} from API, falling back to mock data:`,
+      error,
+    );
+  }
   return Promise.resolve(MOCK_CHAPTER_TEAMS[acronym.toUpperCase()] ?? []);
 }
 
