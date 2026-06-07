@@ -4,17 +4,18 @@ import bodyParser from "body-parser";
 
 import router from "./routes";
 import { errorHandler } from "./middlewares";
+import { corsOptions } from "@/utils/cors";
 
 const app = express();
 
-app.use(cors({ origin: "*", credentials: true, }));
+app.use(cors(corsOptions));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    })
+  bodyParser.urlencoded({
+    extended: true,
+  }),
 );
 
 app.use("/api", router);

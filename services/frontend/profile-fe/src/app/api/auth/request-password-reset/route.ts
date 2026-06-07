@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-let signInRatelimit: Ratelimit | null = null;
+let passwordResetRatelimit: Ratelimit | null = null;
 
 if (
   process.env.UPSTASH_REDIS_REST_URL &&
@@ -16,33 +16,36 @@ if (
       url: process.env.UPSTASH_REDIS_REST_URL,
       token: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
-    signInRatelimit = new Ratelimit({
+    passwordResetRatelimit = new Ratelimit({
       redis,
-      limiter: Ratelimit.slidingWindow(5, "1 m"), // 5 attempts per 1 minute
+      limiter: Ratelimit.slidingWindow(3, "5 m"), // 3 attempts per 5 minutes
       analytics: true,
-      prefix: "profile-fe/sign-in",
+      prefix: "profile-fe/password-reset",
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error("Failed to initialize Sign-in Upstash Ratelimit:", message);
+    console.error(
+      "Failed to initialize Password reset Upstash Ratelimit:",
+      message,
+    );
   }
 }
 
 export async function POST(req: NextRequest) {
-  if (signInRatelimit) {
+  if (passwordResetRatelimit) {
     try {
       const ip =
-        (req as any).ip ||
+        (req as NextRequest & { ip?: string }).ip ||
         req.headers.get("x-forwarded-for")?.split(",")[0] ||
         "127.0.0.1";
       const { success, limit, reset, remaining } =
-        await signInRatelimit.limit(ip);
+        await passwordResetRatelimit.limit(ip);
 
       if (!success) {
         return NextResponse.json(
           {
             message:
-              "Too many authentication attempts. Please try again later.",
+              "Too many password reset attempts. Please try again later.",
           },
           {
             status: 429,
@@ -56,17 +59,17 @@ export async function POST(req: NextRequest) {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      console.error("Sign-in rate limiting error:", message);
+      console.error("Password reset rate limiting error:", message);
       // Fail-open
     }
   }
 
   try {
-    const { email: identifier, password } = await req.json();
+    const { email: identifier, redirectTo } = await req.json();
 
-    if (!identifier || !password) {
+    if (!identifier) {
       return NextResponse.json(
-        { message: "Email and password are required" },
+        { message: "Email, Username, or Membership ID is required" },
         { status: 400 },
       );
     }
@@ -84,29 +87,26 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user || !user.email) {
-      return NextResponse.json(
-        { message: "Invalid email or password" },
-        { status: 401 },
-      );
+      // Return success response to prevent email enumeration
+      return NextResponse.json({ status: true });
     }
 
-    // Call Better Auth to perform sign in with email and password.
-    // Setting `asResponse: true` causes Better Auth to return a standard Response
-    // with secure HttpOnly Set-Cookie headers for the session.
-    const response = await auth.api.signInEmail({
+    // Call Better Auth to initiate password reset on the resolved email
+    const response = await auth.api.requestPasswordReset({
       body: {
         email: user.email,
-        password: password,
+        redirectTo: redirectTo,
       },
       headers: await headers(),
       asResponse: true,
     });
 
     return response;
-  } catch (error: any) {
-    console.error("Custom sign-in override error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Custom password reset override error:", message);
     return NextResponse.json(
-      { message: error.message || "Internal server error" },
+      { message: message || "Internal server error" },
       { status: 500 },
     );
   }

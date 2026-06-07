@@ -6,13 +6,9 @@ import router from "@/routes";
 import { auth } from "@/lib/auth";
 import { fromNodeHeaders } from "better-auth/node";
 import { CONFIG } from "./configs";
+import { corsOptions } from "@/utils/cors";
 
 const app = express();
-
-const corsOptions: CorsOptions = {
-    origin: process.env.NODE_ENV === "development" ? "http://localhost:5173" : CONFIG.auth.trustedOrigins,
-    credentials: true,
-}
 
 app.use(cors(corsOptions));
 
@@ -21,9 +17,9 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    })
+  bodyParser.urlencoded({
+    extended: true,
+  }),
 );
 
 app.use("/api", router);

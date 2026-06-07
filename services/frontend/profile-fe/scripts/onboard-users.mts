@@ -638,7 +638,7 @@ async function main() {
         const clientPromise = (await import("../src/lib/db")).default;
         const client = await clientPromise;
         await client.close();
-      } catch {}
+      } catch { }
 
       process.exit(1);
     }

@@ -35,9 +35,14 @@ export default function SignIn() {
         router.push("/");
       } else {
         const errorData = await response.json();
+        const isRateLimit =
+          response.status === 429 ||
+          errorData.message?.toLowerCase().includes("too many");
         toast({
-          title: "Connection Failed",
-          description: errorData.message || "Invalid identifier or password",
+          title: isRateLimit ? "Access Suspended" : "Connection Failed",
+          description: isRateLimit
+            ? "You have made too many authentication attempts. Please try again later."
+            : errorData.message || "Invalid identifier or password",
           variant: "destructive",
         });
       }
@@ -57,11 +62,15 @@ export default function SignIn() {
     <div className="min-h-screen bg-[#0d0d1a] text-[#c8ffe8] font-['Share_Tech_Mono',_monospace] flex items-center justify-center p-6 relative">
       <ScanlineOverlay />
       <div className="w-full max-w-md border border-[rgba(0,255,157,0.25)] bg-[rgba(0,255,157,0.02)] p-8 rounded-lg relative z-10">
-        <h1 className="font-vt text-4xl text-[#00ff9d] mb-6 text-center uppercase tracking-widest">System Access: Log In</h1>
+        <h1 className="font-vt text-4xl text-[#00ff9d] mb-6 text-center uppercase tracking-widest">
+          System Access: Log In
+        </h1>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">identifier (email / membership id)</label>
+            <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">
+              identifier (email / membership id)
+            </label>
             <input
               type="text"
               placeholder="Enter email, username, or membership id"
@@ -73,7 +82,9 @@ export default function SignIn() {
 
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)]">password</label>
+              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)]">
+                password
+              </label>
               <Link
                 href="/auth/forgot-password"
                 className="text-xs uppercase tracking-wider text-[#ff4fd8] hover:text-[#ffb700] hover:underline transition-colors"
@@ -115,4 +126,3 @@ export default function SignIn() {
     </div>
   );
 }
-

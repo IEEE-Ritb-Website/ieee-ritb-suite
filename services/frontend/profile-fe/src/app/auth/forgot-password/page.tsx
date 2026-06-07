@@ -24,15 +24,20 @@ export default function ForgotPassword() {
 
     setLoading(true);
     try {
-      const { error } = await authClient.forgetPassword({
+      const { error } = await authClient.requestPasswordReset({
         email: email.trim(),
         redirectTo: "/auth/reset-password",
       });
 
       if (error) {
+        const isRateLimit =
+          error.status === 429 ||
+          error.message?.toLowerCase().includes("too many");
         toast({
-          title: "Transmission Failed",
-          description: error.message || "Could not process recovery telemetry.",
+          title: isRateLimit ? "Access Suspended" : "Transmission Failed",
+          description: isRateLimit
+            ? "You have made too many authentication attempts. Please try again later."
+            : error.message || "Could not process recovery telemetry.",
           variant: "destructive",
         });
       } else {
@@ -43,7 +48,7 @@ export default function ForgotPassword() {
           variant: "success",
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Forgot password failed:", err);
       toast({
         title: "Transmission Failed",
@@ -69,7 +74,9 @@ export default function ForgotPassword() {
               Recovery Packet Dispatched
             </div>
             <p className="text-sm leading-relaxed text-[rgba(200,255,232,0.7)]">
-              An encrypted link has been sent to <span className="text-[#00ff9d] font-bold">{email}</span>. Click the link within 1 hour to establish your new system password.
+              An encrypted link has been sent to{" "}
+              <span className="text-[#00ff9d] font-bold">{email}</span>. Click
+              the link within 1 hour to establish your new system password.
             </p>
             <div className="pt-4 border-t border-[rgba(0,255,157,0.1)]">
               <Link

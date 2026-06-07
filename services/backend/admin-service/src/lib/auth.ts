@@ -70,6 +70,9 @@ export const auth = betterAuth({
         }),
     ],
     user: {
+        changeEmail: {
+            enabled: true,
+        },
         additionalFields: {
             username: {
                 type: "string",
@@ -125,7 +128,7 @@ export const auth = betterAuth({
                 required: false,
             },
             chapters: {
-                type: "string[]",
+                type: "json",
                 required: false,
             },
             batch: {

@@ -4,6 +4,60 @@ import { profileSchema } from "@/lib/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { ObjectId } from "mongodb";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+// Initialize Upstash Redis and Ratelimit only if the environment variables are present
+// to avoid breaking local development/testing if they are not set.
+let profileUpdateRatelimit: Ratelimit | null = null;
+
+if (
+  process.env.UPSTASH_REDIS_REST_URL &&
+  process.env.UPSTASH_REDIS_REST_TOKEN
+) {
+  try {
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+    profileUpdateRatelimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(15, "5 m"), // 15 updates per 5 minutes
+      analytics: true,
+      prefix: "profile-fe/profile-update",
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(
+      "Failed to initialize profile update Upstash Ratelimit:",
+      message,
+    );
+  }
+}
+
+const safeParseJson = (val: unknown) => {
+  if (typeof val === "string") {
+    try {
+      return JSON.parse(val);
+    } catch (e) {
+      console.error("Failed to parse JSON string:", val, e);
+      return [];
+    }
+  }
+  return Array.isArray(val) ? val : [];
+};
+
+const safeParseObject = (val: unknown) => {
+  if (typeof val === "string") {
+    try {
+      return JSON.parse(val);
+    } catch (e) {
+      console.error("Failed to parse JSON string for object:", val, e);
+      return {};
+    }
+  }
+  return val && typeof val === "object" && !Array.isArray(val) ? (val as Record<string, unknown>) : {};
+};
 
 export const dynamic = "force-dynamic";
 
@@ -23,17 +77,6 @@ export async function GET(req: NextRequest) {
   const client = await clientPromise;
   const db = client.db(getDbName());
 
-  const safeParseJson = (val: any) => {
-    if (typeof val === "string") {
-      try {
-        return JSON.parse(val);
-      } catch (e) {
-        console.error("Failed to parse JSON string:", val, e);
-        return [];
-      }
-    }
-    return Array.isArray(val) ? val : [];
-  };
 
   let profile = null;
   let user = null;
@@ -106,6 +149,7 @@ export async function GET(req: NextRequest) {
     ...profile,
     name: user.name || profile.name,
     email: user.email,
+    image: user.image,
     username: user.username,
     membershipId: user.membershipId,
     usn: user.usn,
@@ -267,6 +311,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
+  // Apply rate limiting if initialized
+  if (profileUpdateRatelimit) {
+    try {
+      const identifier = session.user.id;
+      const { success, limit, reset, remaining } =
+        await profileUpdateRatelimit.limit(identifier);
+
+      if (!success) {
+        return NextResponse.json(
+          {
+            message:
+              "Please wait for some time, you've tried to update your profile too many times.",
+          },
+          {
+            status: 429,
+            headers: {
+              "X-RateLimit-Limit": limit.toString(),
+              "X-RateLimit-Remaining": remaining.toString(),
+              "X-RateLimit-Reset": reset.toString(),
+            },
+          },
+        );
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("Profile update rate limiting error:", message);
+      // Fail-open: proceed with update even if rate limit check fails
+    }
+  }
+
   const body = await req.json();
 
   // Clean empty social links before validation and saving
@@ -306,7 +380,14 @@ export async function POST(req: NextRequest) {
   const existingProfile: any = currentProfile || {};
   const mergedCurrentProfile = {
     ...existingProfile,
+    image: user.image,
     department: user.department || existingProfile.department,
+    skills: safeParseJson(existingProfile.skills),
+    social_links: safeParseJson(existingProfile.social_links),
+    timeline: safeParseJson(existingProfile.timeline),
+    achievements: safeParseJson(existingProfile.achievements),
+    projects: safeParseJson(existingProfile.projects),
+    stats: safeParseObject(existingProfile.stats),
   };
 
   if (!hasProfileChanged(mergedCurrentProfile, result.data)) {
@@ -316,8 +397,16 @@ export async function POST(req: NextRequest) {
   }
 
   // Update or Insert the profile document
-  const { usn, year, batch, phoneNumber, department, ...profileSaveData } =
-    result.data;
+  const {
+    usn,
+    year,
+    batch,
+    phoneNumber,
+    department,
+    image,
+    email,
+    ...profileSaveData
+  } = result.data;
 
   const profileData = {
     ...profileSaveData,
@@ -325,13 +414,14 @@ export async function POST(req: NextRequest) {
     updatedAt: new Date(),
   };
 
-  await db
-    .collection("profile")
-    .updateOne(
-      { userId: session.user.id },
-      { $set: profileData },
-      { upsert: true },
-    );
+  await db.collection("profile").updateOne(
+    { userId: session.user.id },
+    {
+      $set: profileData,
+      $unset: { image: "" },
+    },
+    { upsert: true },
+  );
 
   // Sync basic info to Better Auth user collection
   const userSyncFields: any = {

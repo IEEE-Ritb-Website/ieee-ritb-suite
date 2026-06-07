@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import fs from "fs";
-import path from "path";
+import { Chapters as CatalogChapters } from "../../../../packages/catalogues/src/chapter-data/index";
 import { DEPARTMENTS } from "../src/lib/departments";
 
 const isProd =
@@ -35,8 +35,7 @@ if (isProd) {
 console.log(`Ultimate Database Normalizer Bootstrapping in ${envMode} mode...`);
 
 const ChaptersCatalog = [
-  { name: "Computer Society", acronym: "CS" },
-  { name: "Computational Intelligence Society", acronym: "CIS" },
+  ...CatalogChapters,
   { name: "Student Branch", acronym: "SB" },
 ];
 
@@ -69,16 +68,14 @@ function normalizeChapters(rawChapters: any): any[] {
   return parsed
     .map((ch: any) => {
       const acronym =
-        typeof ch === "string"
-          ? ch.trim().toUpperCase()
-          : (ch.acronym || "").trim().toUpperCase();
+        typeof ch === "string" ? ch.trim() : (ch.acronym || "").trim();
       const pos =
         typeof ch === "string" ? "Execom" : (ch.position || "Execom").trim();
       const match = ChaptersCatalog.find(
-        (c) => c.acronym.toUpperCase() === acronym,
+        (c) => c.acronym.toLowerCase() === acronym.toLowerCase(),
       );
       return {
-        acronym,
+        acronym: match ? match.acronym : acronym,
         name: match ? match.name : acronym,
         position: pos || "Execom",
       };
@@ -220,12 +217,26 @@ async function main() {
         }
       }
 
+      // ── Profile collection: find existing profile doc first to check for image propagation ──
+      const profileDoc = await db
+        .collection("profile")
+        .findOne({ userId: userIdStr });
+
+      // Migrate image if profile has it but user doesn't
+      let resolvedUserImage = u.image || "";
+      if (!resolvedUserImage && profileDoc && profileDoc.image) {
+        resolvedUserImage = profileDoc.image;
+        console.log(
+          `- Propagated image from profile to user collection for: ${u.email}`,
+        );
+      }
+
       // Capture legacy data from user doc (might have been stored there before profile existed)
       const legacySkills = safeParseArray(u.skills);
       const legacySocialLinks = safeParseArray(u.social_links);
 
       // ── User collection: set all current-schema fields, unset legacy fields ──
-      const userUpdateFields: any = {
+      const userUpdateFields: Record<string, unknown> = {
         username:
           u.username ||
           generateUsername(u.name || "User", u.email || "user@domain.com"),
@@ -239,18 +250,18 @@ async function main() {
       };
 
       // Preserve existing values (if they exist) rather than overwriting with empty
-      if (u.name) userUpdateFields.name = u.name;
-      if (u.email) userUpdateFields.email = u.email;
+      if (u.name) userUpdateFields["name"] = u.name;
+      if (u.email) userUpdateFields["email"] = u.email;
       if (u.emailVerified !== undefined)
-        userUpdateFields.emailVerified = !!u.emailVerified;
-      if (u.image) userUpdateFields.image = u.image;
-      if (u.tagline) userUpdateFields.tagline = u.tagline;
-      if (u.bio) userUpdateFields.bio = u.bio;
-      if (u.year) userUpdateFields.year = normalizeYear(u.year);
+        userUpdateFields["emailVerified"] = !!u.emailVerified;
+      if (resolvedUserImage) userUpdateFields["image"] = resolvedUserImage;
+      if (u.tagline) userUpdateFields["tagline"] = u.tagline;
+      if (u.bio) userUpdateFields["bio"] = u.bio;
+      if (u.year) userUpdateFields["year"] = normalizeYear(u.year);
       if (u.department)
-        userUpdateFields.department = resolveDepartment(u.department);
-      if (u.usn) userUpdateFields.usn = u.usn;
-      if (u.phoneNumber) userUpdateFields.phoneNumber = u.phoneNumber;
+        userUpdateFields["department"] = resolveDepartment(u.department);
+      if (u.usn) userUpdateFields["usn"] = u.usn;
+      if (u.phoneNumber) userUpdateFields["phoneNumber"] = u.phoneNumber;
 
       await db.collection("user").updateOne(
         { _id: u._id },
@@ -263,11 +274,6 @@ async function main() {
           },
         },
       );
-
-      // ── Profile collection: ensure all current-schema fields are present ──
-      const profileDoc = await db
-        .collection("profile")
-        .findOne({ userId: userIdStr });
 
       const cleanSkills =
         profileDoc && Array.isArray(profileDoc.skills)
@@ -282,7 +288,6 @@ async function main() {
       const newProfileData = {
         userId: userIdStr,
         name: u.name || profileDoc?.name || "Unnamed",
-        image: u.image || profileDoc?.image || "",
         current_status: profileDoc?.current_status || "",
         bio: u.bio || profileDoc?.bio || "",
         stats: profileDoc?.stats || {},
@@ -304,6 +309,7 @@ async function main() {
         {
           $set: newProfileData,
           $unset: {
+            image: "",
             username: "",
             email: "",
             chapters: "",

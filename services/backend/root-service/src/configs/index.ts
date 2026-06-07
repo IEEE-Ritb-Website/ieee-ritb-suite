@@ -4,10 +4,11 @@ const SERVER_PORT = 3000;
 
 export const CONFIG: ICONFIG = {
     database: {
-        name: process.env.NODE_ENV === "development" ? "test" : "prod",
+        name: process.env.NODE_ENV === "production" ? "astranova" : "test",
     },
     server: {
         port: SERVER_PORT,
         name: "Root " + (process.env.NODE_ENV || "development"),
     },
+    cronSecret: process.env.CRON_SECRET || "",
 };
