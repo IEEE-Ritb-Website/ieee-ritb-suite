@@ -35,6 +35,30 @@ if (
   }
 }
 
+const safeParseJson = (val: unknown) => {
+  if (typeof val === "string") {
+    try {
+      return JSON.parse(val);
+    } catch (e) {
+      console.error("Failed to parse JSON string:", val, e);
+      return [];
+    }
+  }
+  return Array.isArray(val) ? val : [];
+};
+
+const safeParseObject = (val: unknown) => {
+  if (typeof val === "string") {
+    try {
+      return JSON.parse(val);
+    } catch (e) {
+      console.error("Failed to parse JSON string for object:", val, e);
+      return {};
+    }
+  }
+  return val && typeof val === "object" && !Array.isArray(val) ? (val as Record<string, unknown>) : {};
+};
+
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
@@ -53,17 +77,6 @@ export async function GET(req: NextRequest) {
   const client = await clientPromise;
   const db = client.db(getDbName());
 
-  const safeParseJson = (val: any) => {
-    if (typeof val === "string") {
-      try {
-        return JSON.parse(val);
-      } catch (e) {
-        console.error("Failed to parse JSON string:", val, e);
-        return [];
-      }
-    }
-    return Array.isArray(val) ? val : [];
-  };
 
   let profile = null;
   let user = null;
@@ -369,6 +382,12 @@ export async function POST(req: NextRequest) {
     ...existingProfile,
     image: user.image,
     department: user.department || existingProfile.department,
+    skills: safeParseJson(existingProfile.skills),
+    social_links: safeParseJson(existingProfile.social_links),
+    timeline: safeParseJson(existingProfile.timeline),
+    achievements: safeParseJson(existingProfile.achievements),
+    projects: safeParseJson(existingProfile.projects),
+    stats: safeParseObject(existingProfile.stats),
   };
 
   if (!hasProfileChanged(mergedCurrentProfile, result.data)) {
@@ -385,6 +404,7 @@ export async function POST(req: NextRequest) {
     phoneNumber,
     department,
     image,
+    email,
     ...profileSaveData
   } = result.data;
 

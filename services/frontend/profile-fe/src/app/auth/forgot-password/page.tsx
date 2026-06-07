@@ -24,7 +24,7 @@ export default function ForgotPassword() {
 
     setLoading(true);
     try {
-      const { error } = await authClient.forgetPassword({
+      const { error } = await authClient.requestPasswordReset({
         email: email.trim(),
         redirectTo: "/auth/reset-password",
       });
@@ -48,7 +48,7 @@ export default function ForgotPassword() {
           variant: "success",
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Forgot password failed:", err);
       toast({
         title: "Transmission Failed",

@@ -286,6 +286,7 @@ function areProfilesEqual(
   if (s(a.image) !== s(b.image)) return false;
   if (s(a.current_status) !== s(b.current_status)) return false;
   if (s(a.bio) !== s(b.bio)) return false;
+  if (s(a.email) !== s(b.email)) return false;
 
   const linksA = (a.social_links || []).filter((l: any) => s(l?.link) !== "");
   const linksB = (b.social_links || []).filter((l: any) => s(l?.link) !== "");
@@ -492,11 +493,10 @@ function ProjectModal({
                     onClick={() =>
                       setValue("type", t.value as any, { shouldValidate: true })
                     }
-                    className={`flex items-center gap-2 px-3 py-2 rounded border text-xs transition-all ${
-                      isSelected
-                        ? "border-[#ff4fd8] bg-[rgba(255,79,216,0.1)] text-[#ff4fd8]"
-                        : "border-[rgba(255,79,216,0.2)] text-[rgba(200,255,232,0.4)] hover:border-[rgba(255,79,216,0.4)]"
-                    }`}
+                    className={`flex items-center gap-2 px-3 py-2 rounded border text-xs transition-all ${isSelected
+                      ? "border-[#ff4fd8] bg-[rgba(255,79,216,0.1)] text-[#ff4fd8]"
+                      : "border-[rgba(255,79,216,0.2)] text-[rgba(200,255,232,0.4)] hover:border-[rgba(255,79,216,0.4)]"
+                      }`}
                   >
                     <meta.Icon
                       size={12}
@@ -618,11 +618,10 @@ function ProjectModal({
                         : [...selectedTags, tag];
                       setValue("tags", next, { shouldValidate: true });
                     }}
-                    className={`text-xs px-2 py-0.5 rounded-[2px] border transition-all ${
-                      isSelected
-                        ? "border-[#ff4fd8] bg-[rgba(255,79,216,0.12)] text-[#ff4fd8]"
-                        : "border-[rgba(200,255,232,0.15)] text-[rgba(200,255,232,0.4)] hover:border-[rgba(255,79,216,0.3)]"
-                    }`}
+                    className={`text-xs px-2 py-0.5 rounded-[2px] border transition-all ${isSelected
+                      ? "border-[#ff4fd8] bg-[rgba(255,79,216,0.12)] text-[#ff4fd8]"
+                      : "border-[rgba(200,255,232,0.15)] text-[rgba(200,255,232,0.4)] hover:border-[rgba(255,79,216,0.3)]"
+                      }`}
                   >
                     #{tag}
                   </button>
@@ -804,6 +803,7 @@ export default function ProfilePage() {
       achievements: [],
       projects: [],
       timeline: [],
+      email: "",
     },
   });
 
@@ -862,15 +862,15 @@ export default function ProfilePage() {
         const profile = response.ok
           ? await response.json()
           : {
-              name: data.user.name,
-              email: data.user.email,
-              username: (data.user as any).username,
-              chapters: [],
-              social_links: [],
-              stats: {},
-              achievements: [],
-              projects: [],
-            };
+            name: data.user.name,
+            email: data.user.email,
+            username: (data.user as any).username,
+            chapters: [],
+            social_links: [],
+            stats: {},
+            achievements: [],
+            projects: [],
+          };
         setFullProfile(profile);
         const normalized = safeNormalizeProfile(profile);
         reset(normalized);
@@ -907,6 +907,26 @@ export default function ProfilePage() {
       const dataToSave = { ...data, social_links: cleanedLinks };
       setIsUpdating(true);
       try {
+        let emailChangeResult = "";
+        if (data.email && data.email !== originalData.email) {
+          const { error: emailError } = await authClient.changeEmail({
+            newEmail: data.email.trim(),
+            callbackURL: window.location.origin + "/profile",
+          });
+          if (emailError) {
+            toast({
+              title: "Email Update Failed",
+              description:
+                emailError.message || "Failed to initiate email change.",
+              variant: "destructive",
+            });
+            setIsUpdating(false);
+            return;
+          }
+          emailChangeResult =
+            "A verification email has been sent to your new email address. Please click the link to confirm the change.";
+        }
+
         if (stagedImageFile) {
           setIsUploading(true);
           const fd = new FormData();
@@ -916,10 +936,17 @@ export default function ProfilePage() {
             body: fd,
           });
           if (!uploadResponse.ok) {
-            const err = await uploadResponse.json();
+            let errMsg = "Upload error. Please try again later.";
+            try {
+              const err = await uploadResponse.json();
+              errMsg = err.message || errMsg;
+            } catch (jsonErr) {
+              console.error("Failed to parse upload error response JSON:", jsonErr);
+              errMsg = `Server error (${uploadResponse.status}): ${uploadResponse.statusText || "Upload rejected by gateway."}`;
+            }
             toast({
               title: "Upload Failed",
-              description: err.message || "Visual identifier update rejected.",
+              description: errMsg,
               variant: "destructive",
             });
             return;
@@ -946,22 +973,39 @@ export default function ProfilePage() {
             clearStagedImage();
             toast({
               title: "System Synced",
-              description: "Telemetry profiles updated successfully.",
+              description: emailChangeResult
+                ? `Telemetry profiles updated. ${emailChangeResult}`
+                : "Telemetry profiles updated successfully.",
               variant: "success",
+            });
+          } else {
+            console.error("Profile refresh failed with status:", refresh.status);
+            toast({
+              title: "System Synced",
+              description: "Telemetry profiles updated, but local view refresh failed. Please reload the page.",
+              variant: "destructive",
             });
           }
         } else {
-          const err = await response.json();
+          let errMsg = "Database synchronization failed.";
+          try {
+            const err = await response.json();
+            errMsg = err.message || errMsg;
+          } catch (jsonErr) {
+            console.error("Failed to parse profile error response JSON:", jsonErr);
+            errMsg = `Server error (${response.status}): ${response.statusText || "Internal Server Error"}`;
+          }
           toast({
             title: "Update Denied",
-            description: err.message || "Database synchronization failed.",
+            description: errMsg,
             variant: "destructive",
           });
         }
-      } catch {
+      } catch (err) {
+        console.error("Profile saving error:", err);
         toast({
           title: "Connection Failure",
-          description: "Network error. Database sync interrupted.",
+          description: err instanceof Error ? err.message : "Network error. Database sync interrupted.",
           variant: "destructive",
         });
       } finally {
@@ -1017,11 +1061,10 @@ export default function ProfilePage() {
         <div className="flex gap-4 items-center">
           <button
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`text-sm flex gap-2 items-center px-3 py-1 border transition-all uppercase tracking-widest ${
-              isEditMode
-                ? "bg-[#00ff9d] text-[#0d0d1a] border-[#00ff9d]"
-                : "border-[rgba(0,255,157,0.4)] text-[#00ff9d] hover:bg-[rgba(0,255,157,0.1)]"
-            }`}
+            className={`text-sm flex gap-2 items-center px-3 py-1 border transition-all uppercase tracking-widest ${isEditMode
+              ? "bg-[#00ff9d] text-[#0d0d1a] border-[#00ff9d]"
+              : "border-[rgba(0,255,157,0.4)] text-[#00ff9d] hover:bg-[rgba(0,255,157,0.1)]"
+              }`}
           >
             {isEditMode ? (
               <>
@@ -1037,9 +1080,8 @@ export default function ProfilePage() {
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className={`text-sm text-[#ff4fd8] flex gap-2 items-center border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest ${
-            isLoggingOut ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`text-sm text-[#ff4fd8] flex gap-2 items-center border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest ${isLoggingOut ? "opacity-50 cursor-not-allowed" : ""
+            }`}
         >
           {isLoggingOut ? (
             <Loader2 size={12} className="animate-spin" />
@@ -1073,11 +1115,10 @@ export default function ProfilePage() {
                 <button
                   onClick={saveProfile}
                   disabled={isUpdating || !hasChanges}
-                  className={`bg-[#00ff9d] text-[#0d0d1a] px-8 py-2 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:scale-105 transition-all ${
-                    isUpdating || !hasChanges
-                      ? "opacity-50 cursor-not-allowed shadow-none scale-100 hover:scale-100"
-                      : ""
-                  }`}
+                  className={`bg-[#00ff9d] text-[#0d0d1a] px-8 py-2 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:scale-105 transition-all ${isUpdating || !hasChanges
+                    ? "opacity-50 cursor-not-allowed shadow-none scale-100 hover:scale-100"
+                    : ""
+                    }`}
                 >
                   {isUpdating
                     ? "Synchronizing..."
@@ -1149,8 +1190,19 @@ export default function ProfilePage() {
                   publicly available. contact admins for changes.
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs uppercase flex gap-2 text-[rgba(200,255,232,0.45)] mb-1">
+                      Email <Pen size={12} className="text-[#00ff9d]" />
+                    </label>
+                    <input
+                      {...register("email")}
+                      placeholder="user@example.com"
+                      className={`w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-2 outline-none focus:border-[#00ff9d] text-[#00ff9d] transition-colors text-xs ${errCls(!!errors.email)}`}
+                    />
+                    <FieldError msg={errors.email?.message} />
+                  </div>
+
                   {[
-                    ["Email", fullProfile?.email],
                     ["USN", fullProfile?.usn || formData.usn],
                     [
                       "Phone Number",
@@ -1730,31 +1782,31 @@ export default function ProfilePage() {
                             </div>
                             {formData.timeline?.[idx]?.position !==
                               "volunteer" && (
-                              <div>
-                                <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">
-                                  Chapter
-                                </label>
-                                <Controller
-                                  control={control}
-                                  name={`timeline.${idx}.chapter`}
-                                  render={({ field }) => (
-                                    <DebouncedSelect
-                                      options={CHAPTER_OPTIONS}
-                                      value={field.value || ""}
-                                      onChange={(val) => {
-                                        field.onChange(val);
-                                        setValue(
-                                          `timeline.${idx}.chapter`,
-                                          val,
-                                          { shouldDirty: true },
-                                        );
-                                      }}
-                                      placeholder="Select chapter..."
-                                    />
-                                  )}
-                                />
-                              </div>
-                            )}
+                                <div>
+                                  <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">
+                                    Chapter
+                                  </label>
+                                  <Controller
+                                    control={control}
+                                    name={`timeline.${idx}.chapter`}
+                                    render={({ field }) => (
+                                      <DebouncedSelect
+                                        options={CHAPTER_OPTIONS}
+                                        value={field.value || ""}
+                                        onChange={(val) => {
+                                          field.onChange(val);
+                                          setValue(
+                                            `timeline.${idx}.chapter`,
+                                            val,
+                                            { shouldDirty: true },
+                                          );
+                                        }}
+                                        placeholder="Select chapter..."
+                                      />
+                                    )}
+                                  />
+                                </div>
+                              )}
                           </div>
                           <textarea
                             {...register(`timeline.${idx}.description`)}
@@ -1892,11 +1944,10 @@ export default function ProfilePage() {
       {/* Mobile sticky/fixed save bar */}
       {isEditMode && (
         <div
-          className={`md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(0,255,157,0.25)] bg-[#0d0d1a]/95 backdrop-blur-md px-4 py-4 flex items-center justify-between gap-4 transition-all duration-300 ease-in-out transform ${
-            hasChanges
-              ? "translate-y-0 opacity-100 pointer-events-auto"
-              : "translate-y-full opacity-0 pointer-events-none"
-          }`}
+          className={`md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(0,255,157,0.25)] bg-[#0d0d1a]/95 backdrop-blur-md px-4 py-4 flex items-center justify-between gap-4 transition-all duration-300 ease-in-out transform ${hasChanges
+            ? "translate-y-0 opacity-100 pointer-events-auto"
+            : "translate-y-full opacity-0 pointer-events-none"
+            }`}
         >
           <div className="flex items-center gap-2 text-xs font-mono text-[#ff4fd8] uppercase tracking-wider">
             <span className="w-2.5 h-2.5 rounded-full bg-[#ff4fd8] animate-pulse" />
