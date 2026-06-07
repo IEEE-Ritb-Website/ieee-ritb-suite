@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import fs from "fs";
+import { Chapters as CatalogChapters } from "../../../../packages/catalogues/src/chapter-data/index";
 import { DEPARTMENTS } from "../src/lib/departments";
 
 const isProd =
@@ -34,8 +35,7 @@ if (isProd) {
 console.log(`Ultimate Database Normalizer Bootstrapping in ${envMode} mode...`);
 
 const ChaptersCatalog = [
-  { name: "Computer Society", acronym: "CS" },
-  { name: "Computational Intelligence Society", acronym: "CIS" },
+  ...CatalogChapters,
   { name: "Student Branch", acronym: "SB" },
 ];
 
@@ -68,16 +68,14 @@ function normalizeChapters(rawChapters: any): any[] {
   return parsed
     .map((ch: any) => {
       const acronym =
-        typeof ch === "string"
-          ? ch.trim().toUpperCase()
-          : (ch.acronym || "").trim().toUpperCase();
+        typeof ch === "string" ? ch.trim() : (ch.acronym || "").trim();
       const pos =
         typeof ch === "string" ? "Execom" : (ch.position || "Execom").trim();
       const match = ChaptersCatalog.find(
-        (c) => c.acronym.toUpperCase() === acronym,
+        (c) => c.acronym.toLowerCase() === acronym.toLowerCase(),
       );
       return {
-        acronym,
+        acronym: match ? match.acronym : acronym,
         name: match ? match.name : acronym,
         position: pos || "Execom",
       };
