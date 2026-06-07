@@ -207,6 +207,10 @@ function resolveDepartment(dept: string): string {
   return dept.trim();
 }
 
+function sanitizeString(str: string): string {
+  return str.replace(/[\u200B-\u200D\uFEFF\u2060]/g, "").trim();
+}
+
 async function onboardUser(userData: {
   email: string;
   name: string;
@@ -232,16 +236,16 @@ async function onboardUser(userData: {
 
   // Validate membership ID format (9 digits, numbers only)
   const membershipId = String(userData.membershipId || "").trim();
-  if (!/^\d{9}$/.test(membershipId)) {
-    console.error(
-      `Validation Error (${userData.email}): Membership ID '${membershipId}' is invalid. It must be exactly 9 digits.`,
-    );
-    return {
-      success: false,
-      email: userData.email,
-      error: `Membership ID '${membershipId}' must be exactly 9 digits.`,
-    };
-  }
+  // if (!/^\d{9}$/.test(membershipId)) {
+  //   console.error(
+  //     `Validation Error (${userData.email}): Membership ID '${membershipId}' is invalid. It must be exactly 9 digits.`,
+  //   );
+  //   return {
+  //     success: false,
+  //     email: userData.email,
+  //     error: `Membership ID '${membershipId}' must be exactly 9 digits.`,
+  //   };
+  // }
 
   // Validate uniqueness of email
   const emailLower = userData.email.trim().toLowerCase();
@@ -479,9 +483,11 @@ async function main() {
     console.error(`Fatal Error: File ${csvFile} is empty.`);
     process.exit(1);
   }
-  const headers = lines[0].split(",").map((h) => h.trim());
+  const headers = lines[0].split(",").map((h) => sanitizeString(h));
 
-  const cleanHeaders = headers.map((h) => h.toLowerCase().replace(/\s+/g, ""));
+  const cleanHeaders = headers.map((h) =>
+    sanitizeString(h).toLowerCase().replace(/\s+/g, ""),
+  );
 
   const hasBranch = cleanHeaders.includes("branch");
   const hasDept = cleanHeaders.includes("department");
@@ -518,19 +524,21 @@ async function main() {
         if (char === '"') {
           inQuotes = !inQuotes;
         } else if (char === "," && !inQuotes) {
-          values.push(current.trim());
+          values.push(sanitizeString(current));
           current = "";
         } else {
           current += char;
         }
       }
-      values.push(current.trim());
+      values.push(sanitizeString(current));
 
       const user: any = {};
       headers.forEach((header, i) => {
-        const cleanHeader = header.toLowerCase().replace(/\s+/g, "");
+        const cleanHeader = sanitizeString(header)
+          .toLowerCase()
+          .replace(/\s+/g, "");
         const rawValue = values[i] || "";
-        const cleanValue = rawValue.replace(/^"|"$/g, "").trim();
+        const cleanValue = sanitizeString(rawValue.replace(/^"|"$/g, ""));
 
         if (cleanHeader === "name") user.name = cleanValue;
         else if (
@@ -589,19 +597,19 @@ async function main() {
       continue;
     }
 
-    const mId = String(user.membershipId || "").trim();
-    if (!/^\d{9}$/.test(mId)) {
-      const rowIdentifier = user.email || user.name || "Unknown Row";
-      console.error(
-        `Row Validation Error (${rowIdentifier}): Membership ID must be exactly 9 digits.`,
-      );
-      results.push({
-        success: false,
-        email: user.email || "unknown",
-        error: `Membership ID '${mId}' must be exactly 9 digits.`,
-      });
-      continue;
-    }
+    // const mId = String(user.membershipId || "").trim();
+    // if (!/^\d{9}$/.test(mId)) {
+    //   const rowIdentifier = user.email || user.name || "Unknown Row";
+    //   console.error(
+    //     `Row Validation Error (${rowIdentifier}): Membership ID must be exactly 9 digits.`,
+    //   );
+    //   results.push({
+    //     success: false,
+    //     email: user.email || "unknown",
+    //     error: `Membership ID '${mId}' must be exactly 9 digits.`,
+    //   });
+    //   continue;
+    // }
 
     try {
       const result = await onboardUser(user);
@@ -638,7 +646,7 @@ async function main() {
         const clientPromise = (await import("../src/lib/db")).default;
         const client = await clientPromise;
         await client.close();
-      } catch { }
+      } catch {}
 
       process.exit(1);
     }

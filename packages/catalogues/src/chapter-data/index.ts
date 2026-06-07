@@ -151,6 +151,17 @@ export const ChapterAcronyms = Chapters.map(c => c.acronym);
 export type IChapterNames = ChapterNameTuple;
 export type IChapterAcronyms = ChapterAcronymTuple;
 
+export const OrganizationStructure = [
+    ...Chapters,
+    {
+        name: "Student Branch",
+        acronym: "SB",
+        type: null,
+        shortDescription: "Student Branch is the coordinating authority to make sure all the chapter's ideas are valued and we live up to the IEEE values",
+        color: "#00ccff"
+    },
+];
+
 export const ChapterNameSchema = z.enum(
     Chapters.map(c => c.name)
 );

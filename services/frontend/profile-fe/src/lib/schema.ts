@@ -117,7 +117,7 @@ export const profileSchema = z.object({
   batch: z.string().optional(),
   phoneNumber: z.string().optional(),
   department: z.string().optional(),
-  email: z.string().email("Must be a valid email").optional(),
+  email: z.string().optional(),
   github_username: z.string().optional().or(z.literal("")),
   leetcode_username: z.string().optional().or(z.literal("")),
   timeline: z.array(timelineSchema).default([]),
