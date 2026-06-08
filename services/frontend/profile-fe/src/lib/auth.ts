@@ -19,23 +19,23 @@ export const auth = betterAuth({
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
       const { sendResetPasswordEmail } = await import("./email");
-      sendResetPasswordEmail({
-        email: user.email,
-        name: user.name,
-        resetUrl: url,
-      }).catch((err) => {
+      try {
+        await sendResetPasswordEmail({
+          email: user.email,
+          name: user.name,
+          resetUrl: url,
+        });
+      } catch (err) {
         console.error(
           "Failed to send password reset email to",
           user.email,
           err,
         );
-      });
+        throw err; // bubble error up so Better Auth is aware of the failure
+      }
     },
   },
   user: {
-    changeEmail: {
-      enabled: true,
-    },
     additionalFields: {
       username: {
         type: "string",

@@ -363,9 +363,7 @@ export function ProfileEditProvider({
           body: JSON.stringify(dataToSave),
         });
         if (response.ok) {
-          const refresh = await fetch(
-            `/api/profile?email=${email}`,
-          );
+          const refresh = await fetch(`/api/profile?email=${email}`);
           if (refresh.ok) {
             const updated = await refresh.json();
             const normalized = safeNormalizeProfile(updated);
@@ -429,7 +427,12 @@ export function ProfileEditProvider({
         for (const key of Object.keys(obj)) {
           const val = obj[key];
           const path = prefix ? `${prefix} → ${key}` : key;
-          if (val && typeof val === "object" && "message" in val && typeof (val as { message: unknown }).message === "string") {
+          if (
+            val &&
+            typeof val === "object" &&
+            "message" in val &&
+            typeof (val as { message: unknown }).message === "string"
+          ) {
             const msg = (val as { message: string }).message;
             const k = `${path}:${msg}`;
             if (!seen.has(k)) {
@@ -516,10 +519,10 @@ export function ProfileEditProvider({
 
   const handleChangeEmail = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newEmail || !emailPassword) {
+    if (!newEmail) {
       toast({
         title: "Validation Error",
-        description: "Both new email and password fields are required.",
+        description: "Please enter a new email address.",
         variant: "destructive",
       });
       return;
@@ -535,34 +538,30 @@ export function ProfileEditProvider({
 
     setIsChangingEmail(true);
     try {
-      const response = await fetch("/api/auth/change-email", {
+      const res = await fetch("/api/auth/change-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          newEmail: newEmail.trim(),
-          currentPassword: emailPassword,
-          callbackURL: window.location.origin + "/profile",
-        }),
+        body: JSON.stringify({ newEmail: newEmail.trim() }),
       });
+      const data = await res.json().catch(() => ({}));
 
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
+      if (!res.ok) {
         toast({
           title: "Email Change Failed",
-          description: data?.error?.message || "Failed to update email.",
+          description:
+            (data as { message?: string }).message ||
+            "Failed to send verification email.",
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Email Update Triggered",
-          description: "Email updated successfully. Re-authenticating...",
+          title: "Verification Email Sent",
+          description: `A confirmation link has been dispatched to ${newEmail.trim()}. Click it and enter your password to complete the change.`,
           variant: "success",
         });
         setNewEmail("");
         setEmailPassword("");
         setShowEmailModal(false);
-        window.location.reload();
       }
     } catch (err) {
       console.error("Change email error:", err);

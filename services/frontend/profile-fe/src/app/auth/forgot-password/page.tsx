@@ -1,22 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
 import { ScanlineOverlay } from "@/components/layout/Common";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const { toast } = useToast();
 
   const handleRequestReset = async () => {
-    if (!email || !email.includes("@")) {
+    const trimmed = identifier.trim();
+    if (!trimmed) {
       toast({
         title: "Validation Error",
-        description: "Please enter a valid system email address.",
+        description: "Please enter your email, membership ID, or username.",
         variant: "destructive",
       });
       return;
@@ -24,30 +24,43 @@ export default function ForgotPassword() {
 
     setLoading(true);
     try {
-      const { error } = await authClient.requestPasswordReset({
-        email: email.trim(),
-        redirectTo: "/auth/reset-password",
+      const res = await fetch("/api/auth/request-password-reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: trimmed,
+          redirectTo: "/auth/reset-password",
+        }),
       });
 
-      if (error) {
-        const isRateLimit =
-          error.status === 429 ||
-          error.message?.toLowerCase().includes("too many");
+      if (res.status === 429) {
         toast({
-          title: isRateLimit ? "Access Suspended" : "Transmission Failed",
-          description: isRateLimit
-            ? "You have made too many authentication attempts. Please try again later."
-            : error.message || "Could not process recovery telemetry.",
+          title: "Access Suspended",
+          description:
+            "You have made too many authentication attempts. Please try again later.",
           variant: "destructive",
         });
-      } else {
-        setSuccess(true);
-        toast({
-          title: "Recovery Sent",
-          description: "System recovery packet dispatched to your mailbox.",
-          variant: "success",
-        });
+        return;
       }
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast({
+          title: "Transmission Failed",
+          description:
+            (data as { message?: string }).message ||
+            "Could not process recovery telemetry.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setSuccess(true);
+      toast({
+        title: "Recovery Sent",
+        description: "System recovery packet dispatched to your mailbox.",
+        variant: "success",
+      });
     } catch (err: unknown) {
       console.error("Forgot password failed:", err);
       toast({
@@ -74,9 +87,13 @@ export default function ForgotPassword() {
               Recovery Packet Dispatched
             </div>
             <p className="text-sm leading-relaxed text-[rgba(200,255,232,0.7)]">
-              An encrypted link has been sent to{" "}
-              <span className="text-[#00ff9d] font-bold">{email}</span>. Click
-              the link within 1 hour to establish your new system password.
+              If an account matching{" "}
+              <span className="text-[#00ff9d] font-bold">
+                {identifier.trim()}
+              </span>{" "}
+              exists, a recovery link has been dispatched to its registered
+              mailbox. Click the link within 1 hour to establish your new system
+              password.
             </p>
             <div className="pt-4 border-t border-[rgba(0,255,157,0.1)]">
               <Link
@@ -90,19 +107,29 @@ export default function ForgotPassword() {
         ) : (
           <div className="space-y-4">
             <div>
-              <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">
-                registered system email
+              <label
+                htmlFor="identifier"
+                className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1"
+              >
+                Identifier
               </label>
               <input
-                type="email"
-                placeholder="user@gmail.com"
-                className="w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-4 py-2 text-[#c8ffe8] outline-none focus:border-[#00ff9d] transition-colors"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="identifier"
+                type="text"
+                placeholder="Enter email or membership id or username"
+                className="w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-4 py-2 text-[#c8ffe8] placeholder-[rgba(200,255,232,0.2)] outline-none focus:border-[#00ff9d] transition-colors"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleRequestReset()}
               />
+              <p className="mt-1.5 text-[10px] text-[rgba(200,255,232,0.3)] leading-relaxed">
+                Enter any of: registered email address, IEEE membership ID, or
+                your profile username.
+              </p>
             </div>
 
             <button
+              id="request-reset-btn"
               onClick={handleRequestReset}
               disabled={loading}
               className="w-full bg-[rgba(0,255,157,0.1)] border border-[#00ff9d] text-[#00ff9d] py-3 rounded uppercase tracking-widest hover:bg-[rgba(0,255,157,0.2)] transition-all disabled:opacity-50 mt-4 font-bold"

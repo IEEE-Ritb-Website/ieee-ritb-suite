@@ -139,7 +139,9 @@ export function ProjectModal({
                     key={t.value}
                     type="button"
                     onClick={() =>
-                      setValue("type", t.value as ProjectType, { shouldValidate: true })
+                      setValue("type", t.value as ProjectType, {
+                        shouldValidate: true,
+                      })
                     }
                     className={`flex items-center gap-2 px-3 py-2 rounded border text-xs transition-all ${
                       isSelected
@@ -428,10 +430,7 @@ export function EmailChangeModal() {
     setShowEmailModal,
     newEmail,
     setNewEmail,
-    emailPassword,
     setEmailPassword,
-    showEmailPassword,
-    setShowEmailPassword,
     isChangingEmail,
     handleChangeEmail,
   } = useProfileEdit();
@@ -447,49 +446,31 @@ export function EmailChangeModal() {
       title="Change Email"
     >
       <form onSubmit={handleChangeEmail} className="space-y-4">
-        <div className="grid grid-cols-1 gap-4">
-          <div>
-            <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">
-              new email address
-            </label>
-            <input
-              type="email"
-              placeholder="new-email@example.com"
-              className="w-full bg-[rgba(255,79,216,0.05)] border border-[rgba(255,79,216,0.2)] rounded px-3 py-1.5 text-sm text-[#c8ffe8] outline-none focus:border-[#ff4fd8] transition-colors font-mono"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">
-              current password
-            </label>
-            <div className="relative">
-              <input
-                type={showEmailPassword ? "text" : "password"}
-                placeholder="********"
-                className="w-full bg-[rgba(255,79,216,0.05)] border border-[rgba(255,79,216,0.2)] rounded pl-3 pr-10 py-1.5 text-sm text-[#c8ffe8] outline-none focus:border-[#ff4fd8] transition-colors"
-                value={emailPassword}
-                onChange={(e) => setEmailPassword(e.target.value)}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowEmailPassword(!showEmailPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,255,232,0.45)] hover:text-[#ff4fd8] transition-colors"
-              >
-                {showEmailPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-              </button>
-            </div>
-          </div>
+        <p className="text-xs text-[rgba(200,255,232,0.5)] uppercase tracking-wider leading-relaxed">
+          A verification link will be sent to the new address. Your email will
+          only update after you click it.
+        </p>
+        <div>
+          <label className="block text-xs uppercase tracking-wider text-[rgba(200,255,232,0.45)] mb-1">
+            new email address
+          </label>
+          <input
+            type="email"
+            placeholder="new-email@example.com"
+            className="w-full bg-[rgba(255,79,216,0.05)] border border-[rgba(255,79,216,0.2)] rounded px-3 py-1.5 text-sm text-[#c8ffe8] outline-none focus:border-[#ff4fd8] transition-colors font-mono"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            required
+          />
         </div>
         <button
           type="submit"
           disabled={isChangingEmail}
           className="w-full bg-[rgba(255,79,216,0.1)] border border-[#ff4fd8] text-[#ff4fd8] py-2 rounded uppercase tracking-widest hover:bg-[rgba(255,79,216,0.2)] transition-all disabled:opacity-50 mt-2 font-bold text-xs"
         >
-          {isChangingEmail ? "Updating Email..." : "Verify & Change Email"}
+          {isChangingEmail
+            ? "Sending Verification..."
+            : "Send Verification Link"}
         </button>
       </form>
     </Modal>

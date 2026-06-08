@@ -282,3 +282,87 @@ export async function sendResetPasswordEmail({
 
   return sendEmail({ to: email, subject, text, html });
 }
+
+/**
+ * Sends a verification email to the NEW email address when a user requests an email change.
+ * The user must click the link in this email to confirm the change.
+ */
+export async function sendEmailChangeVerificationEmail({
+  email,
+  name,
+  verificationUrl,
+}: {
+  email: string;
+  name: string;
+  verificationUrl: string;
+}) {
+  const subject = "Confirm Your New Email Address — IEEE RITB";
+  const text = `Hello ${name},\n\nA request was made to change your IEEE RITB account email to this address. Click the link below to confirm: ${verificationUrl}\n\nIf you did not request this change, you can safely ignore this email.\n\nBest regards,\nIEEE RITB Team`;
+
+  const html = `<div style="margin:0;padding:0;background-color:#f0f4f8;font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f0f4f8;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;max-width:600px;">
+
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background:#00629B;padding:40px 32px;">
+              <img
+                src="https://res.cloudinary.com/ddrv7lqrg/image/upload/v1760040051/ieee-logo-square_lzpsoz.jpg"
+                alt="IEEE RITB"
+                width="76"
+                height="76"
+                style="display:block;margin:0 auto 20px;border-radius:12px;padding:5px;background:#ffffff;"
+              />
+              <p style="margin:0 0 10px;font-size:11px;font-weight:500;letter-spacing:2px;color:#7ec8f4;text-transform:uppercase;">IEEE RITB Student Branch</p>
+              <h1 style="margin:0 0 10px;color:#ffffff;font-size:26px;font-weight:700;line-height:1.3;">Confirm Your New Email</h1>
+              <p style="margin:0;color:#b8ddf5;font-size:14px;line-height:1.6;">A verification is required to update your account email address.</p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 32px;background:#ffffff;">
+              <p style="margin:0 0 4px;font-size:13px;color:#64748b;font-weight:500;letter-spacing:0.5px;">Hello,</p>
+              <p style="margin:0 0 20px;font-size:20px;font-weight:700;color:#0f172a;">${name} 👋</p>
+              <p style="font-size:15px;line-height:1.8;color:#1e293b;margin:0 0 16px;">
+                A request was made to change your IEEE RITB account email address to <strong>${email}</strong>. To confirm this change, click the button below.
+              </p>
+              <p style="font-size:15px;line-height:1.8;color:#475569;margin:0 0 28px;">
+                If you did not request this change, you can safely ignore this email — your account remains unchanged.
+              </p>
+
+              <!-- CTA -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:32px 0;">
+                <tr>
+                  <td align="center">
+                    <a href="${verificationUrl}"
+                       style="display:inline-block;background:#00629B;color:#ffffff;text-decoration:none;padding:13px 32px;border-radius:8px;font-size:14px;font-weight:600;letter-spacing:0.3px;">
+                      Confirm Email Change &rarr;
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size:14px;line-height:1.8;color:#64748b;margin:0 0 4px;">This link is single-use and expires in 1 hour.</p>
+              <p style="font-size:14px;color:#0f172a;margin:0;font-weight:600;">— IEEE RITB Team</p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="border-top:1px solid #e2e8f0;padding:20px 32px;text-align:center;background:#f8fafc;">
+              <p style="margin:0 0 4px;font-size:12px;color:#64748b;">IEEE Ramaiah Institute of Technology Bangalore · Student Branch</p>
+              <p style="margin:0;font-size:11px;color:#94a3b8;">If you weren't expecting this email, you can safely ignore it.</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>`;
+
+  return sendEmail({ to: email, subject, text, html });
+}
