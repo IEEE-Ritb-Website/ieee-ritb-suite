@@ -88,7 +88,19 @@ export const projectSchema = z.object({
 });
 
 export const timelineSchema = z.object({
-  year: z.string().min(1, "Year is required"),
+  year: z
+    .string()
+    .min(1, "Year is required")
+    .refine(
+      (val) => {
+        const yr = parseInt(val, 10);
+        const currentYear = new Date().getFullYear();
+        return !isNaN(yr) && yr >= currentYear - 15 && yr <= currentYear;
+      },
+      {
+        message: `Year must be between ${new Date().getFullYear() - 15} and ${new Date().getFullYear()}`,
+      },
+    ),
   position: z.string().min(1, "Position is required"),
   chapter: z.string().optional().or(z.literal("")),
   description: z.string().optional().or(z.literal("")),

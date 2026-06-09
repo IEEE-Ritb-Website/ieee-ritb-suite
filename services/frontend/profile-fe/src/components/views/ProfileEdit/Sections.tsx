@@ -364,9 +364,7 @@ export function AchievementsSection() {
                   placeholder="Achievement title (e.g. 1st Place — HackMIT 2024)"
                   className={`w-full bg-transparent border-b border-[rgba(0,255,157,0.2)] outline-none text-sm text-[#c8ffe8] placeholder:text-[rgba(200,255,232,0.25)] pb-1 transition-colors ${errCls(!!errors.achievements?.[idx]?.title)}`}
                 />
-                <FieldError
-                  msg={errors.achievements?.[idx]?.title?.message}
-                />
+                <FieldError msg={errors.achievements?.[idx]?.title?.message} />
 
                 <div className="flex gap-2 flex-wrap items-center">
                   <div className="relative">
@@ -413,9 +411,7 @@ export function AchievementsSection() {
                   className={`w-full bg-transparent border-b border-[rgba(0,255,157,0.1)] py-1 outline-none focus:border-[rgba(0,255,157,0.3)] text-sm text-[rgba(200,255,232,0.6)] placeholder:text-[rgba(200,255,232,0.2)] resize-none transition-colors ${errCls(!!errors.achievements?.[idx]?.description)}`}
                 />
                 <FieldError
-                  msg={
-                    errors.achievements?.[idx]?.description?.message
-                  }
+                  msg={errors.achievements?.[idx]?.description?.message}
                 />
 
                 <input
@@ -423,9 +419,7 @@ export function AchievementsSection() {
                   placeholder="Link (certificate URL, project, etc.)"
                   className={`w-full bg-transparent border-b border-[rgba(0,255,157,0.2)] outline-none text-sm text-[rgba(200,255,232,0.6)] placeholder:text-[rgba(200,255,232,0.2)] transition-colors ${errCls(!!errors.achievements?.[idx]?.link)}`}
                 />
-                <FieldError
-                  msg={errors.achievements?.[idx]?.link?.message}
-                />
+                <FieldError msg={errors.achievements?.[idx]?.link?.message} />
               </div>
               <button
                 type="button"
@@ -656,14 +650,36 @@ export function TimelineSection() {
                     <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">
                       Year
                     </label>
-                    <input
-                      {...register(`timeline.${idx}.year`)}
-                      placeholder="e.g. 2024-25"
-                      className={`w-full bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-1.5 text-xs outline-none focus:border-[#00ff9d] text-[#00ff9d] transition-colors ${errCls(!!errors.timeline?.[idx]?.year)}`}
-                    />
-                    <FieldError
-                      msg={errors.timeline?.[idx]?.year?.message}
-                    />
+                    <div className="relative">
+                      <select
+                        {...register(`timeline.${idx}.year`)}
+                        className={`w-full appearance-none bg-[rgba(0,255,157,0.05)] border border-[rgba(0,255,157,0.2)] rounded px-3 py-1.5 pr-8 text-xs outline-none focus:border-[#00ff9d] text-[#00ff9d] transition-colors cursor-pointer ${errCls(!!errors.timeline?.[idx]?.year)}`}
+                      >
+                        <option value="" className="bg-[#0d0d1a]">
+                          Select Year
+                        </option>
+                        {(() => {
+                          const currentYear = new Date().getFullYear();
+                          const years = Array.from({ length: 16 }, (_, i) =>
+                            String(currentYear - i),
+                          );
+                          const val = formData?.timeline?.[idx]?.year;
+                          if (val && !years.includes(val)) {
+                            years.push(val);
+                          }
+                          return years.map((y) => (
+                            <option key={y} value={y} className="bg-[#0d0d1a]">
+                              {y}
+                            </option>
+                          ));
+                        })()}
+                      </select>
+                      <ChevronDown
+                        size={12}
+                        className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#00ff9d] opacity-60"
+                      />
+                    </div>
+                    <FieldError msg={errors.timeline?.[idx]?.year?.message} />
                   </div>
                   <div>
                     <label className="block text-xs text-[rgba(200,255,232,0.35)] mb-0.5">
