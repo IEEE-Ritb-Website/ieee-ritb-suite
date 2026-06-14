@@ -68,10 +68,10 @@ const MOCK_SB_OFFICERS: ITeamMember[] = [
     term: "2026-27",
   },
   {
-    username: "TheShiveshNetwork",
+    username: "whoisshivesh",
     name: "Shivesh Tiwari",
     image:
-      "https://res.cloudinary.com/ddrv7lqrg/image/upload/v1780428494/profiles/rkigmf6mrnqzlrek1ib8.jpg",
+      "https://res.cloudinary.com/ddrv7lqrg/image/upload/v1780819144/profiles/vedg8oi6xkkbdbc2ws6k.jpg",
     position: "Technical Head",
     chapter: { acronym: "SB", name: "Student Branch" },
     department: "ISE",

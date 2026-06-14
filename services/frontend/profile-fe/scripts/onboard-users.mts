@@ -243,61 +243,32 @@ async function onboardUser(userData: {
   // Validate uniqueness of email
   const emailLower = userData.email.trim().toLowerCase();
 
-  if (envMode === "development") {
-    const existingEmail = await db
-      .collection("user")
-      .findOne({ email: emailLower });
-    if (existingEmail) {
-      console.log(
-        `[DEV MODE] Email ${emailLower} already exists. Deleting user for clean onboarding...`,
-      );
-      await db.collection("user").deleteOne({ _id: existingEmail._id });
-      await db.collection("account").deleteMany({ userId: existingEmail._id });
-      await db.collection("session").deleteMany({ userId: existingEmail._id });
-      await db
-        .collection("profile")
-        .deleteMany({ userId: existingEmail._id.toString() });
-    }
-    const existingMId = await db.collection("user").findOne({ membershipId });
-    if (existingMId) {
-      console.log(
-        `[DEV MODE] Membership ID ${membershipId} already exists. Deleting user...`,
-      );
-      await db.collection("user").deleteOne({ _id: existingMId._id });
-      await db.collection("account").deleteMany({ userId: existingMId._id });
-      await db.collection("session").deleteMany({ userId: existingMId._id });
-      await db
-        .collection("profile")
-        .deleteMany({ userId: existingMId._id.toString() });
-    }
-  } else {
-    // Validate uniqueness of email in production
-    const existingEmail = await db
-      .collection("user")
-      .findOne({ email: emailLower });
-    if (existingEmail) {
-      console.error(
-        `Validation Error (${userData.email}): Email is already in use.`,
-      );
-      return {
-        success: false,
-        email: userData.email,
-        error: `Email '${userData.email}' is already in use.`,
-      };
-    }
+  // Validate uniqueness of email
+  const existingEmail = await db
+    .collection("user")
+    .findOne({ email: emailLower });
+  if (existingEmail) {
+    console.error(
+      `Validation Error (${userData.email}): Email is already in use.`,
+    );
+    return {
+      success: false,
+      email: userData.email,
+      error: `Email '${userData.email}' is already in use.`,
+    };
+  }
 
-    // Validate uniqueness of membershipId in production
-    const existingMId = await db.collection("user").findOne({ membershipId });
-    if (existingMId) {
-      console.error(
-        `Validation Error (${userData.email}): Membership ID '${membershipId}' is already in use.`,
-      );
-      return {
-        success: false,
-        email: userData.email,
-        error: `Membership ID '${membershipId}' is already in use.`,
-      };
-    }
+  // Validate uniqueness of membershipId
+  const existingMId = await db.collection("user").findOne({ membershipId });
+  if (existingMId) {
+    console.error(
+      `Validation Error (${userData.email}): Membership ID '${membershipId}' is already in use.`,
+    );
+    return {
+      success: false,
+      email: userData.email,
+      error: `Membership ID '${membershipId}' is already in use.`,
+    };
   }
 
   // Parse and normalize Year of Study with fallbacks
