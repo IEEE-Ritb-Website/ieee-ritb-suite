@@ -1,7 +1,5 @@
 
 export const IEEE_POSITIONS = [
-    { value: "volunteer", name: "Volunteer" },
-    { value: "execom", name: "Execom" },
     { value: "chair", name: "Chair" },
     { value: "secretary", name: "Secretary" },
     { value: "treasurer", name: "Treasurer" },
@@ -17,6 +15,8 @@ export const IEEE_POSITIONS = [
     { value: "vice-treasurer", name: "Vice Treasurer" },
     { value: "vice-technical-head", name: "Vice Technical Head" },
     { value: "vice-convenor", name: "Vice Convenor" },
+    { value: "execom", name: "Execom" },
+    { value: "volunteer", name: "Volunteer" },
 ] as const satisfies readonly { value: string; name: string }[];
 
 type PositionTuple = typeof IEEE_POSITIONS;
