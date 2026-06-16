@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "exports": {
-    "types": "./dist/types/index.js",
-    "client": "./dist/client/index.js"
+    "types": "./dist/types/index.js"
   },
   "scripts": {
     "build": "tsc && tsc-alias",
@@ -20,7 +19,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.12.3",
   "dependencies": {
     "dotenv": "^17.2.2",
     "cors": "^2.8.5",
@@ -29,8 +27,7 @@
     "zod": "^4.1.11",
     "astralogger": "workspace:*",
     "@astranova/catalogues": "workspace:*",
-    "mongodb": "^6.20.0",
-    "axios": "^1.13.5"
+    "mongodb": "^6.20.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",

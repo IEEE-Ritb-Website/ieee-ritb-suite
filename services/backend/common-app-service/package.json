@@ -16,7 +16,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.12.3",
   "dependencies": {
     "astralogger": "workspace:^",
     "body-parser": "^2.2.0",

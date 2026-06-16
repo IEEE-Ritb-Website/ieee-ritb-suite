@@ -1,14 +1,14 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Root Service API",
-    "version": "1.0.0",
-    "description": "Core public API microservice gateway for IEEE RIT-B Suite"
+    "title": "IEEE RIT-B Root Service",
+    "description": "Core public API microservice gateway for the IEEE Student Branch at RIT Bangalore. Provides chapter directory, user directory, and cron health-check endpoints.",
+    "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "http://localhost:3000/api",
-      "description": "Development server"
+      "url": "/api",
+      "description": "API base path"
     }
   ],
   "paths": {
@@ -17,103 +17,69 @@
         "tags": [
           "Chapters"
         ],
-        "summary": "List IEEE chapters with optional filters",
+        "summary": "List IEEE chapters",
+        "description": "Returns all IEEE chapters from the catalogue, with optional filtering by name, acronym, or type. Chapter logo URLs are generated dynamically via Cloudinary.",
         "operationId": "getChapters",
         "parameters": [
           {
-            "in": "query",
             "name": "name",
-            "required": false,
+            "in": "query",
+            "description": "Filter by chapter name (case-insensitive exact match)",
             "schema": {
               "type": "string"
-            },
-            "description": "Filter by chapter name"
+            }
           },
           {
-            "in": "query",
             "name": "acronym",
-            "required": false,
+            "in": "query",
+            "description": "Filter by chapter acronym (case-insensitive exact match)",
             "schema": {
               "type": "string"
-            },
-            "description": "Filter by chapter acronym"
+            }
           },
           {
-            "in": "query",
             "name": "type",
-            "required": false,
+            "in": "query",
+            "description": "Filter by chapter type",
             "schema": {
               "type": "string",
               "enum": [
                 "tech",
                 "non-tech"
               ]
-            },
-            "description": "Filter by chapter type"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Chapters retrieved successfully",
+            "description": "Success — list of chapters matching the filters",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "enum": [
-                        true
-                      ]
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "type": "string"
-                          },
-                          "type": {
-                            "type": "string",
-                            "enum": [
-                              "tech",
-                              "non-tech"
-                            ]
-                          },
-                          "acronym": {
-                            "type": "string"
-                          },
-                          "shortDescription": {
-                            "type": "string"
-                          },
-                          "logoUrl": {
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "name",
-                          "type",
-                          "acronym",
-                          "shortDescription",
-                          "logoUrl"
-                        ]
-                      }
-                    }
-                  },
-                  "required": [
-                    "success",
-                    "data"
-                  ]
+                  "$ref": "#/components/schemas/GetChaptersSuccessResponse"
                 }
               }
             }
           },
           "400": {
-            "$ref": "#/components/responses/ValidationError"
+            "description": "Validation error — invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "500": {
-            "$ref": "#/components/responses/FatalError"
+            "description": "Fatal internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -123,164 +89,102 @@
         "tags": [
           "Users"
         ],
-        "summary": "List users with optional filters and pagination",
+        "summary": "List IEEE users/members",
+        "description": "Returns paginated list of IEEE members for the active term. Supports filtering by chapter affiliation, position type (senior/junior/execom), or specific position title. Chapters parameter accepts a comma-separated list of chapter names or acronyms.",
         "operationId": "getUsers",
         "parameters": [
           {
-            "in": "query",
             "name": "limit",
-            "required": false,
+            "in": "query",
+            "description": "Maximum number of users to return (positive integer)",
             "schema": {
               "type": "integer",
               "minimum": 1,
               "default": 20
-            },
-            "description": "Number of users per page"
+            }
           },
           {
-            "in": "query",
             "name": "offset",
-            "required": false,
+            "in": "query",
+            "description": "Number of users to skip for pagination (non-negative integer)",
             "schema": {
               "type": "integer",
               "minimum": 0,
               "default": 0
-            },
-            "description": "Number of users to skip"
+            }
           },
           {
-            "in": "query",
             "name": "position",
-            "required": false,
+            "in": "query",
+            "description": "Filter by exact position title (case-insensitive). Ignored when onlySeniorPositions, onlyJuniorPositions, or onlyExecoms is set.",
             "schema": {
               "type": "string"
-            },
-            "description": "Filter by position title"
+            }
           },
           {
-            "in": "query",
             "name": "chapters",
-            "required": false,
+            "in": "query",
+            "description": "Comma-separated list of chapter names or acronyms to filter by. All values must correspond to valid registered chapters.",
             "schema": {
               "type": "string"
             },
-            "description": "Comma-separated list of valid chapter names or acronyms"
+            "example": "WIE,CS"
           },
           {
-            "in": "query",
             "name": "onlySeniorPositions",
-            "required": false,
+            "in": "query",
+            "description": "If true, filters for senior positions only (chair, vice-chair, secretary, treasurer, etc., excluding volunteers)",
             "schema": {
               "type": "boolean"
-            },
-            "description": "Filter to only senior position holders"
+            }
           },
           {
-            "in": "query",
             "name": "onlyJuniorPositions",
-            "required": false,
+            "in": "query",
+            "description": "If true, filters for junior/vice positions only (e.g., vice-chair, vice-secretary)",
             "schema": {
               "type": "boolean"
-            },
-            "description": "Filter to only junior position holders"
+            }
           },
           {
-            "in": "query",
             "name": "onlyExecoms",
-            "required": false,
+            "in": "query",
+            "description": "If true, filters for Execom members only",
             "schema": {
               "type": "boolean"
-            },
-            "description": "Filter to only execom members"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Users retrieved successfully",
+            "description": "Success — paginated list of users",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "enum": [
-                        true
-                      ]
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "type": "string"
-                          },
-                          "image": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "username": {
-                            "type": "string"
-                          },
-                          "chapters": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "name": {
-                                  "type": "string"
-                                },
-                                "acronym": {
-                                  "type": "string"
-                                },
-                                "position": {
-                                  "type": "string"
-                                }
-                              },
-                              "required": [
-                                "name",
-                                "acronym"
-                              ]
-                            }
-                          },
-                          "department": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "year": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "term": {
-                            "type": "string",
-                            "nullable": true
-                          }
-                        },
-                        "required": [
-                          "name",
-                          "username",
-                          "chapters"
-                        ]
-                      }
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "success",
-                    "data"
-                  ]
+                  "$ref": "#/components/schemas/GetUsersSuccessResponse"
                 }
               }
             }
           },
           "400": {
-            "$ref": "#/components/responses/ValidationError"
+            "description": "Validation error — invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "500": {
-            "$ref": "#/components/responses/FatalError"
+            "description": "Fatal internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -291,11 +195,17 @@
           "System"
         ],
         "summary": "Cron job health-check endpoint",
+        "description": "Secured endpoint designed to be triggered by cron-job.org. Requires the x-cron-secret header to match the server's CRON_SECRET environment variable. Returns a timestamp and success message on valid invocation.",
         "operationId": "cronHandler",
-        "parameters": [],
-        "security": [
+        "parameters": [
           {
-            "CronSecret": []
+            "name": "x-cron-secret",
+            "in": "header",
+            "description": "Secret key for authenticating cron job requests. Must match the CRON_SECRET configured on the server.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -304,74 +214,43 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "enum": [
-                        true
-                      ]
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "timestamp": {
-                          "type": "string"
-                        },
-                        "message": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "timestamp",
-                        "message"
-                      ]
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "success",
-                    "data",
-                    "message"
-                  ]
+                  "$ref": "#/components/schemas/CronSuccessResponse"
                 }
               }
             }
           },
           "401": {
-            "$ref": "#/components/responses/UnauthorizedError"
+            "description": "Unauthorized — invalid or missing x-cron-secret header",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
           "500": {
-            "$ref": "#/components/responses/FatalError"
+            "description": "Fatal internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     }
   },
   "components": {
-    "securitySchemes": {
-      "CronSecret": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-cron-secret",
-        "description": "Cron job secret for securing /api/cron endpoint"
-      }
-    },
     "schemas": {
-      "ErrorType": {
-        "type": "string",
-        "enum": [
-          "validation",
-          "not_found",
-          "unauthorized",
-          "forbidden",
-          "fatal"
-        ]
-      },
       "ErrorResponse": {
         "type": "object",
+        "required": [
+          "success",
+          "error"
+        ],
         "properties": {
           "success": {
             "type": "boolean",
@@ -381,55 +260,209 @@
           },
           "error": {
             "type": "object",
+            "required": [
+              "type",
+              "message"
+            ],
             "properties": {
               "type": {
-                "$ref": "#/components/schemas/ErrorType"
+                "type": "string",
+                "enum": [
+                  "validation",
+                  "not_found",
+                  "unauthorized",
+                  "forbidden",
+                  "fatal"
+                ]
               },
               "message": {
                 "type": "string"
               },
-              "details": {}
-            },
-            "required": [
-              "type",
-              "message"
-            ]
+              "details": {
+                "description": "Optional additional error details",
+                "nullable": true
+              }
+            }
           }
-        },
+        }
+      },
+      "Chapter": {
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "acronym",
+          "shortDescription",
+          "logoUrl"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full name of the IEEE chapter"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "tech",
+              "non-tech"
+            ],
+            "description": "Chapter classification (technical or non-technical)"
+          },
+          "acronym": {
+            "type": "string",
+            "description": "Short acronym identifier for the chapter"
+          },
+          "shortDescription": {
+            "type": "string",
+            "description": "Brief description of the chapter's focus"
+          },
+          "logoUrl": {
+            "type": "string",
+            "description": "Cloudinary URL for the chapter's logo image"
+          }
+        }
+      },
+      "GetChaptersSuccessResponse": {
+        "type": "object",
         "required": [
           "success",
-          "error"
-        ]
-      }
-    },
-    "responses": {
-      "ValidationError": {
-        "description": "Request validation failed",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
+          "data"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Chapter"
             }
           }
         }
       },
-      "UnauthorizedError": {
-        "description": "Invalid or missing cron secret",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
-            }
+      "UserChapter": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the chapter the user belongs to"
+          },
+          "acronym": {
+            "type": "string",
+            "description": "Acronym of the chapter"
+          },
+          "position": {
+            "type": "string",
+            "description": "User's position/title within the chapter"
           }
         }
       },
-      "FatalError": {
-        "description": "Internal server error",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/ErrorResponse"
+      "User": {
+        "type": "object",
+        "required": [
+          "name",
+          "username",
+          "chapters"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full name of the user"
+          },
+          "image": {
+            "type": "string",
+            "nullable": true,
+            "description": "URL to the user's profile image"
+          },
+          "username": {
+            "type": "string",
+            "description": "Unique username identifier"
+          },
+          "chapters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserChapter"
             }
+          },
+          "department": {
+            "type": "string",
+            "nullable": true,
+            "description": "Academic department"
+          },
+          "year": {
+            "type": "string",
+            "nullable": true,
+            "description": "Current academic year"
+          },
+          "term": {
+            "type": "string",
+            "nullable": true,
+            "description": "Active term identifier (e.g. '2026-27')"
+          }
+        }
+      },
+      "GetUsersSuccessResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "data"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Optional user-facing message"
+          }
+        }
+      },
+      "CronSuccessResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "data",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "data": {
+            "type": "object",
+            "required": [
+              "timestamp",
+              "message"
+            ],
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "description": "ISO 8601 timestamp of cron execution"
+              },
+              "message": {
+                "type": "string",
+                "description": "Status message confirming execution"
+              }
+            }
+          },
+          "message": {
+            "type": "string",
+            "description": "Top-level response message"
           }
         }
       }

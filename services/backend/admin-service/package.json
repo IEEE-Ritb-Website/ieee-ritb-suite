@@ -21,7 +21,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.12.3",
   "dependencies": {
     "@astranova/catalogues": "workspace:*",
     "astralogger": "workspace:*",
