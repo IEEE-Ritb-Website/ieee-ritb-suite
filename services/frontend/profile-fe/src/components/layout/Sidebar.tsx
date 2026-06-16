@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { AvatarFrame } from './Common';
 import { ChapterChip, LinkItem, Modal } from '../ui';
+import { ShareProfileModal } from '../ui/ShareProfileModal';
 import { ExternalIcon } from '../icons';
 import { Chapters as CatalogChapters, OrganizationStructure } from "@astranova/catalogues";
-import { useToast } from '../ui/use-toast';
 import { Share2 } from 'lucide-react';
 
 
@@ -30,28 +30,11 @@ interface SidebarProps {
 const Chapters = OrganizationStructure;
 
 export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: SidebarProps) => {
-  const { toast } = useToast();
+  const [showShareModal, setShowShareModal] = useState(false);
   const [activeChapterDetails, setActiveChapterDetails] = useState<any>(null);
 
   const handleShare = () => {
-    if (typeof window !== "undefined" && user.username) {
-      const shareUrl = `${window.location.origin}/${user.username}`;
-      navigator.clipboard.writeText(shareUrl)
-        .then(() => {
-          toast({
-            title: "Link Copied",
-            description: "System registry link copied to clipboard.",
-            variant: "success",
-          });
-        })
-        .catch(() => {
-          toast({
-            title: "Transfer Failed",
-            description: "Failed to write registry link to clipboard.",
-            variant: "destructive",
-          });
-        });
-    }
+    setShowShareModal(true);
   };
 
   const safeParseChapters = (chVal: any) => {
@@ -194,6 +177,13 @@ export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: Sideb
           </div>
         </Modal>
       )}
+
+      <ShareProfileModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        username={user.username || ""}
+        name={user.name || "User"}
+      />
     </aside>
   );
 };
