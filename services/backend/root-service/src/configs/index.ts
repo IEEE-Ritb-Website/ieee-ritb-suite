@@ -1,14 +1,15 @@
+import { isProduction } from "astranova-core/node";
 import { ICONFIG } from "@/types";
 
-const SERVER_PORT = 3000;
+const SERVER_PORT = 3002;
 
 export const CONFIG: ICONFIG = {
     database: {
-        name: process.env.NODE_ENV === "production" ? "astranova" : "test",
+        name: isProduction() ? "astranova" : "test",
     },
     server: {
         port: SERVER_PORT,
-        name: "Root " + (process.env.NODE_ENV || "development"),
+        name: "Root " + (isProduction() ? "production" : "development"),
     },
     cronSecret: process.env.CRON_SECRET || "",
 };

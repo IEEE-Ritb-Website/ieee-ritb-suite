@@ -1,0 +1,5 @@
+{
+  "name": "astranova-core/node",
+  "types": "../dist/node.d.ts",
+  "main": "../dist/node.js"
+}

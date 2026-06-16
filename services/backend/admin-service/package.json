@@ -24,6 +24,7 @@
   "dependencies": {
     "@astranova/catalogues": "workspace:*",
     "astralogger": "workspace:*",
+    "astranova-core": "workspace:*",
     "better-auth": "^1.3.13",
     "body-parser": "^2.2.0",
     "cloudinary": "^2.9.0",

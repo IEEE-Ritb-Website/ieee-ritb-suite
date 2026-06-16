@@ -20,7 +20,7 @@ export const getUsers =
     return response.data;
   };
 
-export const createClient = (baseURL: string) => {
+export const createRootServiceAPIClient = (baseURL: string) => {
   const api = API(baseURL);
 
   return {

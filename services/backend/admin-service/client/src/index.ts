@@ -70,7 +70,7 @@ export const signIn =
     return response.data;
   };
 
-export const createClient = (baseURL: string) => {
+export const createAdminServiceAPIClient = (baseURL: string) => {
   const api = API(baseURL);
 
   return {

@@ -17,6 +17,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "astralogger": "workspace:*",
+    "astranova-core": "workspace:*",
+    "@astranova/catalogues": "workspace:*",
     "cors": "^2.8.5",
     "body-parser": "^2.2.0",
     "dotenv": "^17.2.3",

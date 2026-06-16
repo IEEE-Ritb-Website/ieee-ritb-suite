@@ -1,0 +1,5 @@
+{
+  "admin-service": "https://ieee-ritb-admin-service.onrender.com",
+  "common-app-service": "https://apps-ritb.onrender.com",
+  "root-service": "https://ieee-ritb-root-service.onrender.com"
+}

@@ -1,4 +1,5 @@
 import { MongoClient } from "mongodb";
+import { isProduction } from "astranova-core";
 
 if (!process.env.MONGODB_URL) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URL"');
@@ -10,7 +11,7 @@ const options = {};
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
-if (process.env.NODE_ENV === "development") {
+if (!isProduction()) {
   // In development mode, use a global variable so that the value
   // is preserved across module reloads caused by HMR (Hot Module Replacement).
   let globalWithMongo = global as typeof globalThis & {
@@ -32,7 +33,7 @@ if (process.env.NODE_ENV === "development") {
  * Helper to get the database name based on environment
  */
 export const getDbName = () => {
-    return process.env.NODE_ENV === "production" ? "astranova" : "test";
+    return isProduction() ? "astranova" : "test";
 };
 
 /**

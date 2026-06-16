@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
-import { exec } from "child_process";
+import { exec, execSync } from "child_process";
 import chalk from "chalk";
 import { StepLogger } from "../step-logger.js";
+import { getMonorepoRoot, detectServicePort } from "../helper.js";
 
 function walkDir(dir: string, fileList: string[] = []): string[] {
     if (!fs.existsSync(dir)) return fileList;
@@ -552,6 +553,243 @@ function findRouteCallEnd(content: string, matchIndex: number): number {
 }
 
 
+function syncSharedClients(monorepoRoot: string) {
+    const sharedClientsDir = path.join(monorepoRoot, "shared-clients");
+    const sharedClientsSrcDir = path.join(sharedClientsDir, "src");
+
+    if (!fs.existsSync(sharedClientsSrcDir)) {
+        fs.mkdirSync(sharedClientsSrcDir, { recursive: true });
+    }
+
+    const backendDir = path.join(monorepoRoot, "services", "backend");
+    if (!fs.existsSync(backendDir)) return;
+
+    const subdirs = fs.readdirSync(backendDir);
+    const clients: {
+        serviceFolder: string;
+        pkgName: string;
+        pascalName: string;
+        factoryName: string;
+        clientName: string;
+    }[] = [];
+
+    for (const dir of subdirs) {
+        const clientDir = path.join(backendDir, dir, "client");
+        if (fs.existsSync(clientDir) && fs.statSync(clientDir).isDirectory()) {
+            const pkgPath = path.join(clientDir, "package.json");
+            if (fs.existsSync(pkgPath)) {
+                try {
+                    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+                    const pkgName = pkg.name;
+                    if (pkgName) {
+                        const pascalName = dir
+                            .split("-")
+                            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join("");
+                        
+                        const factoryName = `create${pascalName}APIClient`;
+                        const clientName = `${pascalName}APIClient`;
+
+                        clients.push({
+                            serviceFolder: dir,
+                            pkgName,
+                            pascalName,
+                            factoryName,
+                            clientName
+                        });
+                    }
+                } catch (e) {}
+            }
+        }
+    }
+
+    // Read and merge config from shared-clients directory
+    const configPath = path.join(sharedClientsDir, "client-config.json");
+    let rawConfig: Record<string, any> = {};
+    if (fs.existsSync(configPath)) {
+        try {
+            rawConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+        } catch (e) {}
+    }
+
+    let configObj: Record<string, string> = {};
+    let configChanged = false;
+
+    // Convert old nested structure if present, or copy flat keys
+    for (const key of Object.keys(rawConfig)) {
+        if (rawConfig[key] && typeof rawConfig[key] === "object") {
+            configObj[key] = rawConfig[key].production || "";
+            configChanged = true;
+        } else if (typeof rawConfig[key] === "string") {
+            configObj[key] = rawConfig[key];
+        }
+    }
+
+    for (const client of clients) {
+        if (!configObj[client.serviceFolder]) {
+            const prodUrl = client.serviceFolder === "common-app-service"
+                ? "https://apps-ritb.onrender.com"
+                : client.serviceFolder === "root-service"
+                ? "https://ieee-ritb-root-service.onrender.com"
+                : `https://ieee-ritb-${client.serviceFolder.replace("-service", "")}-service.onrender.com`;
+            
+            configObj[client.serviceFolder] = prodUrl;
+            configChanged = true;
+        }
+    }
+
+    if (configChanged) {
+        fs.writeFileSync(configPath, JSON.stringify(configObj, null, 2), "utf-8");
+    }
+
+    const dependencies: Record<string, string> = {
+        "astranova-core": "workspace:*"
+    };
+    for (const client of clients) {
+        dependencies[client.pkgName] = "workspace:*";
+    }
+
+    const packageJsonContent = {
+        name: "shared-clients",
+        version: "1.0.0",
+        description: "Unified client singletons for frontends",
+        main: "dist/index.js",
+        types: "dist/index.d.ts",
+        exports: {
+            ".": "./dist/index.js"
+        },
+        scripts: {
+            build: "tsc",
+            clean: "rm -rf dist"
+        },
+        dependencies,
+        devDependencies: {
+            typescript: "^5.8.3"
+        }
+    };
+
+    fs.writeFileSync(
+        path.join(sharedClientsDir, "package.json"),
+        JSON.stringify(packageJsonContent, null, 2),
+        "utf-8"
+    );
+
+    const tsconfigContent = {
+        extends: "../tsconfig.base.json",
+        compilerOptions: {
+            target: "ES2022",
+            module: "ESNext",
+            moduleResolution: "bundler",
+            declaration: true,
+            outDir: "dist",
+            strict: true,
+            esModuleInterop: true,
+            resolveJsonModule: true
+        },
+        include: ["src"],
+        exclude: ["node_modules", "dist", "build"]
+    };
+
+    fs.writeFileSync(
+        path.join(sharedClientsDir, "tsconfig.json"),
+        JSON.stringify(tsconfigContent, null, 4),
+        "utf-8"
+    );
+
+    let indexCode = "";
+    indexCode += `import { isProduction } from "astranova-core";\n`;
+    for (const client of clients) {
+        indexCode += `import { ${client.factoryName} } from "${client.pkgName}";\n`;
+    }
+    indexCode += "\n";
+
+    indexCode += "export const CLIENT_CONFIG: Record<string, { production: string; development: string }> = {\n";
+    for (const client of clients) {
+        const detectedPort = detectServicePort(path.join(monorepoRoot, "services", "backend", client.serviceFolder));
+        const prodUrl = configObj[client.serviceFolder] || "";
+        indexCode += `  "${client.serviceFolder}": {\n`;
+        indexCode += `    production: "${prodUrl}",\n`;
+        indexCode += `    development: "http://localhost:${detectedPort}"\n`;
+        indexCode += "  },\n";
+    }
+    indexCode += "};\n\n";
+
+    indexCode += `const isProd = isProduction();\n\n`;
+
+    indexCode += `function logConnectionWarning(serviceFolder: string, url: string) {
+  if (isProd) return;
+
+  if (typeof window !== "undefined") {
+    console.error(
+      \`%c[Astranova Client] Warning: Local server for "\${serviceFolder}" is not running at \${url}.\\n\` +
+      \`Please start the backend service using:\\n\` +
+      \`  pnpm --filter \${serviceFolder} dev\\n\` +
+      \`or run the monorepo dev orchestrator.\`,
+      "color: #ff3333; font-weight: bold; font-size: 12px; padding: 4px; border: 1px solid #ff3333; border-radius: 4px;"
+    );
+  } else {
+    console.warn(
+      \`\\x1b[33m[Astranova Client] Warning: Local server for "\${serviceFolder}" is not running at \${url}.\\x1b[0m\\n\` +
+      \`Please start the backend service using:\\n\` +
+      \`  pnpm --filter \${serviceFolder} dev\\n\` +
+      \`or run the monorepo dev orchestrator.\\n\`
+    );
+  }
+}
+
+function wrapClientWithConnectionCheck<T extends Record<string, any>>(
+  client: T,
+  serviceFolder: string,
+  url: string
+): T {
+  const wrapped: Record<string, any> = {};
+  for (const [key, val] of Object.entries(client)) {
+    if (typeof val === "function") {
+      wrapped[key] = async (...args: any[]) => {
+        try {
+          return await val(...args);
+        } catch (error: any) {
+          if (
+            error &&
+            (error.code === "ERR_NETWORK" ||
+              error.code === "ECONNREFUSED" ||
+              error.message === "Network Error" ||
+              !error.response)
+          ) {
+            logConnectionWarning(serviceFolder, url);
+          }
+          throw error;
+        }
+      };
+    } else {
+      wrapped[key] = val;
+    }
+  }
+  return wrapped as T;
+}\n\n`;
+
+    for (const client of clients) {
+        const urlVarName = `${client.serviceFolder.replace(/-service$/, "").replace(/-([a-z])/g, (g) => g[1].toUpperCase())}Url`;
+        indexCode += `const ${urlVarName} = isProd\n`;
+        indexCode += `  ? CLIENT_CONFIG["${client.serviceFolder}"].production\n`;
+        indexCode += `  : CLIENT_CONFIG["${client.serviceFolder}"].development;\n\n`;
+        indexCode += `export const ${client.clientName} = wrapClientWithConnectionCheck(${client.factoryName}(${urlVarName}), "${client.serviceFolder}", ${urlVarName});\n`;
+        const aliasName = client.clientName.replace("APIClient", "Client");
+        if (aliasName !== client.clientName) {
+            indexCode += `export const ${aliasName} = ${client.clientName};\n`;
+        }
+        indexCode += "\n";
+    }
+
+
+    fs.writeFileSync(path.join(sharedClientsSrcDir, "index.ts"), indexCode, "utf-8");
+
+    try {
+        execSync("pnpm prettier --write shared-clients/src", { cwd: monorepoRoot });
+    } catch (e) {}
+}
+
+
 export async function runGenerateClient() {
     const serviceRoot = process.cwd();
     const routesDir = path.join(serviceRoot, "src", "routes");
@@ -920,6 +1158,11 @@ export async function runGenerateClient() {
         }
         fs.writeFileSync(path.join(clientSrcDir, "types.ts"), typesCode, "utf-8");
 
+        const pascalServiceName = serviceFolder
+            .split("-")
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join("");
+
         let indexCode = `import { AxiosInstance } from "axios";\nimport { API } from "./api";\n`;
         let hasTypes = false;
         let methodsCode = "";
@@ -939,7 +1182,7 @@ export async function runGenerateClient() {
         }
 
         indexCode += methodsCode;
-        indexCode += `export const createClient = (baseURL: string) => {\n  const api = API(baseURL);\n\n  return {\n`;
+        indexCode += `export const create${pascalServiceName}APIClient = (baseURL: string) => {\n  const api = API(baseURL);\n\n  return {\n`;
         for (const route of routesList) {
             indexCode += `    ${route.methodName}: ${route.methodName}(api),\n`;
         }
@@ -966,14 +1209,10 @@ export async function runGenerateClient() {
 
         logger.startNextStep(); // step 4: Synchronize workspace package dependencies
 
-        let monorepoRoot = serviceRoot;
-        while (monorepoRoot && !fs.existsSync(path.join(monorepoRoot, "pnpm-workspace.yaml"))) {
-            const parent = path.dirname(monorepoRoot);
-            if (parent === monorepoRoot) break;
-            monorepoRoot = parent;
-        }
+        const monorepoRoot = getMonorepoRoot();
 
         try {
+            syncSharedClients(monorepoRoot);
             await execCommandAsync("pnpm install", monorepoRoot);
         } catch (err: any) {
             logger.failStep(err.message);

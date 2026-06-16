@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { runCreateBE } from "./commands/create-express.js";
 import { runCreateFE } from "./commands/create-react.js";
+import { runCreateNextFE } from "./commands/create-next.js";
 import { runGenerateClient } from "./commands/generate-client.js";
 import { runGenerateDocs } from "./commands/generate-docs.js";
 import { askProjectName } from "./helper.js";
@@ -34,6 +35,13 @@ async function main() {
             await runCreateFE(projectName);
             break;
 
+        case "create-next":
+            if (!projectName) {
+                projectName = await askProjectName();
+            }
+            await runCreateNextFE(projectName);
+            break;
+
         case "generate-client":
             await runGenerateClient();
             break;
@@ -43,7 +51,7 @@ async function main() {
             break;
 
         default:
-            console.log("No such methods defined. Available methods: create-be, create-fe, generate-client, generate-docs");
+            console.log("No such methods defined. Available methods: create-be, create-fe, create-next, generate-client, generate-docs");
             process.exit(1);
     }
 }

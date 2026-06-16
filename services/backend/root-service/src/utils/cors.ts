@@ -1,9 +1,11 @@
 import { CorsOptions } from "cors";
 
+import { isProduction } from "astranova-core/node";
+
 export const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     // In development, allow all origins by reflecting the requesting origin
-    if (process.env.NODE_ENV !== "production") {
+    if (!isProduction()) {
       callback(null, true);
       return;
     }

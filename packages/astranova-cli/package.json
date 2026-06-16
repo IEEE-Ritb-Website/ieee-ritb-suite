@@ -15,6 +15,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "astranova-core": "workspace:*"
+  },
   "devDependencies": {
     "@mrknown404/create-express-app": "^1.0.15",
     "astranova-ai": "workspace:*",

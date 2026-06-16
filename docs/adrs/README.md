@@ -15,3 +15,4 @@ Each ADR describes a decision, its context, the options considered, and the rati
 | [0005](./0005-cron-jobs.md) | Cron Jobs for Backend Services | Why cron jobs are used (Render free tier constraints) |
 | [0006](./0006-ci-cd-deployment.md) | CI/CD and Deployment Strategy | Deployment targets and pipeline choices |
 | [0007](./0007-client-sdk-pattern.md) | Client SDK Pattern | Typed API client packages co-located with backend services |
+| [0008](./0008-centralized-clients-and-core-split.md) | Centralized Clients & Core Split | Instantiated client singletons in shared-clients and astranova-core entrypoints |

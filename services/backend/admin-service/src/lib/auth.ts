@@ -5,6 +5,7 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { fromNodeHeaders } from "better-auth/node";
 import { admin, organization } from "better-auth/plugins";
 import { Request } from "express";
+import { getAstraLogger } from "astralogger";
 import { member, orgAdmin, rootAdmin } from "./auth/permissions";
 
 // REFERENCE: https://www.better-auth.com/docs/plugins/admin
@@ -27,7 +28,7 @@ export const auth = betterAuth({
                 return user.role === "rootAdmin";   // Only allow the root admins to create organizations
             },
             sendInvitationEmail: async (data) => {
-                console.log(`Sending invitation to ${data.email} for organization: ${data.organization.name}`);
+                getAstraLogger().info(`Sending invitation to ${data.email} for organization: ${data.organization.name}`);
             },
             roles: {
                 member,
