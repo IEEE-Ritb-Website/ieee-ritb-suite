@@ -15,22 +15,7 @@
 
 <br/>
 
-**🎯 18 IEEE Chapters** &nbsp;•&nbsp; **🏗️ Nx-Orchestrated** &nbsp;•&nbsp; **⚡ TypeScript-First** &nbsp;•&nbsp; **🎨 React 19 + Tailwind v4**
-
-<br/>
-
-<p align="center">
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-architecture">Architecture</a> •
-  <a href="#-tech-stack">Tech Stack</a> •
-  <a href="#-features">Features</a> •
-  <a href="#-architecture-decision-records">ADRs</a> •
-  <a href="#-contributing">Contributing</a>
-</p>
-
 </div>
-
----
 
 ## 📋 Table of Contents
 
@@ -45,7 +30,22 @@
 - [🤝 Contributing](#-contributing)
 - [📞 Contact](#-contact)
 
----
+<br/>
+
+## 🤖 Agentic Development Setup
+
+> **IMPORTANT:** Developers are strongly encouraged to use these commands to spin up their own local agentic development environment for this project. This is the recommended approach for any sort of agentic development work within the monorepo.
+
+| Command | Description |
+|---------|-------------|
+| `pnpm ai` | Starts/detects the server and opens the browser to the latest session |
+| `pnpm ai --fresh` | Starts a fresh browser session |
+| `pnpm ai "your prompt"` | Runs prompt asynchronously in the Web UI, continuing the last session |
+| `pnpm ai --tui "your prompt"` | Runs prompt in the Terminal UI |
+| `pnpm ai --native "your prompt"` | Runs prompt synchronously in the terminal |
+| `pnpm ai --help` | Shows all available flags and options |
+
+<br/>
 
 ## 🚀 Quick Start
 
@@ -157,7 +157,7 @@ pnpm dev
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
----
+<br/>
 
 ## 🏛️ Architecture
 
@@ -165,24 +165,31 @@ pnpm dev
 
 ```mermaid
 graph TB
-    subgraph Packages["📦 Shared Packages"]
+    subgraph Packages["📦 Packages"]
         AL["🔊 astralogger<br/><i>Pino Logger</i>"]
         CLI["⚙️ astranova-cli<br/><i>Scaffolding Tool</i>"]
+        AI["🤖 astranova-ai<br/><i>AI Assistant</i>"]
         CAT["📚 catalogues<br/><i>Chapter Registry</i>"]
     end
 
     subgraph Backend["🖥️ Backend Services"]
-        ROOT["🌐 root-service<br/><i>Main API</i>"]
-        ADMIN["🔐 admin-service<br/><i>Auth & Admin</i>"]
-        URL["🔗 url-shortener<br/><i>Link Service</i>"]
-        COMMON["🛠️ common-app<br/><i>Tools Backend</i>"]
+        ROOT["🌐 root-service<br/><i>Core API</i>"]
+        ADMIN["🔐 admin-service<br/><i>Auth & User Admin</i>"]
+        COMMON["🛠️ common-app-service<br/><i>Tools & URL Shortener</i>"]
+        FORM["📋 form-service<br/><i>Forms & Registration</i>"]
+    end
+
+    subgraph Clients["🔌 Client SDKs"]
+        RC["@astranova/root-client"]
+        AC["@astranova/admin-client"]
+        CC["@astranova/common-app-client"]
     end
 
     subgraph Frontend["🎨 Frontend Apps"]
-        LAND["🏠 landing-fe<br/><i>Three.js Landing</i>"]
+        LAND["🏠 landing-fe<br/><i>3D Landing Page</i>"]
         LINKS["📋 ieee-links<br/><i>Chapter Showcase</i>"]
         TOOLS["🧰 common-app-fe<br/><i>Dev Tools</i>"]
-        IND["🏭 industry-conclave<br/><i>Event Site</i>"]
+        PROFILE["👤 profile-fe<br/><i>User Dashboard</i>"]
     end
 
     subgraph Docs["📖 Documentation"]
@@ -191,8 +198,13 @@ graph TB
 
     Packages --> Backend
     Packages --> Frontend
-    ADMIN -.->|"auth-client"| ROOT
-    ADMIN -.->|"auth-client"| URL
+
+    ROOT --> RC
+    ADMIN --> AC
+    COMMON --> CC
+
+    RC --> LAND
+    CC --> TOOLS
 ```
 
 ### Directory Structure
@@ -203,21 +215,22 @@ ieee-ritb-suite/
 ├── 📦 packages/                      # Shared libraries
 │   ├── 🔊 astralogger/              # Pino-based logging utility
 │   ├── ⚙️ astranova-cli/            # Custom scaffolding CLI
+│   ├── 🤖 astranova-ai/             # Just runs OpenCode
 │   └── 📚 catalogues/               # IEEE chapter data registry (18 chapters)
 │
 ├── 🔧 services/
 │   │
 │   ├── 🖥️ backend/                  # Express.js microservices
-│   │   ├── 🔐 admin-service/        # Authentication (better-auth)
-│   │   ├── 🌐 root-service/         # Main API server
-│   │   ├── 🛠️ common-app-service/   # Tools backend
-│   │   └── 🔗 url-shortener-service/
+│   │   ├── 🔐 admin-service/        # Auth & user administration
+│   │   ├── 🌐 root-service/         # Core public API
+│   │   ├── 🛠️ common-app-service/   # Dev tools backend & URL shortener
+│   │   └── 📋 form-service/         # Forms & event registration
 │   │
-│   └── 🎨 frontend/                 # Vite + React applications
-│       ├── 🏠 landing-fe/           # Main landing (Three.js 3D)
+│   └── 🎨 frontend/                 # Vite + React frontends
+│       ├── 🏠 landing-fe/           # 3D landing page
 │       ├── 🧰 common-app-fe/        # Developer tools dashboard
-│       ├── 📋 ieee-links/           # Chapter showcase
-│       └── 🏭 industry-conclave-fe/
+│       ├── 📋 ieee-links/           # Chapter link showcase
+│       └── 👤 profile-fe/           # Next.js user dashboard
 │
 ├── 📖 docs/
 │   └── 📝 adrs/                     # Architecture Decision Records
@@ -227,7 +240,7 @@ ieee-ritb-suite/
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
----
+<br/>
 
 ## ✨ Features
 
@@ -314,7 +327,7 @@ Stunning Three.js + React Three Fiber powered landing with WebGL effects
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
----
+<br/>
 
 ## 📖 Architecture Decision Records
 
@@ -335,7 +348,7 @@ Architecture Decision Records (ADRs) are lightweight documents that capture impo
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
----
+<br/>
 
 ## ⚡ Tech Stack
 
@@ -380,7 +393,7 @@ Architecture Decision Records (ADRs) are lightweight documents that capture impo
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
----
+<br/>
 
 ## 🛠️ Commands
 
@@ -447,7 +460,7 @@ cd services/frontend/<app-name>
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
----
+<br/>
 
 ## 📦 Packages & Services
 
@@ -464,23 +477,23 @@ cd services/frontend/<app-name>
 
 | App | Description | Key Technologies |
 |-----|-------------|------------------|
-| **🏠 landing-fe** | Main landing page | Three.js, React Three Fiber, WebGL |
+| **🏠 landing-fe** | 3D landing page | Three.js, React Three Fiber, Lenis |
 | **🧰 common-app-fe** | Developer tools dashboard | Radix UI, React Router, UUID/JSON/Hash generators |
-| **📋 ieee-links** | Chapter information showcase | Framer Motion animations |
-| **🏭 industry-conclave-fe** | Event site | React Router, Radix UI, CVA styling |
+| **📋 ieee-links** | Chapter link showcase | Framer Motion |
+| **👤 profile-fe** | User dashboard & auth | Next.js 16, better-auth |
 
 ### Backend Services
 
 | Service | Description | Key Features |
 |---------|-------------|--------------|
-| **🔐 admin-service** | Authentication & admin | better-auth, exports auth-client |
-| **🌐 root-service** | Main API server | Express v5, MongoDB |
-| **🛠️ common-app-service** | Tools backend | REST APIs for dev tools |
-| **🔗 url-shortener-service** | URL shortening | Link management, analytics |
+| **🔐 admin-service** | Auth & user admin | better-auth, Cloudinary, exports auth-client |
+| **🌐 root-service** | Core public API | Express v5, MongoDB, chapter catalogues |
+| **🛠️ common-app-service** | Dev tools backend & URL shortener | REST APIs, ritb.in short URLs, cron endpoint |
+| **📋 form-service** | Forms & event registration | Zod validation, MongoDB |
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
----
+<br/>
 
 ## 📊 Project Statistics
 
@@ -488,28 +501,12 @@ cd services/frontend/<app-name>
 
 | Metric | Count |
 |:------:|:-----:|
-| 📦 **Shared Packages** | 3 |
+| 📦 **Shared Packages** | 4 |
 | 🖥️ **Backend Services** | 4 |
 | 🎨 **Frontend Apps** | 4 |
-| 🎯 **IEEE Chapters** | 18 |
 | 📖 **ADR Documents** | 6 |
 
 </div>
-
-### Chapter Breakdown
-
-```
-┌─────────────────────────────────────────────┐
-│  📊 IEEE Chapters                           │
-├─────────────────────────────────────────────┤
-│  🔬 Technical Chapters      ████████████ 12 │
-│  🎨 Non-Technical Chapters  ██████       6  │
-└─────────────────────────────────────────────┘
-```
-
-<p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
-
----
 
 ## 🤝 Contributing
 
@@ -550,7 +547,7 @@ We welcome contributions! Here's how to get started:
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
----
+<br/>
 
 ## 📞 Contact
 
@@ -562,7 +559,7 @@ For issues and feature requests, please [open an issue](https://github.com/IEEE-
 
 </div>
 
----
+<br/>
 
 <div align="center">
 
