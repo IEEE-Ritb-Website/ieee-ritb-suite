@@ -5,7 +5,7 @@ import {
     FEATURES,
     LANGUAGE,
 } from "@mrknown404/create-express-app";
-import { getMonorepoRoot } from "./helper.js";
+import { getMonorepoRoot } from "../helper.js";
 import chalk from "chalk";
 
 export async function runCreateBE(projectName: string) {
@@ -34,6 +34,32 @@ export async function runCreateBE(projectName: string) {
 
         await builder.init();
         await builder.setupProject();
+
+        // Override default tsconfig to extend base and fix rootDir requirement
+        builder.createFile(
+            "tsconfig.json",
+            JSON.stringify(
+                {
+                    extends: "../../../tsconfig.base.json",
+                    compilerOptions: {
+                        target: "ES2020",
+                        module: "commonjs",
+                        outDir: "dist",
+                        rootDir: "src",
+                        declaration: false,
+                        declarationMap: false,
+                        sourceMap: false,
+                        paths: {
+                            "@/*": ["./src/*"],
+                        },
+                    },
+                    include: ["src"],
+                },
+                null,
+                2,
+            ) + "\n",
+        );
+
         builder.createFile(
             "astralogger.json",
             JSON.stringify(
@@ -163,7 +189,7 @@ pnpm --filter ${projectName} dev
         const packageJsonPath = path.join(projectPath, "package.json");
         if (fs.existsSync(packageJsonPath)) {
             const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-            
+
             packageJson.scripts = packageJson.scripts || {};
             packageJson.scripts["gen-docs"] = "astranova-cli generate-docs";
             packageJson.scripts["generate-docs"] = "astranova-cli generate-docs";
@@ -184,21 +210,23 @@ pnpm --filter ${projectName} dev
                 `\nNew backend service ${builder.projectName} created successfully`,
             ),
         );
-        builder.finalize();
 
-        console.log(chalk.cyan("\n📋 Cron Job Setup:"));
-        console.log(
-            `  Generate a CRON_SECRET: ${chalk.bold("node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"")}`,
-        );
-        console.log(
-            `  Add to ${chalk.bold(".env")}: CRON_SECRET=<generated-secret>`,
-        );
-        console.log(
-            `  Endpoint: ${chalk.bold("GET /api/cron")} (requires ${chalk.bold("x-cron-secret")} header)`,
-        );
-        console.log(
-            `  Secure with ${chalk.bold("cron-job.org")}: set ${chalk.bold("CRON_SECRET")} in .env and configure as a cron job target`,
-        );
+        console.log(chalk.yellow("\nCron Job Setup:"));
+        console.log(chalk.yellow(
+            `\tGenerate a CRON_SECRET: ${chalk.bold("node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"")}`,
+        ));
+        console.log(chalk.yellow(
+            `\tAdd to ${chalk.bold(".env")}: CRON_SECRET=<generated-secret>`,
+        ));
+        console.log(chalk.yellow(
+            `\tEndpoint: ${chalk.bold("GET /api/cron")} (requires ${chalk.bold("x-cron-secret")} header)`,
+        ));
+        console.log(chalk.yellow(
+            `\tSecure with ${chalk.bold("cron-job.org")}: set ${chalk.bold("CRON_SECRET")} in .env and configure as a cron job target`,
+        ));
+
+        builder.finalize();
+        console.log("\n\n")
     } catch (err) {
         console.error(chalk.red("❌ Project creation failed:"), err);
         process.exit(1);

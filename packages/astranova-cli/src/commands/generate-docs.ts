@@ -3,7 +3,7 @@ import path from "path";
 import os from "os";
 import { runAI } from "astranova-ai/runner";
 import chalk from "chalk";
-import { StepLogger } from "./step-logger.js";
+import { StepLogger } from "../step-logger.js";
 
 function walkDir(dir: string, fileList: string[] = []): string[] {
     if (!fs.existsSync(dir)) return fileList;
@@ -28,7 +28,7 @@ function getServiceName(serviceRoot: string): string {
                 return pkg.name;
             }
         }
-    } catch {}
+    } catch { }
     return path.basename(serviceRoot);
 }
 
