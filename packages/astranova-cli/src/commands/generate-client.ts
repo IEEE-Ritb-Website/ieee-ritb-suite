@@ -480,6 +480,76 @@ function execCommandAsync(command: string, cwd: string): Promise<void> {
     });
 }
 
+/**
+ * Finds the position of the closing paren for a route call (e.g. `router.get(...)`)
+ * by counting parentheses from the match position, respecting strings and comments.
+ */
+function findRouteCallEnd(content: string, matchIndex: number): number {
+    const openParen = content.indexOf("(", matchIndex);
+    if (openParen === -1) return -1;
+
+    let parenCount = 0;
+    let inString: string | null = null;
+    let inSingleLineComment = false;
+    let inMultiLineComment = false;
+
+    for (let i = openParen; i < content.length; i++) {
+        const char = content[i];
+
+        if (inMultiLineComment) {
+            if (char === "*" && content[i + 1] === "/") {
+                inMultiLineComment = false;
+                i++;
+            }
+            continue;
+        }
+
+        if (inSingleLineComment) {
+            if (char === "\n") {
+                inSingleLineComment = false;
+            }
+            continue;
+        }
+
+        if (inString) {
+            if (char === inString && content[i - 1] !== "\\") {
+                inString = null;
+            }
+            continue;
+        }
+
+        if (char === "/" && content[i + 1] === "/") {
+            inSingleLineComment = true;
+            i++;
+            continue;
+        }
+
+        if (char === "/" && content[i + 1] === "*") {
+            inMultiLineComment = true;
+            i++;
+            continue;
+        }
+
+        if (char === '"' || char === "'" || char === "`") {
+            inString = char;
+            continue;
+        }
+
+        if (char === "(") {
+            parenCount++;
+            continue;
+        }
+
+        if (char === ")") {
+            parenCount--;
+            if (parenCount === 0) {
+                return i + 1;
+            }
+        }
+    }
+
+    return -1;
+}
 
 
 export async function runGenerateClient() {
@@ -563,7 +633,12 @@ export async function runGenerateClient() {
                 }
 
                 const matchIndex = routeMatch.index;
-                const windowText = fileContent.slice(matchIndex, matchIndex + 600);
+                // Use paren-counting to find the actual route call end instead of a fixed window
+                const callEnd = findRouteCallEnd(fileContent, matchIndex);
+                const windowText = fileContent.slice(
+                    matchIndex,
+                    callEnd > 0 ? Math.min(callEnd, matchIndex + 600) : matchIndex + 600,
+                );
 
                 const validatorRegex = /withResponseValidation\s*<\s*([\w]+)\s*,\s*(?:typeof\s+)?([\w]+)\s*>\s*\(\s*([\w]+)/;
                 const valMatch = validatorRegex.exec(windowText);
@@ -609,6 +684,21 @@ export async function runGenerateClient() {
                     reqValidatorName,
                     resValidatorName
                 });
+            }
+        }
+
+        // Deduplicate method names: when two routes share the same name, disambiguate with HTTP method + path
+        const methodNameCounts = new Map<string, number>();
+        for (const route of routesList) {
+            methodNameCounts.set(route.methodName, (methodNameCounts.get(route.methodName) || 0) + 1);
+        }
+        const seenNames = new Map<string, number>();
+        for (const route of routesList) {
+            const count = methodNameCounts.get(route.methodName)!;
+            if (count > 1) {
+                const seenCount = (seenNames.get(route.methodName) || 0) + 1;
+                seenNames.set(route.methodName, seenCount);
+                route.methodName = route.methodName + route.httpMethod.charAt(0).toUpperCase() + route.httpMethod.slice(1);
             }
         }
 

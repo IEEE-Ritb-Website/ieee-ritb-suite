@@ -148,6 +148,16 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2
 
+  services/backend/admin-service/client:
+    dependencies:
+      axios:
+        specifier: ^1.13.5
+        version: 1.15.2
+    devDependencies:
+      tsc-alias:
+        specifier: ^1.8.16
+        version: 1.8.16
+
   services/backend/common-app-service:
     dependencies:
       astralogger:
