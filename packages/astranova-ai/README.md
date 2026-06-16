@@ -4,7 +4,7 @@ A local CLI runner and wrapper around the OpenCode engine. It manages servers, T
 
 ## Commands and Flag Combinations
 
-All commands can be run using `pnpm ai` or `npx ai`.
+All commands can be run using `pnpm ai`.
 
 ### 1. Web UI Mode (Default)
 Starts the local server (if down) and opens the Web UI in the default browser.

@@ -469,11 +469,51 @@ async function cleanupEmptySessions() {
 /**
  * Main application CLI logic parsing flags and executing actions.
  */
+const HELP_TEXT = `
+Usage: pnpm ai [flags] [message]
+
+Flags:
+  --web        Open or run commands in the Web UI (default when no flag is specified)
+  --tui        Open or run commands in the Terminal UI
+  --native     Run headlessly in the terminal (requires a message)
+  --fresh      Start a new session instead of continuing the last one
+  --help       Show this help message
+
+Message prefixes:
+  @file:<path>   Read the prompt from a file
+
+Modes (mutually exclusive):
+
+  Launch modes — opens the respective interface:
+    pnpm ai                          Open Web UI (continues last session)
+    pnpm ai --fresh                  Open Web UI (fresh session)
+    pnpm ai --tui                    Open TUI (continues last session)
+    pnpm ai --tui --fresh            Open TUI (fresh session)
+
+  Execution modes — runs a prompt and then opens the Web UI:
+    pnpm ai "message"                Run on Web UI (continues last session)
+    pnpm ai --fresh "message"        Run on Web UI (fresh session)
+    pnpm ai --tui "message"          Run on TUI (continues last session)
+    pnpm ai --tui --fresh "message"  Run on TUI (fresh session)
+
+  Headless mode — runs directly in the terminal without opening any UI:
+    pnpm ai --native "message"               Run headless (continues last session)
+    pnpm ai --native --fresh "message"       Run headless (fresh session)
+
+  The "run" prefix is automatically stripped:
+    pnpm ai run "message"                    Same as pnpm ai "message"
+`;
+
 async function main() {
+    const args = process.argv.slice(2);
+
+    if (args.includes("--help") || args.includes("-h")) {
+        console.log(HELP_TEXT);
+        process.exit(0);
+    }
+
     // Clean up empty/dangling sessions left by old POST /session API
     await cleanupEmptySessions();
-
-    const args = process.argv.slice(2);
 
     const hasWebFlag = args.includes("--web");
     const hasTuiFlag = args.includes("--tui");
