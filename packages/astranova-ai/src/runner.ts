@@ -46,6 +46,8 @@ export function getLocalOpencodePath(): string {
 export interface RunAIOptions {
     /** Short label shown in the braille spinner while waiting, e.g. "Generating docs" */
     spinnerLabel?: string;
+    /** Whether to show the stderr spinner (defaults to true) */
+    showSpinner?: boolean;
     /** Working directory for the opencode process (defaults to process.cwd()) */
     cwd?: string;
     /** Optional file path to attach via opencode's -f flag (keeps the message arg short) */
@@ -72,6 +74,7 @@ export interface RunAIOptions {
 export function runAI(message: string, options: RunAIOptions = {}): Promise<string> {
     const {
         spinnerLabel = "Waiting for AI response",
+        showSpinner = true,
         cwd = process.cwd(),
         contextFilePath,
         timeoutMs = 180000,
@@ -82,17 +85,22 @@ export function runAI(message: string, options: RunAIOptions = {}): Promise<stri
         let frameIndex = 0;
         let firstData = false;
 
-        process.stderr.write(`⠋ ${spinnerLabel}...`);
-        const spinnerInterval = setInterval(() => {
-            frameIndex = (frameIndex + 1) % spinnerFrames.length;
-            if (!firstData) {
-                process.stderr.write(`\r${spinnerFrames[frameIndex]} ${spinnerLabel}...`);
-            }
-        }, 80);
+        let spinnerInterval: NodeJS.Timeout | null = null;
+        if (showSpinner) {
+            process.stderr.write(`⠋ ${spinnerLabel}...`);
+            spinnerInterval = setInterval(() => {
+                frameIndex = (frameIndex + 1) % spinnerFrames.length;
+                if (!firstData) {
+                    process.stderr.write(`\r${spinnerFrames[frameIndex]} ${spinnerLabel}...`);
+                }
+            }, 80);
+        }
 
         const stopSpinner = () => {
-            clearInterval(spinnerInterval);
-            process.stderr.write("\r\x1b[K");
+            if (spinnerInterval) {
+                clearInterval(spinnerInterval);
+                process.stderr.write("\r\x1b[K");
+            }
         };
 
         const isWindows = process.platform === "win32";

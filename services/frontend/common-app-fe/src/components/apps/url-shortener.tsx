@@ -63,8 +63,10 @@ export default function UrlShortener() {
 
     try {
       const res = await apiClient.createShortUrl({
-        long_url: url,
-        ttl_seconds: null,
+        body: {
+          long_url: url,
+          ttl_seconds: null,
+        },
       })
 
       if (!res.success) {

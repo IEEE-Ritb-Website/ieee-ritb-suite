@@ -5,12 +5,10 @@ export type CreateShortUrlPayload = CreateShortUrlRequest;
 
 export const createShortUrl =
   (api: AxiosInstance) =>
-  async (
-    payload: CreateShortUrlPayload
-  ): Promise<CreateShortUrlResponse> => {
+  async (payload: CreateShortUrlPayload): Promise<CreateShortUrlResponse> => {
     const response = await api.post<CreateShortUrlResponse>(
       "/api/shorten-url",
-      payload
+      payload,
     );
 
     return response.data;

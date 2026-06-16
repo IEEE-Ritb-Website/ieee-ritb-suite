@@ -1,6 +1,6 @@
-# root-service
+# form-service
 
-Core backend service exposing public endpoints for the student branch catalog, branch members, and secure scheduler cron tasks.
+Backend service for dynamic event registration, form ingestion, and submission processing.
 
 ## Commands
 
