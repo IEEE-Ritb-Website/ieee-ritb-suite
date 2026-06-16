@@ -7,7 +7,11 @@
     "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
     "lint": "eslint . --ext .ts,.js",
-    "test": "echo 'no tests'"
+    "test": "echo 'no tests'",
+    "gen-docs": "astranova-cli generate-docs",
+    "generate-docs": "astranova-cli generate-docs",
+    "gen-client": "astranova-cli generate-client",
+    "generate-client": "astranova-cli generate-client"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +23,8 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "zod": "^4.1.12",
-    "mongodb": "^6.20.0"
+    "mongodb": "^6.20.0",
+    "axios": "^1.13.5"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
@@ -30,6 +35,10 @@
     "tsc-alias": "^1.8.16",
     "@typescript-eslint/eslint-plugin": "^8.47.0",
     "typescript": "^5.9.3",
-    "@typescript-eslint/parser": "^8.47.0"
+    "@typescript-eslint/parser": "^8.47.0",
+    "astranova-cli": "workspace:*"
+  },
+  "exports": {
+    "client": "./dist/client/index.js"
   }
 }

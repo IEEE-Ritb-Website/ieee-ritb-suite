@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import ora from "ora";
 import { ProjectBuilder, LANGUAGE } from "@mrknown404/create-express-app";
-import { getMonorepoRoot } from "./helper";
+import { getMonorepoRoot } from "./helper.js";
 import chalk from "chalk";
 
 export async function runCreateFE(projectName: string) {

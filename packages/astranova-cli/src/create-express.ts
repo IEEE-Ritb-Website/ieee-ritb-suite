@@ -5,7 +5,7 @@ import {
     FEATURES,
     LANGUAGE,
 } from "@mrknown404/create-express-app";
-import { getMonorepoRoot } from "./helper";
+import { getMonorepoRoot } from "./helper.js";
 import chalk from "chalk";
 
 export async function runCreateBE(projectName: string) {
@@ -158,6 +158,24 @@ pnpm --filter ${projectName} dev
 
         builder.createFile("AGENTS.md", agentsContent);
         builder.createFile("README.md", readmeContent);
+
+        // Update package.json to include scripts and devDependencies for generating client and docs
+        const packageJsonPath = path.join(projectPath, "package.json");
+        if (fs.existsSync(packageJsonPath)) {
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+            
+            packageJson.scripts = packageJson.scripts || {};
+            packageJson.scripts["gen-docs"] = "astranova-cli generate-docs";
+            packageJson.scripts["generate-docs"] = "astranova-cli generate-docs";
+            packageJson.scripts["gen-client"] = "astranova-cli generate-client";
+            packageJson.scripts["generate-client"] = "astranova-cli generate-client";
+
+            packageJson.devDependencies = packageJson.devDependencies || {};
+            packageJson.devDependencies["astranova-cli"] = "workspace:*";
+            packageJson.devDependencies["astranova-ai"] = "workspace:*";
+
+            fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2), "utf-8");
+        }
 
         await builder.runCommand("Install dependencies", "pnpm install");
 

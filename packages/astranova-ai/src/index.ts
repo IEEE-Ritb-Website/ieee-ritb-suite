@@ -4,7 +4,8 @@
  * 
  * A clean, self-documenting wrapper around the local opencode-ai binary.
  * Supports running commands:
- *  - inside the Web UI (--ui, default)
+ *  - inside the Web UI (--web, default)
+ *  - in the Terminal UI (--tui)
  *  - directly in the terminal (--native)
  *  - in a new session (--fresh) or continuing the last session (default).
  * 
@@ -14,9 +15,45 @@
 import { spawn, exec } from "child_process";
 import fs from "fs";
 import path from "path";
+import { runAI, getLocalOpencodePath } from "./runner.js";
 
 const SERVER_PORT = 4096;
 const SERVER_URL = `http://127.0.0.1:${SERVER_PORT}`;
+
+let serverChildProcess: any = null;
+let runnerChildProcess: any = null;
+
+function cleanupServer() {
+    if (runnerChildProcess) {
+        try {
+            runnerChildProcess.kill("SIGTERM");
+        } catch {
+            // ignore
+        }
+        runnerChildProcess = null;
+    }
+    if (serverChildProcess) {
+        console.log("\nStopping OpenCode server...");
+        try {
+            serverChildProcess.kill("SIGTERM");
+        } catch {
+            // ignore
+        }
+        serverChildProcess = null;
+    }
+}
+
+function setupCleanupHandlers() {
+    process.on("exit", cleanupServer);
+    process.on("SIGINT", () => {
+        cleanupServer();
+        process.exit(0);
+    });
+    process.on("SIGTERM", () => {
+        cleanupServer();
+        process.exit(0);
+    });
+}
 
 // Helper: Pause execution for a given duration in milliseconds
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -37,60 +74,59 @@ export function getMonorepoRoot(): string {
     return process.cwd();
 }
 
-/**
- * Resolves the path to the project-local opencode binary script.
- * This guarantees the tool runs using local workspace packages without global installations.
- */
 function getOpencodeExecutablePath(): string {
-    const workspaceRoot = getMonorepoRoot();
-    const isWindows = process.platform === "win32";
-    const executableName = isWindows ? "opencode.CMD" : "opencode";
-
-    // 1. Check workspace root node_modules/.bin
-    const workspaceBinPath = path.join(workspaceRoot, "node_modules", ".bin", executableName);
-    if (fs.existsSync(workspaceBinPath)) {
-        return workspaceBinPath;
-    }
-
-    // 2. Check packages/astranova-ai/node_modules/.bin
-    const packageBinPath = path.join(__dirname, "..", "node_modules", ".bin", executableName);
-    if (fs.existsSync(packageBinPath)) {
-        return packageBinPath;
-    }
-
-    // 3. Fallback to global command in PATH
-    return "opencode";
+    return getLocalOpencodePath();
 }
 
 /**
  * Opens a URL in the user's default web browser in a cross-platform manner.
  */
-function openBrowser(url: string) {
-    const startCommand = process.platform === "win32" ? "start" : process.platform === "darwin" ? "open" : "xdg-open";
-    exec(`${startCommand} ${url}`, (err) => {
-        if (err) {
-            console.error(`Failed to open browser: ${err.message}`);
+function openBrowser(url: string, callback?: () => void) {
+    if (process.platform === "win32") {
+        const child = spawn("explorer.exe", [url], { detached: true, stdio: "ignore" });
+        child.unref();
+        if (callback) {
+            let called = false;
+            const done = () => {
+                if (called) return;
+                called = true;
+                callback();
+            };
+            child.on("exit", done);
+            child.on("error", done);
         }
-    });
+    } else {
+        const startCommand = process.platform === "darwin" ? "open" : "xdg-open";
+        exec(`${startCommand} ${url}`, (err) => {
+            if (err) {
+                console.error(`Failed to open browser: ${err.message}`);
+            }
+            if (callback) callback();
+        });
+    }
 }
 
 /**
  * Spawns a background process completely hidden from the user (no console window pop-ups on Windows).
  */
-function spawnHiddenProcess(command: string, args: string[], cwd: string) {
-    if (process.platform === "win32") {
-        // Wrap command in a hidden PowerShell execution to prevent terminal window pop-ups
-        const commandLine = `${command} ${args.map(a => `"${a.replace(/"/g, '\\"')}"`).join(" ")}`;
-        return spawn("powershell", ["-WindowStyle", "Hidden", "-Command", commandLine], {
+function spawnHiddenProcess(command: string, args: string[], cwd: string, pipeOutput = false) {
+    const isWindows = process.platform === "win32";
+    const needsCmdWrap = isWindows && (command.toLowerCase().endsWith(".cmd") || command === "opencode");
+    const finalCommand = needsCmdWrap ? "cmd.exe" : command;
+    const finalArgs = needsCmdWrap ? ["/c", command, ...args] : args;
+
+    if (isWindows) {
+        return spawn(finalCommand, finalArgs, {
             cwd,
-            detached: true,
-            stdio: "ignore"
+            detached: !pipeOutput,
+            stdio: pipeOutput ? ["ignore", "pipe", "pipe"] : ["ignore", "ignore", "ignore"],
+            windowsHide: true
         });
     } else {
         return spawn(command, args, {
             cwd,
-            detached: true,
-            stdio: "ignore",
+            detached: !pipeOutput,
+            stdio: pipeOutput ? ["ignore", "pipe", "pipe"] : ["ignore", "ignore", "ignore"],
             shell: true
         });
     }
@@ -116,7 +152,7 @@ async function isServerRunning(): Promise<boolean> {
  * Ensures the OpenCode server is running. Starts it in the background if it is currently down.
  * Returns true if started fresh, false if it was already running.
  */
-async function ensureServerRunning(): Promise<boolean> {
+async function ensureServerRunning(unref = true): Promise<boolean> {
     const isAlreadyRunning = await isServerRunning();
     if (isAlreadyRunning) {
         return false;
@@ -124,10 +160,22 @@ async function ensureServerRunning(): Promise<boolean> {
 
     const workspaceRoot = getMonorepoRoot();
     const opencodePath = getOpencodeExecutablePath();
-    console.log(`Starting OpenCode server in background at root: ${workspaceRoot}`);
+    console.log(`Starting OpenCode server at root: ${workspaceRoot}`);
     
-    const serverProcess = spawnHiddenProcess(opencodePath, ["web", "--port", String(SERVER_PORT)], workspaceRoot);
-    serverProcess.unref();
+    const serverProcess = spawnHiddenProcess(
+        opencodePath,
+        ["serve", "--port", String(SERVER_PORT), "--print-logs", "--log-level", "DEBUG"],
+        workspaceRoot,
+        !unref
+    );
+    
+    if (unref) {
+        serverProcess.unref();
+    } else {
+        serverChildProcess = serverProcess;
+        serverProcess.stdout?.on("data", (data) => process.stdout.write(data));
+        serverProcess.stderr?.on("data", (data) => process.stderr.write(data));
+    }
 
     console.log("Waiting for OpenCode server to start...");
     let ready = false;
@@ -149,74 +197,99 @@ async function ensureServerRunning(): Promise<boolean> {
 }
 
 /**
- * Resolves the session ID to use for running commands or opening the browser.
- * If fresh is false, it searches for the most recently updated session matching the current directory.
- * If fresh is true, or no session is found, it requests a new session.
+ * Finds the most recent session for the current directory, or null if none exists.
  */
-async function resolveSession(fresh: boolean, messageSnippet?: string): Promise<string> {
+async function findExistingSession(): Promise<string | null> {
     const currentDir = process.cwd();
-
-    if (!fresh) {
-        try {
-            const response = await fetch(`${SERVER_URL}/session`);
-            if (response.ok) {
-                const sessions = await response.json() as Array<{ id: string; directory: string; time: { updated: number } }>;
-                const matchingSessions = sessions.filter(
-                    (s) => s.directory && path.resolve(s.directory).toLowerCase() === path.resolve(currentDir).toLowerCase()
-                );
-                if (matchingSessions.length > 0) {
-                    // Sort by updated time in descending order to get the latest session
-                    matchingSessions.sort((a, b) => b.time.updated - a.time.updated);
-                    const latestSessionId = matchingSessions[0].id;
-                    console.log(`Continuing existing session: ${latestSessionId}`);
-                    return latestSessionId;
-                }
+    try {
+        const response = await fetch(`${SERVER_URL}/session`);
+        if (response.ok) {
+            const sessions = await response.json() as Array<{ id: string; directory?: string; dir?: string; time: { updated: number } }>;
+            const matchingSessions = sessions.filter((s) => {
+                const dir = s.directory || s.dir;
+                return dir && path.resolve(dir).toLowerCase() === path.resolve(currentDir).toLowerCase();
+            });
+            if (matchingSessions.length > 0) {
+                matchingSessions.sort((a, b) => b.time.updated - a.time.updated);
+                return matchingSessions[0].id;
             }
-        } catch (err: any) {
-            console.warn(`Could not query existing sessions: ${err.message}. Creating a new one...`);
         }
+    } catch {
+        // server may not be ready
     }
-
-    // Create a new session
-    console.log("Creating a fresh session on the OpenCode server...");
-    const sessionTitle = messageSnippet 
-        ? `Astranova Run: ${messageSnippet}` 
-        : `Astranova Session - ${new Date().toLocaleString()}`;
-
-    const createResponse = await fetch(`${SERVER_URL}/session`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            title: sessionTitle,
-            dir: currentDir,
-            directory: currentDir
-        })
-    });
-
-    if (!createResponse.ok) {
-        throw new Error(`Failed to create session: ${createResponse.statusText}`);
-    }
-
-    const sessionData = await createResponse.json() as { id: string };
-    console.log(`Fresh session created with ID: ${sessionData.id}`);
-    return sessionData.id;
+    return null;
 }
 
 /**
- * Starts the server (if down), resolves the session, and opens the Web UI in the browser.
+ * Creates a fresh session for the current directory on the OpenCode server.
+ */
+async function createFreshSession(): Promise<string> {
+    const currentDir = process.cwd();
+    const postData = JSON.stringify({
+        title: `Fresh Session - ${path.basename(currentDir)}`,
+        dir: currentDir,
+        directory: currentDir
+    });
+    const response = await fetch(`${SERVER_URL}/session`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: postData
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to create fresh session: ${response.statusText}`);
+    }
+    const session = await response.json() as { id: string };
+    return session.id;
+}
+
+/**
+ * Starts the server (if down) and opens the Web UI in the browser.
  */
 async function startWebUIOnly(fresh: boolean) {
     try {
-        const startedFresh = await ensureServerRunning();
-        await resolveSession(fresh);
+        const startedFresh = await ensureServerRunning(false);
+        const currentDir = process.cwd();
 
-        // If the server started fresh, it opens the default homepage automatically.
-        // If it was already running or we requested a fresh session, we open the browser to the home URL.
-        if (!startedFresh || fresh) {
-            console.log("Opening OpenCode Web UI in browser...");
-            openBrowser(SERVER_URL);
+        let sessionUrl = SERVER_URL;
+        let sessionId: string | null = null;
+
+        if (!fresh) {
+            sessionId = await findExistingSession();
+            if (sessionId) {
+                console.log(`Continuing existing session: ${sessionId}`);
+            }
+        }
+
+        if (!sessionId) {
+            console.log(fresh ? "Creating a fresh session..." : "No existing session found. Creating a fresh session...");
+            try {
+                sessionId = await createFreshSession();
+                console.log(`Fresh session created with ID: ${sessionId}`);
+            } catch (err: any) {
+                console.warn(`Could not create fresh session via API: ${err.message}. Falling back to root URL.`);
+            }
+        }
+
+        if (sessionId) {
+            const base64ProjectPath = Buffer.from(currentDir).toString("base64")
+                .replace(/=/g, "")
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_");
+            sessionUrl = `${SERVER_URL}/${base64ProjectPath}/session/${sessionId}`;
+        }
+
+        console.log(`OpenCode server is running at ${SERVER_URL}`);
+        console.log(`Session URL: ${sessionUrl}`);
+        console.log("Opening OpenCode Web UI in browser...");
+        openBrowser(sessionUrl);
+
+        if (startedFresh) {
+            console.log("\nPress Ctrl+C to stop the server and exit.");
+            setupCleanupHandlers();
         } else {
-            console.log("OpenCode Web UI opened in browser.");
+            setTimeout(() => process.exit(0), 1000);
         }
     } catch (err: any) {
         console.error(`Failed to launch Web UI: ${err.message}`);
@@ -225,38 +298,122 @@ async function startWebUIOnly(fresh: boolean) {
 }
 
 /**
- * Runs a command on the Web UI (browser) in the background.
+ * Runs a command locally then opens the Web UI in the browser.
+ * Runs locally (not through the server HTTP API) to avoid a server-side
+ * bug where session_message.seq is not initialized on HTTP prompts.
  */
 async function executeOnWebUI(message: string, fresh: boolean) {
     try {
-        const startedFresh = await ensureServerRunning();
-        const sessionId = await resolveSession(fresh, message.slice(0, 30));
+        // Kill any lingering server on 4096 to prevent opencode run
+        // from auto-attaching to it, which would hit the server-side seq bug.
+        cleanupServer();
+
+        // Run the command locally first (avoids server-side seq bug)
+        const continueFlag = !fresh;
+        await runAI(message, {
+            spinnerLabel: "Waiting for AI response",
+            timeoutMs: 120000,
+            extraArgs: continueFlag ? ["--continue"] : [],
+            onStdout: (data) => {
+                process.stdout.write(data);
+            },
+            onStderr: (data, firstDataReceived) => {
+                if (firstDataReceived) {
+                    process.stderr.write(data);
+                }
+            }
+        });
+
+        // Then start the server and open the web UI for continuation
+        const startedFresh = await ensureServerRunning(false);
+        const currentDir = process.cwd();
+
+        let sessionUrl = SERVER_URL;
+        const sessionId = await findExistingSession();
+        if (sessionId) {
+            const base64ProjectPath = Buffer.from(currentDir).toString("base64")
+                .replace(/=/g, "")
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_");
+            sessionUrl = `${SERVER_URL}/${base64ProjectPath}/session/${sessionId}`;
+        }
+
+        console.log(`OpenCode server is running at ${SERVER_URL}`);
+        console.log(`Session URL: ${sessionUrl}`);
+        console.log("Opening OpenCode Web UI in browser...");
+        openBrowser(sessionUrl);
+
+        if (startedFresh) {
+            console.log("\nPress Ctrl+C to stop the server and exit.");
+            setupCleanupHandlers();
+        } else {
+            setTimeout(() => process.exit(0), 1000);
+        }
+    } catch (err: any) {
+        console.error(`\n${err.message}`);
+        process.exit(1);
+    }
+}
+
+/**
+ * Opens the OpenCode TUI (Terminal UI) directly.
+ */
+async function startTUIOnly(fresh: boolean) {
+    try {
         const currentDir = process.cwd();
         const opencodePath = getOpencodeExecutablePath();
 
-        // Open the browser to the chat session if the server was already running
-        if (!startedFresh) {
-            console.log("Opening OpenCode Web UI in browser...");
-            openBrowser(SERVER_URL);
+        const args: string[] = [];
+        if (!fresh) {
+            args.push("--continue");
         }
 
-        // Wait to allow browser tab to load and connect to the event stream
-        console.log("Allowing Web UI browser tab to initialize...");
-        await delay(3000);
+        console.log("Opening OpenCode TUI...");
 
-        console.log("Launching command on the Web UI...");
-        const runnerProcess = spawnHiddenProcess(
-            opencodePath,
-            ["run", message, "--attach", SERVER_URL, "--session", sessionId],
-            currentDir
-        );
-        runnerProcess.unref();
+        const tuiProcess = spawn(opencodePath, args, {
+            cwd: currentDir,
+            stdio: "inherit",
+            shell: true,
+            windowsHide: false,
+        });
 
-        console.log("Command successfully sent to OpenCode Web UI. You can monitor the progress in your browser.");
+        tuiProcess.on("exit", (code) => {
+            process.exit(code ?? 0);
+        });
     } catch (err: any) {
-        console.error(`Web execution failed: ${err.message}`);
-        console.log("Falling back to local terminal execution...");
-        await executeInTerminal(message, fresh);
+        console.error(`Failed to launch TUI: ${err.message}`);
+        process.exit(1);
+    }
+}
+
+/**
+ * Runs a command on the TUI (Terminal UI) in the foreground.
+ */
+async function executeOnTUI(message: string, fresh: boolean) {
+    try {
+        const currentDir = process.cwd();
+        const opencodePath = getOpencodeExecutablePath();
+
+        const args: string[] = ["--prompt", message];
+        if (!fresh) {
+            args.push("--continue");
+        }
+
+        console.log("Launching command on the TUI...");
+
+        const tuiProcess = spawn(opencodePath, args, {
+            cwd: currentDir,
+            stdio: "inherit",
+            shell: true,
+            windowsHide: false,
+        });
+
+        tuiProcess.on("exit", (code) => {
+            process.exit(code ?? 0);
+        });
+    } catch (err: any) {
+        console.error(`TUI execution failed: ${err.message}`);
+        process.exit(1);
     }
 }
 
@@ -264,43 +421,68 @@ async function executeOnWebUI(message: string, fresh: boolean) {
  * Executes a command headlessly directly in the current terminal session.
  */
 async function executeInTerminal(message: string, fresh: boolean) {
-    console.log(`Running command headlessly in terminal: "${message}"...`);
-    const opencodePath = getOpencodeExecutablePath();
-    const args = ["run", message];
+    const continueFlag = !fresh;
 
-    // If not a fresh session, we pass the continue flag to inherit the last session context
-    if (!fresh) {
-        args.push("--continue");
-    }
-
-    const child = spawn(opencodePath, args, {
-        stdio: "inherit",
-        shell: true
-    });
-
-    child.on("error", (err) => {
-        console.error("Failed to start opencode-ai command:", err);
+    try {
+        await runAI(message, {
+            spinnerLabel: "Waiting for AI response",
+            timeoutMs: 120000,
+            extraArgs: continueFlag ? ["--continue"] : [],
+            onStdout: (data) => {
+                process.stdout.write(data);
+            },
+            onStderr: (data, firstDataReceived) => {
+                if (firstDataReceived) {
+                    process.stderr.write(data);
+                }
+            }
+        });
+        process.exit(0);
+    } catch (err: any) {
+        console.error(`\n❌ ${err.message}`);
         process.exit(1);
-    });
+    }
+}
 
-    child.on("exit", (code) => {
-        process.exit(code ?? 0);
-    });
+/**
+ * Deletes sessions with no messages (created by old POST /session calls).
+ * These empty sessions cause NOT NULL constraint failed on session_message.seq
+ * when opencode tries to continue them.
+ */
+async function cleanupEmptySessions() {
+    try {
+        const opencodePath = getOpencodeExecutablePath();
+        await new Promise<void>((resolve) => {
+            const child = spawn(
+                opencodePath,
+                ["db", "DELETE FROM session WHERE id IN (SELECT s.id FROM session s LEFT JOIN session_message sm ON s.id = sm.session_id WHERE sm.id IS NULL)"],
+                { stdio: "ignore", shell: true, windowsHide: true }
+            );
+            child.on("exit", () => resolve());
+            child.on("error", () => resolve());
+        });
+    } catch {
+        // skip
+    }
 }
 
 /**
  * Main application CLI logic parsing flags and executing actions.
  */
 async function main() {
+    // Clean up empty/dangling sessions left by old POST /session API
+    await cleanupEmptySessions();
+
     const args = process.argv.slice(2);
 
-    const hasUiFlag = args.includes("--ui");
+    const hasWebFlag = args.includes("--web");
+    const hasTuiFlag = args.includes("--tui");
     const hasNativeFlag = args.includes("--native");
     const hasFreshFlag = args.includes("--fresh");
 
     // Filter out known flags to get the positional arguments
     const positionalArgs = args.filter(
-        (arg) => arg !== "--ui" && arg !== "--native" && arg !== "--fresh"
+        (arg) => arg !== "--web" && arg !== "--tui" && arg !== "--native" && arg !== "--fresh"
     );
 
     // Strip optional "run" prefix if provided (e.g. 'pnpm ai run "message"')
@@ -308,30 +490,46 @@ async function main() {
         positionalArgs.shift();
     }
 
-    const message = positionalArgs.join(" ").trim();
+    let message = positionalArgs.join(" ").trim();
+    if (message.startsWith("@file:")) {
+        const filePath = message.slice(6).trim();
+        try {
+            message = fs.readFileSync(filePath, "utf-8");
+        } catch (e: any) {
+            console.error(`Error: Failed to read file ${filePath}: ${e.message}`);
+            process.exit(1);
+        }
+    }
 
-    // Validation: flag --ui or --native requires a message payload
-    if ((hasUiFlag || hasNativeFlag) && !message) {
-        console.error("Error: Flag --ui or --native requires a message/command to be passed.");
-        console.log("Example: pnpm ai --ui \"explain this project\"");
+    // Validation: flag --native requires a message payload
+    if (hasNativeFlag && !message) {
+        console.error("Error: Flag --native requires a message/command to be passed.");
+        console.log("Example: pnpm ai --native \"explain this project\"");
         process.exit(1);
     }
 
-    // Validation: cannot specify both --ui and --native
-    if (hasUiFlag && hasNativeFlag) {
-        console.error("Error: Cannot specify both --ui and --native flags.");
+    // Validation: cannot specify mutually exclusive mode flags
+    const modeFlags = [hasWebFlag, hasTuiFlag, hasNativeFlag].filter(Boolean).length;
+    if (modeFlags > 1) {
+        console.error("Error: Cannot specify multiple mode flags (--web, --tui, --native) together.");
         process.exit(1);
     }
 
     // Select behavior based on arguments
-    if (!message && !hasUiFlag && !hasNativeFlag) {
-        // Just launch the Web UI (with or without starting a fresh session)
+    if (!message && !hasWebFlag && !hasTuiFlag && !hasNativeFlag) {
+        // No flags and no message: launch Web UI (with or without starting a fresh session)
         await startWebUIOnly(hasFreshFlag);
+    } else if (hasTuiFlag && !message) {
+        // --tui without message: open TUI (with or without starting a fresh session)
+        await startTUIOnly(hasFreshFlag);
+    } else if (hasTuiFlag) {
+        // --tui with message: run command on TUI
+        await executeOnTUI(message, hasFreshFlag);
     } else if (hasNativeFlag) {
         // Explicit terminal mode
         await executeInTerminal(message, hasFreshFlag);
     } else {
-        // Default message execution (or explicit --ui): run on Web UI
+        // Default message execution (or explicit --web): run on Web UI
         await executeOnWebUI(message, hasFreshFlag);
     }
 }
