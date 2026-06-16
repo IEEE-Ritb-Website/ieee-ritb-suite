@@ -58,15 +58,53 @@ export async function runCreateFE(projectName: string) {
       "pnpm add tailwindcss -D @tailwindcss/vite",
     );
 
-    // Step 4: Configure vite.config.ts
-    const viteConfigContent = `import { defineConfig } from 'vite'
+    // Step 3b: Inject shared-clients workspace dependency into scaffolded package.json
+    const generatedPkgPath = path.join(projectPath, "package.json");
+    if (fs.existsSync(generatedPkgPath)) {
+      const pkg = JSON.parse(fs.readFileSync(generatedPkgPath, "utf-8"));
+      pkg.dependencies = pkg.dependencies ?? {};
+      pkg.dependencies["shared-clients"] = "workspace:*";
+      pkg.dependencies["@astranova/catalogues"] = "workspace:*";
+      pkg.dependencies["astranova-core"] = "workspace:*";
+      fs.writeFileSync(
+        generatedPkgPath,
+        JSON.stringify(pkg, null, 2) + "\n",
+        "utf-8",
+      );
+    }
+
+    // Step 4: Configure vite.config.ts with terminal logger plugin
+    const viteConfigContent = `import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from "path"
 
+/**
+ * Vite plugin that listens for \`astranova:terminal-log\` events sent by the
+ * browser via \`import.meta.hot.send(...)\` and prints them to the Node.js
+ * terminal. This makes shared-clients connection warnings visible server-side.
+ */
+function terminalLoggerPlugin(): Plugin {
+  return {
+    name: "astranova-terminal-logger",
+    configureServer(server) {
+      server.hot.on(
+        "astranova:terminal-log",
+        (data: { message: string }, client) => {
+          process.stdout.write(
+            \`\\n\\x1b[33m\${data.message}\\x1b[0m\\n\\n\`,
+          );
+          // Acknowledge so the client doesn't retry
+          client.send("astranova:terminal-log:ack", {});
+        },
+      );
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
+  plugins: [react(), tailwindcss(), terminalLoggerPlugin()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -78,14 +116,31 @@ export default defineConfig({
     // Step 5: Replace index.css with Tailwind v4 import
     builder.createFile("src/index.css", '@import "tailwindcss";\n');
 
-    // Step 6: Ensure index.css is imported in main.tsx
+    // Step 6: Ensure index.css is imported and terminal logger is registered in main.tsx
     const mainFilePath = path.join(projectPath, "src", "main.tsx");
     if (fs.existsSync(mainFilePath)) {
       let mainContent = fs.readFileSync(mainFilePath, "utf-8");
       if (!mainContent.includes("index.css")) {
         mainContent = `import './index.css'\n${mainContent}`;
-        fs.writeFileSync(mainFilePath, mainContent, "utf-8");
       }
+      if (!mainContent.includes("registerTerminalLogger")) {
+        // Inject after all import lines
+        mainContent = mainContent.replace(
+          /^(import [^\n]+\n)+/m,
+          (match) =>
+            match +
+            `import { registerTerminalLogger } from 'shared-clients'\n` +
+            `\n` +
+            `// Forward shared-clients connection warnings to the Vite dev server terminal\n` +
+            `// via the HMR WebSocket. In production, import.meta.hot is undefined so this is a no-op.\n` +
+            `if (import.meta.hot) {\n` +
+            `  registerTerminalLogger((message) => {\n` +
+            `    import.meta.hot!.send("astranova:terminal-log", { message });\n` +
+            `  });\n` +
+            `}\n\n`,
+        );
+      }
+      fs.writeFileSync(mainFilePath, mainContent, "utf-8");
     }
 
     // Step 7: Create App.tsx with Tailwind styling

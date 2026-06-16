@@ -5,7 +5,7 @@ import {
     FEATURES,
     LANGUAGE,
 } from "@mrknown404/create-express-app";
-import { getMonorepoRoot } from "../helper.js";
+import { getMonorepoRoot, detectServicePort } from "../helper.js";
 import chalk from "chalk";
 
 export async function runCreateBE(projectName: string) {
@@ -20,6 +20,21 @@ export async function runCreateBE(projectName: string) {
         console.log(`Directory ${projectPath} already exists. Aborting.`);
         process.exit(1);
     }
+
+    // Auto-calculate next port (highest existing port + 1)
+    const subdirs = fs.readdirSync(baseDir);
+    let maxPort = 3000;
+    for (const dir of subdirs) {
+        if (dir === projectName) continue;
+        const dirPath = path.join(baseDir, dir);
+        if (fs.statSync(dirPath).isDirectory()) {
+            const port = detectServicePort(dirPath);
+            if (port > maxPort) {
+                maxPort = port;
+            }
+        }
+    }
+    const nextPort = maxPort + 1;
 
     const customConfig = {
         language: LANGUAGE.TYPESCRIPT,
@@ -79,16 +94,22 @@ export async function runCreateBE(projectName: string) {
 
         builder.createFile(
             ".env.example",
-            "PORT=3000\nCRON_SECRET=\n",
+            `PORT=${nextPort}\nCRON_SECRET=\n`,
         );
 
         builder.createFile(
             "src/configs/index.ts",
-            `const SERVER_PORT = process.env.PORT || 3000;
+            `import { isProduction } from "astranova-core/node";
+
+const SERVER_PORT = Number(process.env.PORT) || ${nextPort};
 
 export const CONFIG = {
+    database: {
+        name: isProduction() ? "prod" : "test",
+    },
     server: {
         port: SERVER_PORT,
+        name: "${projectName} " + (isProduction() ? "production" : "development"),
     },
     cronSecret: process.env.CRON_SECRET || "",
 };
@@ -99,6 +120,7 @@ export const CONFIG = {
             "src/routes/cron.ts",
             `import { type Request, type Response, Router } from "express";
 import { CONFIG } from "@/configs";
+import { getAstraLogger } from "astralogger";
 
 export const cronRoute = Router();
 
@@ -108,7 +130,7 @@ cronRoute.get('/cron', (req: Request, res: Response) => {
         return res.status(401).json({ success: false, error: { type: "unauthorized", message: "Invalid cron secret" } });
     }
 
-    console.log("Cron job executed successfully");
+    getAstraLogger().info("Cron job executed successfully");
     return res.status(200).json({
         success: true,
         data: {
@@ -195,6 +217,11 @@ pnpm --filter ${projectName} dev
             packageJson.scripts["generate-docs"] = "astranova-cli generate-docs";
             packageJson.scripts["gen-client"] = "astranova-cli generate-client";
             packageJson.scripts["generate-client"] = "astranova-cli generate-client";
+
+            packageJson.dependencies = packageJson.dependencies || {};
+            packageJson.dependencies["astralogger"] = "workspace:*";
+            packageJson.dependencies["astranova-core"] = "workspace:*";
+            packageJson.dependencies["@astranova/catalogues"] = "workspace:*";
 
             packageJson.devDependencies = packageJson.devDependencies || {};
             packageJson.devDependencies["astranova-cli"] = "workspace:*";

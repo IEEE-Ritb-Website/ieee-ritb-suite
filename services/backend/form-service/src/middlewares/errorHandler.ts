@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 import { ErrorResponse } from "@/types";
+import { getAstraLogger } from "astralogger";
 
 // Custom error classes
 export class ValidationError extends Error {
@@ -44,12 +45,7 @@ export const errorHandler = (
     res: Response,
     _next: NextFunction
 ) => {
-    console.error("[Error]", {
-        name: err instanceof Error ? err.name : "Unknown",
-        message: err instanceof Error ? err.message : String(err),
-        path: req.path,
-        method: req.method,
-    });
+    getAstraLogger().error({ err }, `[Error] path=${req.path} method=${req.method}`);
 
     if (err instanceof ZodError) {
         const errorResponse: ErrorResponse = {

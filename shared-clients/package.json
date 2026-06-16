@@ -1,0 +1,23 @@
+{
+  "name": "shared-clients",
+  "version": "1.0.0",
+  "description": "Unified client singletons for frontends",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "astranova-core": "workspace:*",
+    "@astranova/admin-client": "workspace:*",
+    "@astranova/common-app-client": "workspace:*",
+    "@astranova/root-client": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

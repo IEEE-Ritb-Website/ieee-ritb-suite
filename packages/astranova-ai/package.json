@@ -22,6 +22,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "astranova-core": "workspace:*"
+  },
   "devDependencies": {
     "opencode": "npm:opencode-ai",
     "typescript": "^5.8.3"

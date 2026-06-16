@@ -14,6 +14,15 @@ import { router } from './router'
 import { GlobalLoader } from "@/components/common/GlobalLoader"
 import { PerformanceProvider } from "./contexts/PerformanceContext"
 import { LazyMotion, domAnimation } from "framer-motion"
+import { registerTerminalLogger } from 'shared-clients'
+
+// Forward shared-clients connection warnings to the Vite dev server terminal
+// via the HMR WebSocket. In production, import.meta.hot is undefined so this is a no-op.
+if (import.meta.hot) {
+  registerTerminalLogger((message) => {
+    import.meta.hot!.send("astranova:terminal-log", { message });
+  });
+}
 
 // Fontsource managed fonts
 import "@fontsource/inter/latin-400.css"

@@ -216,7 +216,10 @@ ieee-ritb-suite/
 │   ├── 🔊 astralogger/              # Pino-based logging utility
 │   ├── ⚙️ astranova-cli/            # Custom scaffolding CLI
 │   ├── 🤖 astranova-ai/             # Just runs OpenCode
+│   ├── 📦 astranova-core/           # Core environment and monorepo root helpers
 │   └── 📚 catalogues/               # IEEE chapter data registry (18 chapters)
+│
+├── 🔌 shared-clients/           # Centralized API client singletons (with client-config.json)
 │
 ├── 🔧 services/
 │   │
@@ -339,12 +342,14 @@ Architecture Decision Records (ADRs) are lightweight documents that capture impo
 
 | ADR | Title | Decision |
 |-----|-------|----------|
-| [ADR-001](docs/adrs/001-use-nx-monorepo.md) | Use Nx Monorepo | Nx with pnpm workspace for unified build, caching, and dependency management |
-| [ADR-002](docs/adrs/002-choose-framework-and-styling.md) | Framework & Styling | React 19 + Vite + Tailwind v4 + TypeScript strict across all frontend apps |
-| [ADR-003](docs/adrs/003-backend-service-separation.md) | Backend Separation | Separate Express microservices per domain instead of a monolithic API |
-| [ADR-004](docs/adrs/004-package-based-architecture.md) | Shared Package Strategy | Shared packages (`astralogger`, `catalogues`) via workspace protocol with Zod schemas as contracts |
-| [ADR-005](docs/adrs/005-deployment-and-free-tier-hosting.md) | Free-Tier Hosting | Render for backends, Vercel for frontends, Cloudflare for domains — all on free tiers |
-| [ADR-006](docs/adrs/006-ieee-accounts-and-email-setup.md) | IEEE Accounts & Email | IEEE official email for platform accounts with term credentials or social OAuth |
+| [ADR-001](docs/adrs/0001-pnpm-package-manager.md) | pnpm as Package Manager | Why pnpm was chosen over npm and Yarn |
+| [ADR-002](docs/adrs/0002-nx-build-system.md) | Nx Build System | Why Nx was chosen for monorepo orchestration |
+| [ADR-003](docs/adrs/0003-monorepo-architecture.md) | Monorepo Architecture | Why a monorepo structure was adopted |
+| [ADR-004](docs/adrs/0004-react-hook-form-with-zod.md) | React Hook Form with Zod | Why react-hook-form and Zod are used for form validation |
+| [ADR-005](docs/adrs/0005-cron-jobs.md) | Cron Jobs for Backend Services | Why cron jobs are used (Render free tier constraints) |
+| [ADR-006](docs/adrs/0006-ci-cd-deployment.md) | CI/CD and Deployment Strategy | Deployment targets and pipeline choices |
+| [ADR-007](docs/adrs/0007-client-sdk-pattern.md) | Client SDK Pattern | Typed API client packages co-located with backend services |
+| [ADR-008](docs/adrs/0008-centralized-clients-and-core-split.md) | Centralized Clients & Core Split | Instantiated client singletons in shared-clients and astranova-core entrypoints |
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
@@ -471,7 +476,9 @@ cd services/frontend/<app-name>
 | **🔊 astralogger** | Pino-based logging utility | Singleton pattern, env-aware levels, `astralogger.json` config |
 | **⚙️ astranova-cli** | Custom scaffolding tool | Generates Express/Vite apps with TypeScript, ESLint, Zod |
 | **🤖 astranova-ai** | Local AI developer assistant CLI wrapper | Terminal or Web UI execution modes, dynamic project-local binary resolution |
+| **📦 astranova-core** | Core environment and path helpers | Separate browser-safe and Node-only entrypoints, CommonJS compatible |
 | **📚 @astranova/catalogues** | IEEE chapter data registry | Zod-validated schemas, 18 chapters (12 tech, 6 non-tech) |
+| **🔌 shared-clients** | Centralized instantiated clients | Singleton API client exports, client-config.json urls, local health checks |
 
 ### Frontend Applications
 
@@ -501,10 +508,10 @@ cd services/frontend/<app-name>
 
 | Metric | Count |
 |:------:|:-----:|
-| 📦 **Shared Packages** | 4 |
+| 📦 **Shared Packages** | 5 |
 | 🖥️ **Backend Services** | 4 |
 | 🎨 **Frontend Apps** | 4 |
-| 📖 **ADR Documents** | 6 |
+| 📖 **ADR Documents** | 8 |
 
 </div>
 

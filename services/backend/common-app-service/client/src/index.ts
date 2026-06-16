@@ -15,7 +15,7 @@ export const createShortUrl =
     return response.data;
   };
 
-export const createClient = (baseURL: string) => {
+export const createCommonAppServiceAPIClient = (baseURL: string) => {
   const api = API(baseURL);
 
   return {

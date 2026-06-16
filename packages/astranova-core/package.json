@@ -1,0 +1,29 @@
+{
+  "name": "astranova-core",
+  "version": "1.0.0",
+  "description": "Core workspace utility functions for IEEE RIT-B monorepo",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "default": "./dist/node.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "@types/node": "^24.5.2"
+  }
+}

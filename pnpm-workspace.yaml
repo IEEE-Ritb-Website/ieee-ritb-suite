@@ -2,4 +2,5 @@ packages:
   - packages/*
   - services/backend/**
   - services/frontend/*
+  - shared-clients
   - scripting

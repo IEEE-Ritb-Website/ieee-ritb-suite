@@ -22,6 +22,8 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.12.0",
+    "shared-clients": "workspace:*",
+    "astranova-core": "workspace:*",
     "three": "^0.180.0"
   },
   "devDependencies": {

@@ -26,7 +26,9 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
-    "@astranova/common-app-client": "workspace:*"
+    "shared-clients": "workspace:*",
+    "@astranova/catalogues": "workspace:*",
+    "astranova-core": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

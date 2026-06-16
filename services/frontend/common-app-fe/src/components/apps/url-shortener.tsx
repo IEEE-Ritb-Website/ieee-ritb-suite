@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { copy } from "@/helpers"
 import { Copy } from "lucide-react"
-import { createClient } from "@astranova/common-app-client"
+import { CommonAppServiceClient } from "shared-clients"
 import { toast } from "sonner"
 
 function isValidUrl(value: string) {
@@ -28,11 +28,6 @@ export default function UrlShortener() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [recent, setRecent] = useState<RecentItem[]>([])
-
-  const apiClient = useMemo(
-    () => createClient("https://apps-ritb.onrender.com"),
-    []
-  )
 
   // Load recent links on mount
   useEffect(() => {
@@ -62,7 +57,7 @@ export default function UrlShortener() {
     setBusy(true)
 
     try {
-      const res = await apiClient.createShortUrl({
+      const res = await CommonAppServiceClient.createShortUrl({
         body: {
           long_url: url,
           ttl_seconds: null,

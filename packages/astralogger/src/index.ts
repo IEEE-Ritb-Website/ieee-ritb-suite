@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import pino, { Logger, LoggerOptions } from "pino";
 
+import { isProduction } from "astranova-core/node";
+
 let cachedLogger: Logger | null = null;
 
 function loadConfig(): LoggerOptions {
@@ -10,7 +12,7 @@ function loadConfig(): LoggerOptions {
         try {
             const raw = fs.readFileSync(configPath, "utf-8");
             const config = JSON.parse(raw);
-            if (process.env.NODE_ENV !== "development") {
+            if (isProduction()) {
                 config.level = "info";  // on production, do not log below info for safety
             }
             return config;

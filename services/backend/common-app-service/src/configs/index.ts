@@ -1,10 +1,7 @@
+import { isProduction } from "astranova-core/node";
 import { ICONFIG } from "@/types";
 
-const SERVER_PORT = 3000;
-
-export function isProduction(): boolean {
-    return process.env.NODE_ENV === "production";
-}
+const SERVER_PORT = 3001;
 
 export const CONFIG: ICONFIG = {
     database: {
@@ -12,7 +9,7 @@ export const CONFIG: ICONFIG = {
     },
     server: {
         port: SERVER_PORT,
-        name: "Admin " + process.env.NODE_ENV,
+        name: "Admin " + (isProduction() ? "production" : "development"),
     },
     url: 'https://ritb.in',
     static: {

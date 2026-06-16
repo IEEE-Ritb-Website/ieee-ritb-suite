@@ -16,6 +16,7 @@ import { spawn, exec } from "child_process";
 import fs from "fs";
 import path from "path";
 import { runAI, getLocalOpencodePath } from "./runner.js";
+import { getMonorepoRoot } from "astranova-core/node";
 
 const SERVER_PORT = 4096;
 const SERVER_URL = `http://127.0.0.1:${SERVER_PORT}`;
@@ -58,21 +59,7 @@ function setupCleanupHandlers() {
 // Helper: Pause execution for a given duration in milliseconds
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/**
- * Searches upward from the current directory to find the monorepo root.
- */
-export function getMonorepoRoot(): string {
-    let dir = process.cwd();
-    while (dir !== path.parse(dir).root) {
-        if (fs.existsSync(path.join(dir, 'pnpm-workspace.yaml')) ||
-            (fs.existsSync(path.join(dir, 'package.json')) &&
-                JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf-8')).workspaces)) {
-            return dir;
-        }
-        dir = path.dirname(dir);
-    }
-    return process.cwd();
-}
+
 
 function getOpencodeExecutablePath(): string {
     return getLocalOpencodePath();
