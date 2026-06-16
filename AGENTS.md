@@ -352,6 +352,9 @@ Always configure path aliasing inside local configs to keep imports readable and
 *   Every endpoint handling request parameters, query tokens, or payload bodies **MUST** validate inputs using [Zod](https://zod.dev/) schemas before passing data to databases or controller logic.
 *   Zod validation schemas should be placed under `src/schemas/` directory in backends.
 
+### 6. Frontend API Client Usage — **IMPORTANT**
+*   When integrating a frontend with a backend API, always use the corresponding **service client package** (e.g. `@astranova/common-app-client`). Never use raw `fetch`, install `axios` directly, or create custom HTTP wrappers — the client is already set up with proper typing, base URLs, and interceptors.
+
 ---
 
 ## ⚡ Nx Operations & Local Caching
