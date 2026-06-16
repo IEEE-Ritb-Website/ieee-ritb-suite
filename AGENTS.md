@@ -66,6 +66,7 @@ graph TB
     subgraph Packages["📦 Shared Packages & Clients"]
         AL["🔊 astralogger<br/><i>Pino Logger</i>"]
         CLI["⚙️ astranova-cli<br/><i>Custom Scaffolding CLI</i>"]
+        AI["🤖 astranova-ai<br/><i>CLI AI Runner</i>"]
         CAT["📚 @astranova/catalogues<br/><i>Chapter Registry & Zod Schemas</i>"]
         CAC["🔌 @astranova/common-app-client<br/><i>Axios Client for Common Service</i>"]
     end
@@ -99,6 +100,7 @@ ieee-ritb-suite/
 ├── 📦 packages/                      # Shared libraries and packages
 │   ├── 🔊 astralogger/              # Pino-based unified logger
 │   ├── ⚙️ astranova-cli/            # Scaffolding tool for microservices
+│   ├── 🤖 astranova-ai/             # CLI AI Runner for OpenCode integration
 │   └── 📚 catalogues/               # Single-source-of-truth IEEE Chapter registry
 ├── 🔧 services/
 │   ├── 🖥️ backend/                  # TypeScript Express.js backend services
@@ -187,6 +189,19 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 *   **Location:** `file:///d:/ieee-ritb-suite/services/backend/common-app-service/client`
 *   **Key Dependencies:** `axios` (`^1.13.5`), `tsc-alias` (`^1.8.16`).
 *   **Purpose:** Client SDK exported by the `common-app-service` workspace module, providing strongly typed HTTP abstractions for frontend integration.
+
+### 5. `🤖 astranova-ai`
+*   **Location:** `file:///d:/ieee-ritb-suite/packages/astranova-ai`
+*   **Purpose:** Wrapper around the local OpenCode AI engine that manages servers, TUI sessions, browser lifecycles, and direct execution piping.
+*   **CLI Commands & Flags:**
+    *   `pnpm ai` (or `pnpm ai --web`): Starts the local server (if down) and opens the Web UI in the default browser. By default, it searches for the latest session in the current directory and continues it. If none is found, it starts a new session.
+    *   `pnpm ai --fresh`: Creates a brand-new session on the local OpenCode server (via the REST API) and opens the browser directly to that session-specific URL, rather than loading the root server URL.
+    *   `pnpm ai --tui`: Launches the interactive OpenCode Terminal UI (TUI) in the foreground. Can be combined with `--fresh` or a message prompt.
+    *   `pnpm ai --native "<message>"`: Headless terminal execution mode. Executes the prompt directly inside the current console without opening any external interfaces or browsers.
+    *   `pnpm ai "<message>"`: Executes the command locally, then starts/attaches to the OpenCode server and opens the browser to that session for visual continuation.
+*   **Lifecycle Rules:**
+    *   If starting the server fresh, the runner process remains active in the current console (printing logs) and can be terminated cleanly using `Ctrl+C`.
+    *   If the server is already active, the browser tab is spawned, and the CLI exits cleanly back to the shell prompt.
 
 ---
 

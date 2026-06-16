@@ -2,7 +2,16 @@
   "name": "astranova-ai",
   "version": "1.0.0",
   "description": "Astranova AI runner package",
+  "type": "module",
   "main": "dist/index.js",
+  "types": "dist/runner.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./runner": {
+      "types": "./dist/runner.d.ts",
+      "default": "./dist/runner.js"
+    }
+  },
   "bin": {
     "ai": "dist/index.js"
   },

@@ -2,6 +2,7 @@
   "name": "astranova-cli",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "bin": {
     "astranova-cli": "dist/index.js"
@@ -17,6 +18,7 @@
   "packageManager": "pnpm@10.12.3",
   "devDependencies": {
     "@mrknown404/create-express-app": "^1.0.15",
+    "astranova-ai": "workspace:*",
     "chalk": "^5.6.2",
     "inquirer": "^12.9.6",
     "ora": "^9.0.0"

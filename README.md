@@ -400,7 +400,7 @@ Architecture Decision Records (ADRs) are lightweight documents that capture impo
 
 ### 🤖 AI Command Assistant (astranova-ai)
 
-The suite includes a project-local AI developer assistant wrapper (`astranova-ai`, aliased as `ai`) that calls OpenCode. It runs prompts either headlessly in the terminal or executes them in the Web UI.
+The suite includes a project-local AI developer assistant wrapper (`astranova-ai`, aliased as `ai`) that calls OpenCode. It runs prompts in the Web UI (`--web`, default), Terminal UI (`--tui`), or headlessly in the terminal (`--native`).
 
 | Command | Description |
 |---------|-------------|
@@ -408,6 +408,8 @@ The suite includes a project-local AI developer assistant wrapper (`astranova-ai
 | `pnpm ai --fresh` | Starts a fresh browser session |
 | `pnpm ai "your prompt"` | Runs prompt asynchronously in the Web UI, continuing the last session |
 | `pnpm ai --fresh "your prompt"` | Runs prompt asynchronously in the Web UI in a fresh session |
+| `pnpm ai --tui "your prompt"` | Runs prompt in the Terminal UI, continuing the last session |
+| `pnpm ai --tui --fresh "your prompt"` | Runs prompt in the Terminal UI in a fresh session |
 | `pnpm ai --native "your prompt"` | Runs prompt synchronously directly in the terminal, continuing the last session |
 | `pnpm ai --native --fresh "your prompt"` | Runs prompt synchronously in the terminal as a fresh session |
 
