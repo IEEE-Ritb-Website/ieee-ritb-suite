@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { runCreateBE } from "./create-express.js";
-import { runCreateFE } from "./create-react.js";
-import { runGenerateClient } from "./generate-client.js";
-import { runGenerateDocs } from "./generate-docs.js";
+import { runCreateBE } from "./commands/create-express.js";
+import { runCreateFE } from "./commands/create-react.js";
+import { runGenerateClient } from "./commands/generate-client.js";
+import { runGenerateDocs } from "./commands/generate-docs.js";
 import { askProjectName } from "./helper.js";
 
 async function main() {

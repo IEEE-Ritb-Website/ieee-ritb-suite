@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
-import ora from "ora";
+import { exec, spawn } from "child_process";
+import { Spinner } from "../step-logger.js";
 import { ProjectBuilder, LANGUAGE } from "@mrknown404/create-express-app";
-import { getMonorepoRoot } from "./helper.js";
+import { getMonorepoRoot } from "../helper.js";
 import chalk from "chalk";
 
 export async function runCreateFE(projectName: string) {
@@ -29,11 +30,10 @@ export async function runCreateFE(projectName: string) {
     builder.init();
 
     // Step 2: Scaffold Vite React + TypeScript using direct pnpm dlx approach
-    const viteSpinner = ora(
+    const viteSpinner = new Spinner(
       "Scaffolding Vite React + TypeScript project...",
     ).start();
     await new Promise<void>((resolve, reject) => {
-      const { exec } = require("child_process");
       const command = `pnpm dlx create-vite@latest ${projectName} --template react-ts`;
 
       const child = exec(command, {
@@ -42,8 +42,8 @@ export async function runCreateFE(projectName: string) {
       });
 
       // Handle any prompts by providing default responses
-      child.stdin.write("\n"); // Send enter for any prompts
-      child.stdin.end();
+      child.stdin?.write("\n");
+      child.stdin?.end();
 
       child.on("close", (code: number) => {
         if (code === 0) resolve();
@@ -198,12 +198,11 @@ ${inner}
     }
 
     // Step 10: Run pnpm install in root directory
-    const rootInstallSpinner = ora(
+    const rootInstallSpinner = new Spinner(
       "Running pnpm install in root directory...",
     ).start();
     await new Promise<void>((resolve, reject) => {
-      const spawn = require("child_process").spawn;
-      const cmd = spawn("pnpm", ["install"], { cwd: rootDir, stdio: "pipe" });
+      const cmd = spawn("pnpm", ["install"], { cwd: rootDir, stdio: "pipe", shell: true });
 
       cmd.stderr.on("data", (data: Buffer) => {
         const message = data.toString();

@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
 import chalk from "chalk";
-import { StepLogger } from "./step-logger.js";
+import { StepLogger } from "../step-logger.js";
 
 function walkDir(dir: string, fileList: string[] = []): string[] {
     if (!fs.existsSync(dir)) return fileList;
