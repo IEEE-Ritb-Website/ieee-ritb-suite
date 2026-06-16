@@ -168,9 +168,9 @@ export const Sidebar = ({ user, isEditMode, openModal, isPublic = false }: Sideb
                 </div>
               </div>
             )}
-            <div className="border-t border-[rgba(0,255,157,0.15)] pt-3">
-              <span className="text-[rgba(200,255,232,0.35)] uppercase tracking-wider block mb-1.5">overview</span>
-              <p className="text-[rgba(200,255,232,0.7)] leading-relaxed text-[11px] uppercase">
+            <div className="pt-3">
+              <span className="text-[#fff] text-md uppercase tracking-wider block mb-1.5">overview</span>
+              <p className="text-[rgba(200,255,232,0.7)] leading-relaxed textsm">
                 {activeChapterDetails.shortDescription || "No detailed telemetry description available in official logs."}
               </p>
             </div>

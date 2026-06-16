@@ -89,11 +89,10 @@ function ProfileEditor() {
         <div className="flex gap-4 items-center">
           <button
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`text-sm flex gap-2 items-center px-3 py-1 border transition-all uppercase tracking-widest ${
-              isEditMode
+            className={`text-sm flex gap-2 items-center px-3 py-1 border transition-all uppercase tracking-widest ${isEditMode
                 ? "bg-[#00ff9d] text-[#0d0d1a] border-[#00ff9d]"
                 : "border-[rgba(0,255,157,0.4)] text-[#00ff9d] hover:bg-[rgba(0,255,157,0.1)]"
-            }`}
+              }`}
           >
             {isEditMode ? (
               <>
@@ -109,9 +108,8 @@ function ProfileEditor() {
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className={`text-sm text-[#ff4fd8] flex gap-2 items-center border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest ${
-            isLoggingOut ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`text-sm text-[#ff4fd8] flex gap-2 items-center border border-[#ff4fd8] px-3 py-1 hover:bg-[rgba(255,79,216,0.1)] transition-all uppercase tracking-widest ${isLoggingOut ? "opacity-50 cursor-not-allowed" : ""
+            }`}
         >
           {isLoggingOut ? (
             <Loader2 size={12} className="animate-spin" />
@@ -145,11 +143,10 @@ function ProfileEditor() {
                 <button
                   onClick={saveProfile}
                   disabled={isUpdating || !hasChanges}
-                  className={`bg-[#00ff9d] text-[#0d0d1a] px-8 py-2 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:scale-105 transition-all ${
-                    isUpdating || !hasChanges
+                  className={`bg-[#00ff9d] text-[#0d0d1a] px-8 py-2 font-bold uppercase tracking-[0.2em] shadow-[0_0_15px_rgba(0,255,157,0.3)] hover:scale-105 transition-all ${isUpdating || !hasChanges
                       ? "opacity-50 cursor-not-allowed shadow-none scale-100 hover:scale-100"
                       : ""
-                  }`}
+                    }`}
                 >
                   {isUpdating
                     ? "Synchronizing..."
@@ -189,11 +186,10 @@ function ProfileEditor() {
       {/* Mobile sticky/fixed save bar */}
       {isEditMode && (
         <div
-          className={`md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(0,255,157,0.25)] bg-[#0d0d1a]/95 backdrop-blur-md px-4 py-4 flex items-center justify-between gap-4 transition-all duration-300 ease-in-out transform ${
-            hasChanges
+          className={`md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-[rgba(0,255,157,0.25)] bg-[#0d0d1a]/95 backdrop-blur-md px-4 py-4 flex items-center justify-between gap-4 transition-all duration-300 ease-in-out transform ${hasChanges
               ? "translate-y-0 opacity-100 pointer-events-auto"
               : "translate-y-full opacity-0 pointer-events-none"
-          }`}
+            }`}
         >
           <div className="flex items-center gap-2 text-xs font-mono text-[#ff4fd8] uppercase tracking-wider">
             <span className="w-2.5 h-2.5 rounded-full bg-[#ff4fd8] animate-pulse" />

@@ -120,11 +120,11 @@ interface ProfileViewProps {
     achievements?: Array<{
       title: string;
       badge_type:
-        | "hackathon"
-        | "gsoc"
-        | "open_source"
-        | "certification"
-        | "award";
+      | "hackathon"
+      | "gsoc"
+      | "open_source"
+      | "certification"
+      | "award";
       date?: string;
       description?: string;
       link?: string;
@@ -544,7 +544,7 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
         {validAchievements.length > 0 ? (
           <AchievementsAccordion achievements={validAchievements} />
         ) : (
-          <div className="text-sm opacity-40 italic uppercase tracking-wider">
+          <div className="text-xs opacity-40 italic uppercase tracking-wider">
             {"// no validated honors recorded"}
           </div>
         )}
@@ -644,7 +644,7 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
             })}
           </div>
         ) : (
-          <div className="text-sm opacity-40 italic uppercase tracking-wider">
+          <div className="text-xs opacity-40 italic uppercase tracking-wider">
             {"// no active project telemetry logged"}
           </div>
         )}
@@ -657,7 +657,7 @@ export const ProfileView = ({ data }: ProfileViewProps) => {
             return (
               <div
                 key={idx}
-                className="grid grid-cols-[70px_1fr] gap-3 mb-3 text-xs"
+                className="grid grid-cols-[70px_1fr] font-['Share_Tech_Mono',_monospace] gap-3 mb-3 text-xs"
               >
                 <div className="text-[#00ff9d] pt-0.5 tracking-[0.05em] text-xs">
                   {group.year}

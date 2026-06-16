@@ -1,6 +1,7 @@
 import clientPromise, { getDbName } from "@/lib/db";
 import { ScanlineOverlay, HeaderBar } from "@/components/layout/Common";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { RightPanel } from "@/components/layout/RightPanel";
 import { ProfileView } from "@/components/views/ProfileView";
 import { notFound } from "next/navigation";
 
@@ -73,19 +74,21 @@ export default async function PublicProfilePage(props: {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0d1a] text-[#c8ffe8] font-['Share_Tech_Mono',_monospace] relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#0d0d1a] text-[#c8ffe8] relative overflow-x-hidden">
       <ScanlineOverlay />
       <HeaderBar />
 
-      <div className="flex flex-col md:flex-row min-h-[calc(100vh-40px)]">
+      <div className="grid grid-cols-1 md:grid-cols-[240px_1fr_280px] min-h-[calc(100vh-40px)]">
         <Sidebar
           user={profile as unknown as Parameters<typeof Sidebar>[0]["user"]}
           isPublic={true}
         />
 
-        <main className="flex-1 p-6 flex flex-col gap-6 max-w-5xl relative z-10 pb-20">
+        <main className="p-6 flex flex-col gap-6 max-w-5xl relative z-10 pb-20">
           <ProfileView data={profile} />
         </main>
+
+        <RightPanel username={username} chapters={profile.chapters} />
       </div>
     </div>
   );
