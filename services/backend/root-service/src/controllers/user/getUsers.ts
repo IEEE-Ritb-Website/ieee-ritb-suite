@@ -35,13 +35,16 @@ export async function GetUsersController(
   responseCreator: ResponseCreator<IGetUsersResponse>,
 ): WithResponsePromise<IGetUsersResponse> {
   try {
-    const {
-      position,
-      chapters,
-      onlySeniorPositions,
-      onlyJuniorPositions,
-      onlyExecoms,
-    } = req.query;
+    const { position, chapters } = req.query;
+    const onlySeniorPositions =
+      req.query.onlySeniorPositions === true ||
+      String(req.query.onlySeniorPositions) === "true";
+    const onlyJuniorPositions =
+      req.query.onlyJuniorPositions === true ||
+      String(req.query.onlyJuniorPositions) === "true";
+    const onlyExecoms =
+      req.query.onlyExecoms === true ||
+      String(req.query.onlyExecoms) === "true";
     const limit = parseInt(String(req.query.limit ?? 20), 10);
     const offset = parseInt(String(req.query.offset ?? 0), 10);
 
@@ -135,7 +138,6 @@ export async function GetUsersController(
       .limit(limit)
       .toArray()) as unknown as IDBUser[];
 
-    // Normalize response data to match schema
     const formattedUsers = users.map((u) => ({
       name: u.name || "",
       image: u.image || null,

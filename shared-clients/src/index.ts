@@ -8,38 +8,23 @@ export const CLIENT_CONFIG: Record<
   { production: string; development: string }
 > = {
   "admin-service": {
-    production: "https://ieee-ritb-admin-service.onrender.com",
-    development: "http://localhost:3000",
+    production: "https://ieee-ritb-admin-service.onrender.com/api",
+    development: "http://localhost:3000/api",
   },
   "common-app-service": {
-    production: "https://apps-ritb.onrender.com",
-    development: "http://localhost:3001",
+    production: "https://apps-ritb.onrender.com/api",
+    development: "http://localhost:3001/api",
   },
   "root-service": {
-    production: "https://ieee-ritb-root-service.onrender.com",
-    development: "http://localhost:3002",
+    production: "https://ieee-ritb-root-service.onrender.com/api",
+    development: "http://localhost:3002/api",
   },
 };
 
 const isProd = isProduction();
 
-/**
- * Optional terminal logger function injected by the consuming frontend.
- * When set, connection warnings are forwarded to the dev server terminal
- * in addition to the browser console. Call `registerTerminalLogger` to set this.
- */
 let terminalLoggerFn: ((message: string) => void) | null = null;
 
-/**
- * Register a function that forwards log messages to the dev server terminal.
- * Call this once at app startup (e.g. in main.tsx) before any API calls are made.
- *
- * @example
- * // In common-app-fe/src/main.tsx — forwards via Vite HMR WebSocket:
- * registerTerminalLogger((msg) => {
- *   if (import.meta.hot) import.meta.hot.send("astranova:terminal-log", { message: msg });
- * });
- */
 export function registerTerminalLogger(fn: (message: string) => void) {
   terminalLoggerFn = fn;
 }
@@ -50,7 +35,8 @@ function logConnectionWarning(serviceFolder: string, url: string) {
   const plainMessage =
     `[Astranova Client] Warning: Local server for "${serviceFolder}" is not running at ${url}.\n` +
     `Please start the backend service using:\n` +
-    `  pnpm --filter ${serviceFolder} dev\n` +
+    `  pnpm --filter ${serviceFolder} build\n` +
+    `  pnpm --filter ${serviceFolder} start\n` +
     `or run the monorepo dev orchestrator.`;
 
   if (typeof window !== "undefined") {
@@ -58,12 +44,9 @@ function logConnectionWarning(serviceFolder: string, url: string) {
       `%c${plainMessage}`,
       "color: #ff3333; font-weight: bold; font-size: 12px; padding: 4px; border: 1px solid #ff3333; border-radius: 4px;",
     );
-    // Also forward to dev server terminal if a logger has been registered
     terminalLoggerFn?.(plainMessage);
   } else {
-    console.warn(
-      `\x1b[33m${plainMessage}\x1b[0m\n`,
-    );
+    console.warn(`\x1b[33m${plainMessage}\x1b[0m\n`);
   }
 }
 

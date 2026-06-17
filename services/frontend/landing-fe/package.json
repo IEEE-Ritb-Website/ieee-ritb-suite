@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@astranova/catalogues": "workspace:^",
+    "@astranova/root-client": "workspace:*",
     "@emailjs/browser": "^4.4.1",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/jetbrains-mono": "^5.2.8",

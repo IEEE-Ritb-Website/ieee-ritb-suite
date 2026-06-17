@@ -612,6 +612,31 @@
     padding: var(--space-5) var(--space-3);
   }
 
+  .ct-officers-grid > .ct-officer-card:only-child {
+    width: 100%;
+    max-width: none;
+  }
+
+  .ct-officers-grid > .ct-officer-card:only-child .ct-avatar-ring-md {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .ct-execom-grid > .ct-execom-card:only-child {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: none;
+  }
+
+  .ct-execom-grid > .ct-execom-card:only-child .ct-avatar-ring-sm {
+    width: 100%;
+    max-width: 120px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
   .ct-avatar-ring-md {
     width: 84px;
     height: 84px;
