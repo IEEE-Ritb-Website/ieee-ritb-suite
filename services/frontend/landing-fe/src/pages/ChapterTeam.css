@@ -214,8 +214,10 @@
 }
 
 .ct-avatar-ring-md {
-  width: 106px;
-  height: 106px;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  aspect-ratio: 1 / 1;
 }
 
 .ct-avatar-ring-sm {
@@ -283,7 +285,8 @@
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-5) var(--space-4);
-  width: 190px;
+  width: calc((100% - 4 * var(--space-5)) / 5);
+  max-width: 220px;
   border-radius: 12px;
   border: 1px solid
     color-mix(in srgb, var(--accent) 15%, rgba(255, 255, 255, 0.08));
@@ -503,21 +506,10 @@
 
 /* ── Execom Grid ──────────────────────────────────────────────────── */
 .ct-execom-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-4);
-}
-
-@media (min-width: 640px) {
-  .ct-execom-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .ct-execom-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
+  justify-content: center;
 }
 
 /* ── Execom Card ──────────────────────────────────────────────────── */
@@ -528,6 +520,9 @@
   align-items: center;
   gap: var(--space-3-5);
   padding: var(--space-5) var(--space-3-5);
+  width: calc((100% - 4 * var(--space-4)) / 5);
+  max-width: 190px;
+  flex-shrink: 0;
   border-radius: 12px;
   border: 1px solid
     color-mix(in srgb, var(--accent) 10%, rgba(255, 255, 255, 0.05));
@@ -607,25 +602,7 @@
     font-size: var(--text-2xl);
   }
 
-  .ct-officer-card {
-    width: 155px;
-    padding: var(--space-5) var(--space-3);
-  }
-
-  .ct-officers-grid > .ct-officer-card:only-child {
-    width: 100%;
-    max-width: none;
-  }
-
-  .ct-officers-grid > .ct-officer-card:only-child .ct-avatar-ring-md {
-    width: 100%;
-    max-width: 280px;
-    height: auto;
-    aspect-ratio: 1 / 1;
-  }
-
   .ct-execom-grid > .ct-execom-card:only-child {
-    grid-column: 1 / -1;
     width: 100%;
     max-width: none;
   }
@@ -635,11 +612,6 @@
     max-width: 120px;
     height: auto;
     aspect-ratio: 1 / 1;
-  }
-
-  .ct-avatar-ring-md {
-    width: 84px;
-    height: 84px;
   }
 
   .ct-avatar-ring-sm {
@@ -664,9 +636,45 @@
     padding: 0 var(--space-4);
     gap: var(--space-3);
   }
+}
 
-  .ct-execom-grid {
-    grid-template-columns: repeat(2, 1fr);
+/* Tablet: 3 columns */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .ct-officer-card {
+    width: calc((100% - 2 * var(--space-5)) / 3);
+    max-width: 240px;
+  }
+  .ct-execom-card {
+    width: calc((100% - 2 * var(--space-4)) / 3);
+    max-width: 220px;
+  }
+}
+
+/* Mobile: 2 columns */
+@media (max-width: 639px) {
+  .ct-officers-grid {
+    gap: var(--space-4);
+  }
+
+  .ct-officer-card {
+    width: calc((100% - var(--space-4)) / 2);
+    padding: var(--space-5) var(--space-3);
+  }
+
+  .ct-officers-grid > .ct-officer-card:only-child {
+    width: 100%;
+    max-width: none;
+  }
+
+  .ct-officers-grid > .ct-officer-card:only-child .ct-avatar-ring-md {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .ct-execom-card {
+    width: calc((100% - var(--space-4)) / 2);
   }
 }
 

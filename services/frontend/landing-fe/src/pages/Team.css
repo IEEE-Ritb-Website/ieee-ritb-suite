@@ -168,7 +168,8 @@
     background var(--duration-moderate) var(--ease-smooth),
     box-shadow var(--duration-moderate) var(--ease-smooth);
   cursor: pointer;
-  width: 190px;
+  width: calc((100% - 4 * var(--space-5)) / 5);
+  max-width: 220px;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -187,7 +188,6 @@
 
 /* Senior variant — stronger presence */
 .member-card-senior {
-  width: 190px;
   padding: var(--space-5) var(--space-4);
   border-color: rgba(77, 127, 255, 0.25);
   background: linear-gradient(
@@ -297,8 +297,10 @@
 /* ── Member Avatar ────────────────────────────────────────────────── */
 .member-avatar-ring {
   position: relative;
-  width: 106px;
-  height: 106px;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
   clip-path: polygon(
     15% 0%,
     85% 0%,
@@ -324,8 +326,10 @@
 }
 
 .member-avatar-ring-senior {
-  width: 106px;
-  height: 106px;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
   background: linear-gradient(
     135deg,
     rgba(77, 127, 255, 0.75),
@@ -676,17 +680,28 @@
     aspect-ratio: 1 / 1;
   }
 
-  .member-avatar-ring {
-    width: 84px;
-    height: 84px;
-  }
-  .member-avatar-ring-senior {
-    width: 84px;
-    height: 84px;
-  }
 
   .chapter-directory-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablet: 3 columns */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .member-card,
+  .member-card-senior {
+    width: calc((100% - 2 * var(--space-5)) / 3);
+    max-width: 240px;
+  }
+}
+
+/* Mobile: 1 column */
+@media (max-width: 639px) {
+  .member-card,
+  .member-card-senior {
+    width: 100%;
+    max-width: 280px;
+    padding: var(--space-5) var(--space-3);
   }
 }
 
