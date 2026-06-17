@@ -25,7 +25,7 @@
     "@astranova/catalogues": "workspace:*",
     "astralogger": "workspace:*",
     "astranova-core": "workspace:*",
-    "better-auth": "^1.3.13",
+    "better-auth": "^1.6.11",
     "body-parser": "^2.2.0",
     "cloudinary": "^2.9.0",
     "cors": "^2.8.5",
