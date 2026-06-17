@@ -18,5 +18,7 @@
     "test": {
       "inputs": ["default", "^default"]
     }
-  }
+  },
+  "analytics": true,
+  "nxCloudId": "6a330dbf6d4a50106f47f4ad"
 }

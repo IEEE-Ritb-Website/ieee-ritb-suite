@@ -13,14 +13,14 @@
   "license": "ISC",
   "packageManager": "pnpm@10.28.2",
   "devDependencies": {
-    "@eslint/js": "^9.36.0",
-    "@types/node": "^24.5.2",
+    "@eslint/js": "^9.39.4",
+    "@types/node": "^24.13.2",
     "astranova-ai": "workspace:*",
-    "eslint": "^9.25.1",
-    "globals": "^16.0.0",
-    "nx": "^21.1.2",
-    "prettier": "^3.5.3",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.44.1"
+    "eslint": "^9.39.4",
+    "globals": "^16.5.0",
+    "nx": "22.7.5",
+    "prettier": "^3.8.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.61.1"
   }
 }
