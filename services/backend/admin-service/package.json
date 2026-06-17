@@ -25,25 +25,25 @@
     "@astranova/catalogues": "workspace:*",
     "astralogger": "workspace:*",
     "astranova-core": "workspace:*",
-    "better-auth": "^1.3.13",
-    "body-parser": "^2.2.0",
-    "cloudinary": "^2.9.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
-    "express": "^5.1.0",
-    "mongodb": "^6.20.0",
-    "zod": "^4.1.9"
+    "better-auth": "^1.6.19",
+    "body-parser": "^2.3.0",
+    "cloudinary": "^2.10.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongodb": "^6.21.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.6",
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@typescript-eslint/eslint-plugin": "^8.44.0",
-    "@typescript-eslint/parser": "^8.44.0",
-    "eslint": "^9.36.0",
-    "prettier": "^3.6.2",
-    "tsc-alias": "^1.8.16",
-    "typescript": "^5.9.2",
-    "astranova-cli": "workspace:*"
+    "@types/express": "^5.0.6",
+    "@typescript-eslint/eslint-plugin": "^8.61.1",
+    "@typescript-eslint/parser": "^8.61.1",
+    "astranova-cli": "workspace:*",
+    "eslint": "^9.39.4",
+    "prettier": "^3.8.4",
+    "tsc-alias": "^1.8.17",
+    "typescript": "^5.9.3"
   }
 }

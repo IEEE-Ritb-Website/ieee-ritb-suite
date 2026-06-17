@@ -19,9 +19,9 @@
     "astranova-core": "workspace:*"
   },
   "devDependencies": {
-    "@mrknown404/create-express-app": "^1.0.15",
+    "@mrknown404/create-express-app": "^1.0.19",
     "astranova-ai": "workspace:*",
     "chalk": "^5.6.2",
-    "inquirer": "^12.9.6"
+    "inquirer": "^12.11.1"
   }
 }
