@@ -1,7 +1,7 @@
-import { defineConfig, type Plugin } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import path from "path"
+import { defineConfig, type Plugin } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import path from "path";
 
 /**
  * Vite plugin that listens for `astranova:terminal-log` events sent by the
@@ -15,9 +15,7 @@ function terminalLoggerPlugin(): Plugin {
       server.hot.on(
         "astranova:terminal-log",
         (data: { message: string }, client) => {
-          process.stdout.write(
-            `\n\x1b[33m${data.message}\x1b[0m\n\n`,
-          );
+          process.stdout.write(`\n\x1b[33m${data.message}\x1b[0m\n\n`);
           client.send("astranova:terminal-log:ack", {});
         },
       );
@@ -27,7 +25,6 @@ function terminalLoggerPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-
   plugins: [react(), tailwindcss(), terminalLoggerPlugin()],
 
   resolve: {
@@ -39,15 +36,22 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-three': ['three', '@react-three/fiber'],
-          'vendor-motion': ['framer-motion'],
-          'vendor-utils': ['lenis'],
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("three") || id.includes("@react-three/fiber")) {
+              return "vendor-three";
+            }
+            if (id.includes("framer-motion")) {
+              return "vendor-motion";
+            }
+            if (id.includes("lenis")) {
+              return "vendor-utils";
+            }
+          }
         },
       },
     },
     chunkSizeWarningLimit: 500,
     sourcemap: false,
   },
-
-})
+});
