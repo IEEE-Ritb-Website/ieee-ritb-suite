@@ -20,6 +20,7 @@ import {
   SB_SENIOR_POSITIONS,
   SB_VICE_POSITIONS,
   PROFILE_BASE_URL,
+  sortMembersByPosition,
 } from "@/data/teamData";
 import { Chapters } from "@astranova/catalogues";
 import ChapterIcon from "@/components/ui/ChapterIcon";
@@ -190,10 +191,12 @@ export default function Team() {
 
   const animState = warpComplete ? "visible" : "hidden";
 
-  const seniorOfficers = members.filter((m) =>
-    SB_SENIOR_POSITIONS.has(m.position),
+  const seniorOfficers = sortMembersByPosition(
+    members.filter((m) => SB_SENIOR_POSITIONS.has(m.position)),
   );
-  const viceOfficers = members.filter((m) => SB_VICE_POSITIONS.has(m.position));
+  const viceOfficers = sortMembersByPosition(
+    members.filter((m) => SB_VICE_POSITIONS.has(m.position)),
+  );
 
   return (
     <>

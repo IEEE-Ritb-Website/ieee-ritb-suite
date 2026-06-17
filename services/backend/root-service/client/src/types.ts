@@ -35,7 +35,7 @@ export interface GetUsersRequest {
 
 export interface GetUsersResponse {
   success: true;
-  data?:
+  data:
     | {
         name: string;
         image: string | null;
@@ -45,9 +45,9 @@ export interface GetUsersResponse {
           acronym: string;
           position: string;
         }[];
-        department: string | null;
-        year: string | null;
-        term: string | null;
+        department: string;
+        year: string;
+        term: string;
       }[]
     | null;
   message?: string;

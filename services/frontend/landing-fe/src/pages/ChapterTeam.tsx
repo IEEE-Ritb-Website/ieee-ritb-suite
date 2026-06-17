@@ -16,7 +16,7 @@ import { useState, useMemo } from "react";
 import { useMotion } from "@/hooks/useMotion";
 import type { LayoutContext } from "@/layouts/MainLayout";
 import type { ITeamMember } from "@/types/team";
-import { CHAPTER_POSITION_ORDER, PROFILE_BASE_URL } from "@/data/teamData";
+import { sortMembersByPosition, PROFILE_BASE_URL } from "@/data/teamData";
 import type { IChapter, IChapterAcronyms } from "@astranova/catalogues";
 import ChapterIcon from "@/components/ui/ChapterIcon";
 import SEO from "@/components/common/SEO";
@@ -228,17 +228,10 @@ export default function ChapterTeam() {
   const accentColor = chapter.color ?? "#4d7fff";
 
   const { officers, execoms } = useMemo(() => {
-    const positionIndex = (pos: string) => {
-      const idx = CHAPTER_POSITION_ORDER.indexOf(pos);
-      return idx === -1 ? CHAPTER_POSITION_ORDER.length : idx;
-    };
-
-    const officerList = members
-      .filter((m) => m.position !== "Execom")
-      .sort((a, b) => positionIndex(a.position) - positionIndex(b.position));
-
+    const officerList = sortMembersByPosition(
+      members.filter((m) => m.position !== "Execom"),
+    );
     const execomList = members.filter((m) => m.position === "Execom");
-
     return { officers: officerList, execoms: execomList };
   }, [members]);
 

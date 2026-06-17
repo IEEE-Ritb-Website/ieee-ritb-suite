@@ -586,7 +586,7 @@ function syncSharedClients(monorepoRoot: string) {
                             .split("-")
                             .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
                             .join("");
-                        
+
                         const factoryName = `create${pascalName}APIClient`;
                         const clientName = `${pascalName}APIClient`;
 
@@ -598,7 +598,7 @@ function syncSharedClients(monorepoRoot: string) {
                             clientName
                         });
                     }
-                } catch (e) {}
+                } catch (e) { }
             }
         }
     }
@@ -609,7 +609,7 @@ function syncSharedClients(monorepoRoot: string) {
     if (fs.existsSync(configPath)) {
         try {
             rawConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-        } catch (e) {}
+        } catch (e) { }
     }
 
     let configObj: Record<string, string> = {};
@@ -630,9 +630,9 @@ function syncSharedClients(monorepoRoot: string) {
             const prodUrl = client.serviceFolder === "common-app-service"
                 ? "https://apps-ritb.onrender.com"
                 : client.serviceFolder === "root-service"
-                ? "https://ieee-ritb-root-service.onrender.com"
-                : `https://ieee-ritb-${client.serviceFolder.replace("-service", "")}-service.onrender.com`;
-            
+                    ? "https://ieee-ritb-root-service.onrender.com"
+                    : `https://ieee-ritb-${client.serviceFolder.replace("-service", "")}-service.onrender.com`;
+
             configObj[client.serviceFolder] = prodUrl;
             configChanged = true;
         }
@@ -709,30 +709,35 @@ function syncSharedClients(monorepoRoot: string) {
         const prodUrl = configObj[client.serviceFolder] || "";
         indexCode += `  "${client.serviceFolder}": {\n`;
         indexCode += `    production: "${prodUrl}",\n`;
-        indexCode += `    development: "http://localhost:${detectedPort}"\n`;
+        indexCode += `    development: "http://localhost:${detectedPort}/api"\n`;
         indexCode += "  },\n";
     }
     indexCode += "};\n\n";
 
     indexCode += `const isProd = isProduction();\n\n`;
 
+    indexCode += `let terminalLoggerFn: ((message: string) => void) | null = null;\n\n`;
+    indexCode += `export function registerTerminalLogger(fn: (message: string) => void) {\n  terminalLoggerFn = fn;\n}\n\n`;
+
     indexCode += `function logConnectionWarning(serviceFolder: string, url: string) {
   if (isProd) return;
 
+  const plainMessage =
+    \`[Astranova Client] Warning: Local server for "\${serviceFolder}" is not running at \${url}.\\n\` +
+    \`Please start the backend service using:\\n\` +
+    \`  pnpm --filter \${serviceFolder} build\\n\` +
+    \`  pnpm --filter \${serviceFolder} start\\n\` +
+    \`or run the monorepo dev orchestrator.\`;
+
   if (typeof window !== "undefined") {
     console.error(
-      \`%c[Astranova Client] Warning: Local server for "\${serviceFolder}" is not running at \${url}.\\n\` +
-      \`Please start the backend service using:\\n\` +
-      \`  pnpm --filter \${serviceFolder} dev\\n\` +
-      \`or run the monorepo dev orchestrator.\`,
+      \`%c\${plainMessage}\`,
       "color: #ff3333; font-weight: bold; font-size: 12px; padding: 4px; border: 1px solid #ff3333; border-radius: 4px;"
     );
+    terminalLoggerFn?.(plainMessage);
   } else {
     console.warn(
-      \`\\x1b[33m[Astranova Client] Warning: Local server for "\${serviceFolder}" is not running at \${url}.\\x1b[0m\\n\` +
-      \`Please start the backend service using:\\n\` +
-      \`  pnpm --filter \${serviceFolder} dev\\n\` +
-      \`or run the monorepo dev orchestrator.\\n\`
+      \`\\x1b[33m\${plainMessage}\\x1b[0m\\n\`
     );
   }
 }
@@ -786,7 +791,7 @@ function wrapClientWithConnectionCheck<T extends Record<string, any>>(
 
     try {
         execSync("pnpm prettier --write shared-clients/src", { cwd: monorepoRoot });
-    } catch (e) {}
+    } catch (e) { }
 }
 
 

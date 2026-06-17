@@ -139,18 +139,18 @@ export const GetUsersResponseValidator = defineResponseSchema(
     data: z.array(
       z.object({
         name: z.string(),
-        image: z.string().optional().nullable(),
+        image: z.string().nullable(),
         username: z.string(),
         chapters: z.array(
           z.object({
             name: z.string(),
             acronym: z.string(),
-            position: z.string().optional(),
+            position: z.string(),
           }),
         ),
-        department: z.string().optional().nullable(),
-        year: z.string().optional().nullable(),
-        term: z.string().optional().nullable(),
+        department: z.string(),
+        year: z.string(),
+        term: z.string(),
       }),
     ),
     message: z.string().optional(),

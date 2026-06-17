@@ -663,6 +663,19 @@
     padding: var(--space-5) var(--space-3);
   }
 
+  .officers-grid > .member-card:only-child {
+    width: 100%;
+    max-width: none;
+  }
+
+  .officers-grid > .member-card:only-child .member-avatar-ring,
+  .officers-grid > .member-card:only-child .member-avatar-ring-senior {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
   .member-avatar-ring {
     width: 84px;
     height: 84px;
