@@ -54,6 +54,18 @@ export function getPositionIndex(positionName: string): number {
   return index === -1 ? IEEE_POSITIONS.length : index;
 }
 
+/** Check if a position string represents an Execom member defensively */
+export function isExecomPosition(position: string | undefined | null): boolean {
+  if (!position) return false;
+  const pos = position.trim().toLowerCase();
+  return (
+    pos === "execom" ||
+    pos === "exocom" ||
+    pos.includes("execom") ||
+    pos.includes("exocom")
+  );
+}
+
 /** Sort team members according to the canonical IEEE position rank order */
 export function sortMembersByPosition(members: ITeamMember[]): ITeamMember[] {
   return [...members].sort(

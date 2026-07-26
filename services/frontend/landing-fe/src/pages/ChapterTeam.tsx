@@ -16,7 +16,11 @@ import { useState, useMemo } from "react";
 import { useMotion } from "@/hooks/useMotion";
 import type { LayoutContext } from "@/layouts/MainLayout";
 import type { ITeamMember } from "@/types/team";
-import { sortMembersByPosition, PROFILE_BASE_URL } from "@/data/teamData";
+import {
+  sortMembersByPosition,
+  isExecomPosition,
+  PROFILE_BASE_URL,
+} from "@/data/teamData";
 import type { IChapter, IChapterAcronyms } from "@astranova/catalogues";
 import ChapterIcon from "@/components/ui/ChapterIcon";
 import SEO from "@/components/common/SEO";
@@ -229,9 +233,9 @@ export default function ChapterTeam() {
 
   const { officers, execoms } = useMemo(() => {
     const officerList = sortMembersByPosition(
-      members.filter((m) => m.position !== "Execom"),
+      members.filter((m) => !isExecomPosition(m.position)),
     );
-    const execomList = members.filter((m) => m.position === "Execom");
+    const execomList = members.filter((m) => isExecomPosition(m.position));
     return { officers: officerList, execoms: execomList };
   }, [members]);
 
