@@ -1,23 +1,25 @@
 {
-  "name": "@astranova/common-app-client",
+  "name": "@astranova/backend-common",
   "version": "1.0.0",
-  "description": "",
+  "private": true,
+  "description": "Shared backend primitives for the ieee-ritb-suite monorepo (env loading, error handling).",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "tsc",
     "clean": "rm -rf dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.18.0"
+    "dotenv": "^17.2.2"
   },
   "devDependencies": {
-    "tsc-alias": "^1.8.17"
+    "@types/express": "^5.0.3",
+    "typescript": "^5.9.2"
   }
 }

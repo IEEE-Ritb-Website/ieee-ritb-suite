@@ -19,7 +19,6 @@
     "lucide-react": "^0.511.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "shared-clients": "workspace:*",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {

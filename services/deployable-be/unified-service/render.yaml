@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: ieee-ritb-unified
+    runtime: node
+    plan: free
+    buildCommand: >-
+      pnpm install &&
+      pnpm --filter @astranova/catalogues build &&
+      pnpm --filter astranova-core build &&
+      pnpm --filter astralogger build &&
+      pnpm --filter @astranova/backend-common build &&
+      pnpm --filter admin-service build &&
+      pnpm --filter root-service build &&
+      pnpm --filter form-service build &&
+      pnpm --filter common-app-service build &&
+      pnpm --filter unified-service build
+    startCommand: pnpm --filter unified-service start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URL
+        sync: false
+      - key: BETTER_AUTH_SECRET
+        sync: false
+      - key: BETTER_AUTH_URL
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

@@ -135,12 +135,12 @@ export default nextConfig;
     );
     builder.createFile("tsconfig.json", tsconfigContent);
 
-    // Step 8: Add shared-clients dependency for terminal logger
+    // Step 8: Add unified-client dependency for backend access
     const packageJsonPath = path.join(projectPath, "package.json");
     if (fs.existsSync(packageJsonPath)) {
       const pkg = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
       pkg.dependencies = pkg.dependencies ?? {};
-      pkg.dependencies["shared-clients"] = "workspace:*";
+      pkg.dependencies["@astranova/unified-client"] = "workspace:*";
       pkg.dependencies["@astranova/catalogues"] = "workspace:*";
       pkg.dependencies["astranova-core"] = "workspace:*";
       fs.writeFileSync(
@@ -149,62 +149,6 @@ export default nextConfig;
         "utf-8",
       );
     }
-
-    // Step 9: Create Server Action for terminal logging
-    const actionsDir = path.join(projectPath, "src", "actions");
-    fs.mkdirSync(actionsDir, { recursive: true });
-
-    const logTerminalActionContent = `"use server";
-
-import { isProduction } from "astranova-core";
-
-/**
- * Server Action: logToTerminal
- *
- * Called by client components (via registerTerminalLogger in shared-clients)
- * to forward connection warnings from the browser to the Next.js dev server
- * terminal. Server actions run on the Node.js process, so console output
- * appears directly in the terminal window running \`next dev\`.
- *
- * This is a no-op in production — the registerTerminalLogger is only
- * registered in development.
- */
-export async function logToTerminal(message: string): Promise<void> {
-  if (isProduction()) return;
-  process.stdout.write(\`\\n\\x1b[33m\${message}\\x1b[0m\\n\\n\`);
-}
-`;
-    fs.writeFileSync(
-      path.join(actionsDir, "log-terminal.ts"),
-      logTerminalActionContent,
-      "utf-8",
-    );
-
-    // Step 10: Create instrumentation-client.ts — the Next.js equivalent of Vite's main.tsx.
-    // Next.js automatically runs this file once in the browser before React hydrates,
-    // so no provider component or layout change is needed.
-    const instrumentationClientContent = `/**
- * instrumentation-client.ts — Next.js client-side instrumentation entry point.
- *
- * Next.js runs this file once in the browser before React hydration, making it
- * the equivalent of Vite's main.tsx for one-time client setup.
- *
- * Registers the shared-clients terminal logger so that backend connection
- * warnings are forwarded to the Next.js dev server terminal via a Server Action,
- * in addition to appearing in the browser console.
- */
-import { registerTerminalLogger } from "shared-clients";
-import { logToTerminal } from "@/actions/log-terminal";
-
-registerTerminalLogger((message) => {
-  logToTerminal(message).catch(() => {});
-});
-`;
-    fs.writeFileSync(
-      path.join(projectPath, "src", "instrumentation-client.ts"),
-      instrumentationClientContent,
-      "utf-8",
-    );
 
     // Step 12: AGENTS.md and README.md
     const agentsContent = `# Agent Guide: ${projectName}
@@ -222,10 +166,9 @@ Next.js frontend application under the IEEE RIT-B Suite.
 - Client components must be explicitly marked with \`"use client"\`.
 - Server Actions must be in separate files marked with \`"use server"\`.
 
-## Shared Clients
-- Import service clients from \`shared-clients\` (workspace package).
-- Connection warnings are forwarded to the dev terminal via \`instrumentation-client.ts\` + \`logToTerminal\` Server Action.
-- Do NOT create a provider component for this — it is already wired up via \`src/instrumentation-client.ts\`.
+## Unified Client
+- Import service clients from \`@astranova/unified-client\` (workspace package).
+- Pick the base URL from \`VITE_API_URL\`, falling back to \`http://localhost:3000\` for local dev.
 `;
 
     const readmeContent = `# ${projectName}
