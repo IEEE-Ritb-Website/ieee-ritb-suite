@@ -14,7 +14,9 @@
 import type { ITeamMember } from "@/types/team";
 import { IEEE_POSITIONS } from "@astranova/catalogues";
 import { CONFIG } from "@/configs";
-import { RootServiceClient } from "shared-clients";
+import { createUnifiedClient } from "@astranova/unified-client";
+
+const chaptersClient = createUnifiedClient(CONFIG.UNIFIED_API_BASE).chapters;
 
 export const PROFILE_BASE_URL = CONFIG.PROFILE_BASE_URL;
 
@@ -87,14 +89,12 @@ const MOCK_CHAPTER_TEAMS: Record<string, ITeamMember[]> = {};
  */
 export async function fetchSBOfficers(): Promise<ITeamMember[]> {
   try {
-    const res = await RootServiceClient.getUsers({
-      query: {
-        chapters: "sb",
-        limit: 10,
-        onlySeniorPositions: false,
-        onlyJuniorPositions: false,
-        onlyExecoms: false,
-      },
+    const res = await chaptersClient.getUsers({
+      chapters: "sb",
+      limit: 10,
+      onlySeniorPositions: false,
+      onlyJuniorPositions: false,
+      onlyExecoms: false,
     });
     if (res.success && Array.isArray(res.data) && res.data.length > 0) {
       return res.data.map((user) => {
@@ -122,7 +122,7 @@ export async function fetchSBOfficers(): Promise<ITeamMember[]> {
     }
   } catch (error) {
     console.error(
-      "Failed to fetch SB officers from API via RootServiceClient, falling back to mock data:",
+      "Failed to fetch SB officers from API via unified-client, falling back to mock data:",
       error,
     );
   }
@@ -137,14 +137,12 @@ export async function fetchChapterTeam(
   acronym: string,
 ): Promise<ITeamMember[]> {
   try {
-    const res = await RootServiceClient.getUsers({
-      query: {
-        chapters: acronym.toLowerCase(),
-        limit: 100,
-        onlySeniorPositions: false,
-        onlyJuniorPositions: false,
-        onlyExecoms: false,
-      },
+    const res = await chaptersClient.getUsers({
+      chapters: acronym.toLowerCase(),
+      limit: 100,
+      onlySeniorPositions: false,
+      onlyJuniorPositions: false,
+      onlyExecoms: false,
     });
     if (res.success && Array.isArray(res.data) && res.data.length > 0) {
       return res.data.map((user) => {
@@ -170,7 +168,7 @@ export async function fetchChapterTeam(
     }
   } catch (error) {
     console.error(
-      `Failed to fetch chapter team for ${acronym} from API via RootServiceClient, falling back to mock data:`,
+      `Failed to fetch chapter team for ${acronym} from API via unified-client, falling back to mock data:`,
       error,
     );
   }

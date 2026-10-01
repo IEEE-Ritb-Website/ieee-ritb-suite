@@ -32,7 +32,6 @@
     "react-dom": "19.2.4",
     "react-hook-form": "^7.79.0",
     "react-icon-cloud": "^4.1.7",
-    "shared-clients": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -1,0 +1,56 @@
+{
+  "services": [
+    {
+      "package": "admin-service",
+      "subpath": "router",
+      "mount": "/api/admin",
+      "client": {
+        "file": "admin",
+        "name": "AdminClient",
+        "key": "admin"
+      }
+    },
+    {
+      "package": "root-service",
+      "subpath": "router",
+      "mount": "/api",
+      "client": {
+        "file": "chapters",
+        "name": "ChaptersClient",
+        "key": "chapters"
+      }
+    },
+    {
+      "package": "form-service",
+      "subpath": "router",
+      "mount": "/api/forms",
+      "client": {
+        "file": "forms",
+        "name": "FormsClient",
+        "key": "forms"
+      }
+    },
+    {
+      "package": "common-app-service",
+      "subpath": "short-url-api",
+      "mount": "/api/urls",
+      "client": {
+        "file": "urls",
+        "name": "UrlsClient",
+        "key": "urls"
+      }
+    },
+    {
+      "package": "common-app-service",
+      "subpath": "router",
+      "mount": "/api/urls",
+      "named": "cronRouter"
+    },
+    {
+      "package": "common-app-service",
+      "subpath": "router",
+      "mount": "/",
+      "named": "redirectRouter"
+    }
+  ]
+}

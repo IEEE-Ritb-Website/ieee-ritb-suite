@@ -5,7 +5,8 @@
   "scripts": {
     "create-be": "astranova-cli run create-be",
     "create-fe": "astranova-cli run create-fe",
-    "create-next": "astranova-cli run create-next"
+    "create-next": "astranova-cli run create-next",
+    "link-service": "astranova-cli run link-service"
   },
   "devDependencies": {
     "astranova-cli": "workspace:*"

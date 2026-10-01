@@ -8,8 +8,9 @@ import shortUrlRouter from './shortUrl.routes';
 
 const router = Router();
 
-// default route for short url redirect
-router.get("/l/:code",
+export const redirectRouter = Router();
+
+redirectRouter.get("/l/:code",
     validationMiddleware(GetShortUrlRequestValidator),
     withResponseValidation<IGetShortUrlResponse, typeof GetShortUrlRequestValidator>(
         GetShortUrlResponseValidator,
@@ -22,8 +23,12 @@ router.get("/l/:code",
     ),
 );
 
+router.use(redirectRouter);
+
+export const cronRouter = Router();
+
 // cron job endpoint — secured with x-cron-secret header
-router.get("/api/cron",
+cronRouter.get("/cron",
     (req, res, next) => {
         const secret = req.headers["x-cron-secret"];
         if (!secret || secret !== CONFIG.cronSecret) {
@@ -42,6 +47,8 @@ router.get("/api/cron",
             ),
     ),
 );
+
+router.use("/api", cronRouter);
 
 // all other api routes
 router.use("/api", shortUrlRouter);

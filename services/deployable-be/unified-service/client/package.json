@@ -1,0 +1,24 @@
+{
+  "name": "@astranova/unified-client",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Typed axios clients for the unified-service. Classes are scaffolded by pnpm rs link-service, method bodies are hand-written per endpoint.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.18.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

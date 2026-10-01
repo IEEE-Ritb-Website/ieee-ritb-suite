@@ -219,8 +219,6 @@ ieee-ritb-suite/
 │   ├── 📦 astranova-core/           # Core environment and monorepo root helpers
 │   └── 📚 catalogues/               # IEEE chapter data registry (18 chapters)
 │
-├── 🔌 shared-clients/           # Centralized API client singletons (with client-config.json)
-│
 ├── 🔧 services/
 │   │
 │   ├── 🖥️ backend/                  # Express.js microservices
@@ -478,7 +476,7 @@ cd services/frontend/<app-name>
 | **🤖 astranova-ai** | Local AI developer assistant CLI wrapper | Terminal or Web UI execution modes, dynamic project-local binary resolution |
 | **📦 astranova-core** | Core environment and path helpers | Separate browser-safe and Node-only entrypoints, CommonJS compatible |
 | **📚 @astranova/catalogues** | IEEE chapter data registry | Zod-validated schemas, 18 chapters (12 tech, 6 non-tech) |
-| **🔌 shared-clients** | Centralized instantiated clients | Singleton API client exports, client-config.json urls, local health checks |
+| **🔌 @astranova/unified-client** | Typed axios clients for the unified backend | One client class per service, generated mounts, single base URL |
 
 ### Frontend Applications
 

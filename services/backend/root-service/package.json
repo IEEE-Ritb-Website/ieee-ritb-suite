@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "exports": {
-    "types": "./dist/types/index.js"
+    "./types": "./dist/types/index.js",
+    "./router": "./dist/routes/index.js"
   },
   "scripts": {
     "build": "tsc && tsc-alias",

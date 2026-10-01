@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { copy } from "@/helpers"
 import { Copy } from "lucide-react"
-import { CommonAppServiceClient } from "shared-clients"
+import { createUnifiedClient } from "@astranova/unified-client"
+import { CONFIGS } from "@/configs"
 import { toast } from "sonner"
 
 function isValidUrl(value: string) {
@@ -28,6 +29,11 @@ export default function UrlShortener() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [recent, setRecent] = useState<RecentItem[]>([])
+
+  const apiClient = useMemo(
+    () => createUnifiedClient(CONFIGS.api_url).urls,
+    []
+  )
 
   // Load recent links on mount
   useEffect(() => {
@@ -57,11 +63,9 @@ export default function UrlShortener() {
     setBusy(true)
 
     try {
-      const res = await CommonAppServiceClient.createShortUrl({
-        body: {
-          long_url: url,
-          ttl_seconds: null,
-        },
+      const res = await apiClient.createShortUrl({
+        long_url: url,
+        ttl_seconds: null,
       })
 
       if (!res.success) {

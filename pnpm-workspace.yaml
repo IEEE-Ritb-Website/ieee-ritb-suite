@@ -1,6 +1,6 @@
 packages:
   - packages/*
   - services/backend/**
+  - services/deployable-be/**
   - services/frontend/*
-  - shared-clients
   - scripting
