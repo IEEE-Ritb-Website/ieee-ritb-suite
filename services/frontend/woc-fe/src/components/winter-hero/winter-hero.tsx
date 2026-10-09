@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 
 type Flake = {
   x: number;
@@ -135,11 +136,11 @@ export function WinterHero() {
 
   return (
     <section className="relative flex min-h-screen flex-col overflow-hidden">
-      {/* Falling snow */}
+      {/* Falling snow (sits behind content and app chrome) */}
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-30"
+        className="pointer-events-none absolute inset-0 z-0"
       />
 
       {/* Aurora wash */}
@@ -182,19 +183,19 @@ export function WinterHero() {
           className="mt-10 flex animate-rise flex-col items-center justify-center gap-4 sm:flex-row"
           style={{ animationDelay: "500ms" }}
         >
-          <a
+          <Link
             href="/projects"
             className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-glacier-300 to-glacier-500 px-8 py-3.5 font-mono text-xs font-semibold uppercase tracking-[0.22em] text-night-950 shadow-[0_8px_40px_-6px_rgba(90,169,245,0.7)] transition-all hover:shadow-[0_8px_54px_-4px_rgba(90,169,245,0.9)] sm:w-auto"
           >
             Explore projects
             <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
-          </a>
-          <a
+          </Link>
+          <Link
             href="/organizations"
             className="inline-flex w-full items-center justify-center rounded-full border border-silver-400/40 px-8 py-3.5 font-mono text-xs uppercase tracking-[0.22em] text-silver-100 transition-all hover:border-glacier-300 hover:text-white sm:w-auto"
           >
             Become a mentor
-          </a>
+          </Link>
         </div>
 
         <dl
