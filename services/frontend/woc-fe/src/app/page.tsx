@@ -1,69 +1,135 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import Hero from "@/components/home/Hero";
+import HighlightsSection from "@/components/home/HighlightsSection";
+import IntroductionSection from "@/components/home/IntroductionSection";
+import TimelineSection from "@/components/home/TimelineSection";
+import OrganizationCard from "@/components/organizations/OrganizationCard";
+import PreviewDataNotice from "@/components/PreviewDataNotice";
+import ProjectCard from "@/components/projects/ProjectCard";
+import {
+  buildOrganizationMap,
+  countProjectsByOrganization,
+  getOrganizationsSnapshot,
+  getProjectsSnapshot,
+} from "@/lib/woc-data";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "RIT Winter of Code",
+  description:
+    "RIT Winter of Code is a winter-long open-source program where students build real solutions for participating organizations.",
+};
+
+export default async function Home() {
+  const [projectsSnapshot, organizationsSnapshot] = await Promise.all([
+    getProjectsSnapshot(),
+    getOrganizationsSnapshot(),
+  ]);
+  const organizationsById = buildOrganizationMap(organizationsSnapshot.data);
+  const projectCounts = countProjectsByOrganization(projectsSnapshot.data);
+  const previewProjects = projectsSnapshot.data.slice(0, 3);
+  const previewOrganizations = organizationsSnapshot.data.slice(0, 3);
+  const showingPreview =
+    projectsSnapshot.source === "preview" ||
+    organizationsSnapshot.source === "preview";
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+        <Hero />
+      </div>
+
+      <IntroductionSection />
+
+      <HighlightsSection />
+
+      <TimelineSection />
+
+      <section
+        aria-labelledby="home-projects-heading"
+        className="border-t border-zinc-900/10 dark:border-zinc-100/10"
+      >
+        <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 md:py-24">
+          <p className="font-mono text-xs font-medium tracking-[0.3em] text-blue-700 uppercase dark:text-blue-400">
+            Problem statements
           </p>
+          <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
+            <h2
+              id="home-projects-heading"
+              className="max-w-xl text-3xl font-semibold tracking-tight text-balance text-zinc-900 sm:text-4xl dark:text-zinc-50"
+            >
+              Explore Problem Statements
+            </h2>
+            <Link
+              href="/projects"
+              className="rounded text-sm font-medium text-blue-700 hover:text-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              View all problem statements →
+            </Link>
+          </div>
+          {showingPreview && (
+            <div className="mt-8">
+              <PreviewDataNotice resource="data" />
+            </div>
+          )}
+          {previewProjects.length === 0 ? (
+            <p className="mt-8 text-base leading-7 text-zinc-600 dark:text-zinc-400">
+              No problem statements have been published yet. Check back during
+              the submission period (October 15 – October 31).
+            </p>
+          ) : (
+            <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {previewProjects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  organizationName={organizationsById.get(project.organization)?.name}
+                />
+              ))}
+            </div>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section
+        aria-labelledby="home-orgs-heading"
+        className="border-t border-zinc-900/10 dark:border-zinc-100/10"
+      >
+        <div className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 md:py-24">
+          <p className="font-mono text-xs font-medium tracking-[0.3em] text-blue-700 uppercase dark:text-blue-400">
+            Organizations
+          </p>
+          <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
+            <h2
+              id="home-orgs-heading"
+              className="max-w-xl text-3xl font-semibold tracking-tight text-balance text-zinc-900 sm:text-4xl dark:text-zinc-50"
+            >
+              Participating Organizations
+            </h2>
+            <Link
+              href="/organizations"
+              className="rounded text-sm font-medium text-blue-700 hover:text-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              View all organizations →
+            </Link>
+          </div>
+          {previewOrganizations.length === 0 ? (
+            <p className="mt-8 text-base leading-7 text-zinc-600 dark:text-zinc-400">
+              Participating organizations will be announced soon.
+            </p>
+          ) : (
+            <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {previewOrganizations.map((organization) => (
+                <OrganizationCard
+                  key={organization.id}
+                  organization={organization}
+                  projectCount={projectCounts.get(organization.id) ?? 0}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      </main>
-    </div>
+      </section>
+    </>
   );
 }
