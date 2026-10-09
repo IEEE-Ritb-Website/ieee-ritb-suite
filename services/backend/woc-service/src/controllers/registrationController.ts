@@ -3,7 +3,8 @@ import { getDb } from "@/db";
 import { IProject, IRegistration, RegistrationSchema } from "@/schemas";
 import { successResponse } from "@/utils/responseHelper";
 import { toObjectId } from "@/utils/objectId";
-import { NotFoundError, ValidationError, ConflictError } from "@/middlewares";
+import { assertRegistrationEligibility, normalizeEmail } from "@/utils/registrationGuards";
+import { NotFoundError, ValidationError, ConflictError, UnauthorizedError } from "@/middlewares";
 
 const getProjectsCollection = () => getDb().collection<IProject>("projects");
 const getRegistrationsCollection = () =>
@@ -13,33 +14,33 @@ export const registerForProject = async (req: Request, res: Response) => {
     const { projectId } = req.params;
     const { participant, proposal } = req.body;
 
+    if (!req.user) {
+        throw new UnauthorizedError("Missing access token");
+    }
+
     const project = await getProjectsCollection().findOne({ _id: toObjectId(projectId as string, "project") as any });
 
     if (!project) {
         throw new NotFoundError("Project");
     }
 
-    // check project is published
-    if (project.status !== "published") {
-        throw new ValidationError("Project is not published");
-    }
-
-    // check application deadline
-    if (project.applicationDeadline) {
-        const now = new Date();
-        if (now > new Date(project.applicationDeadline)) {
-            throw new ValidationError("Applications have closed for this project");
-        }
-    }
-
     if (!participant?.email || !participant?.name) {
         throw new ValidationError("Name and email are required");
     }
 
-    // check duplicate registration
+    const canonicalEmail = normalizeEmail(participant.email);
+
+    // eligibility: published status, open deadline, allowed years
+    assertRegistrationEligibility(project, participant.year);
+
+    // check duplicate registration (friendly 400s; unique indexes below
+    // are the race-safe backstop and surface as 409s via errorHandler)
     const existingRegistration = await getRegistrationsCollection().findOne({
         projectId,
-        "participant.email": participant.email,
+        $or: [
+            { "participant.email": canonicalEmail },
+            { userId: req.user.id },
+        ],
     });
 
     if (existingRegistration) {
@@ -51,7 +52,9 @@ export const registerForProject = async (req: Request, res: Response) => {
         projectId: projectId as string,
         projectTitle: project.title,
         projectSlug: project.slug,
-        participant,
+        userId: req.user.id,
+        userEmail: req.user.email,
+        participant: { ...participant, email: canonicalEmail },
         proposal,
         status: "pending",
         ipAddress: req.ip || (req.headers["x-forwarded-for"] as string | undefined),

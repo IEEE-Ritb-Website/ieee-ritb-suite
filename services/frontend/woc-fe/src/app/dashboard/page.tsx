@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import SignOutButton from "@/components/auth/SignOutButton";
 import { isSupabaseConfigured } from "@/lib/auth-config";
 import { getSessionUser } from "@/lib/auth-session";
 
@@ -127,6 +128,7 @@ export default async function DashboardPage() {
         >
           Explore problem statements
         </Link>
+        <SignOutButton />
       </div>
 
       <section aria-labelledby="participation-heading" className="mt-14">

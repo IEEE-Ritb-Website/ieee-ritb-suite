@@ -25,6 +25,20 @@ export class ConflictError extends Error {
     }
 }
 
+export class ForbiddenError extends Error {
+    constructor(message: string = "Forbidden") {
+        super(message);
+        this.name = "ForbiddenError";
+    }
+}
+
+export class UnauthorizedError extends Error {
+    constructor(message: string = "Unauthorized access") {
+        super(message);
+        this.name = "UnauthorizedError";
+    }
+}
+
 export const errorHandler = (
     err: unknown,
     req: Request,
@@ -67,6 +81,29 @@ export const errorHandler = (
         return res.status(404).json(errorResponse);
     }
 
+    if (err instanceof UnauthorizedError) {
+        const errorResponse: ErrorResponse = {
+            success: false,
+            error: {
+                type: "unauthorized",
+                message: err.message,
+            },
+        };
+        return res.status(401).json(errorResponse);
+    }
+
+    // Handle forbidden errors
+    if (err instanceof ForbiddenError) {
+        const errorResponse: ErrorResponse = {
+            success: false,
+            error: {
+                type: "forbidden",
+                message: err.message,
+            },
+        };
+        return res.status(403).json(errorResponse);
+    }
+
     // Handle conflict errors (e.g., duplicate entries)
     if (err instanceof ConflictError) {
         const errorResponse: ErrorResponse = {
@@ -94,6 +131,24 @@ export const errorHandler = (
             },
         };
         return res.status(409).json(errorResponse);
+    }
+
+    // Handle malformed JSON bodies (thrown by body-parser before routing).
+    // Without this branch they surface as misleading 500 fatal errors.
+    if (
+        err instanceof SyntaxError &&
+        "status" in err &&
+        (err as { status?: number }).status === 400 &&
+        "body" in err
+    ) {
+        const errorResponse: ErrorResponse = {
+            success: false,
+            error: {
+                type: "validation",
+                message: "Invalid JSON body",
+            },
+        };
+        return res.status(400).json(errorResponse);
     }
 
     // Default fatal error

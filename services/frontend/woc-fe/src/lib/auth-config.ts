@@ -1,19 +1,16 @@
 /**
  * Authentication preparation for RIT Winter of Code.
  *
- * Intended method: GitHub OAuth via Supabase. Supabase is NOT configured in
- * this repository yet (no existing client, no credentials), so this module
- * only reports configuration status — it creates no client and performs no
- * sign-in. Once the Supabase project exists:
+ * Intended method: GitHub OAuth via Supabase. The Supabase client
+ * libraries are installed and the browser/server clients plus the
+ * `/auth/callback` route exist — what is still missing are the project
+ * credentials:
  *
  * 1. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY
  *    (see .env.example) — values come from the Supabase dashboard.
- * 2. Install `@supabase/supabase-js` and `@supabase/ssr` (needs a shell
- *    with symlink privilege — see `.env.example`), then add the
- *    browser/server clients next to this file.
- * 3. Enable the GitHub OAuth provider in Supabase Auth and set the callback
+ * 2. Enable the GitHub OAuth provider in Supabase Auth and set the callback
  *    URL to `<app-url>/auth/callback`.
- * 4. Confirm with the backend teammate how the session token is sent with
+ * 3. Confirm with the backend teammate how the session token is sent with
  *    protected API requests (e.g. `Authorization: Bearer <token>`).
  *
  * No fake authentication is implemented — the sign-in UI stays in a

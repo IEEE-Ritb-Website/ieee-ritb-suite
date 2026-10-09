@@ -7,6 +7,8 @@
  * BACKEND CONTRACT (woc-service, `POST /api/projects/:id/register`):
  * - Request body: `{ participant: { name, email, institution?, year? },
  *   proposal: { statement, githubUrl? } }`
+ * - Auth: `Authorization: Bearer <supabase-access-token>` (required —
+ *   the backend verifies the session and answers 401 otherwise).
  * - 2xx → `{ status: "success" }`
  * - 409 → `{ status: "duplicate" }` (same email already registered)
  * - 401 → `{ status: "session-expired" }`
@@ -145,13 +147,30 @@ export async function submitRegistration(
   }
   const yearMatch = /^(\d)/.exec(data.academicYear.trim());
 
-  let response: Response;
-  try {
-    response = await fetch(
+  // Present the Supabase session to the backend. Absent sessions simply
+  // omit the header — the backend answers 401, mapped below.
+  const { createClient } = await import("./supabase/browser");
+  const supabase = createClient();
+  const getAccessToken = async (): Promise<string | undefined> => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      return session?.access_token ?? undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const postRegistration = (accessToken: string | undefined): Promise<Response> =>
+    fetch(
       `${WOC_API_BASE_URL}${WOC_ENDPOINTS.registerForProblemStatement(data.problemStatementId)}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
         body: JSON.stringify({
           participant: {
             name: data.fullName,
@@ -166,8 +185,24 @@ export async function submitRegistration(
         }),
       },
     );
+
+  let response: Response;
+  try {
+    response = await postRegistration(await getAccessToken());
   } catch {
     return { status: "network-error" };
+  }
+  // The access token may have expired between page load and submit — refresh
+  // the session once and retry before reporting an expired session.
+  if (response.status === 401) {
+    try {
+      const { data } = await supabase.auth.refreshSession();
+      if (data.session?.access_token) {
+        response = await postRegistration(data.session.access_token);
+      }
+    } catch {
+      // Fall through to the 401 mapping below.
+    }
   }
   if (response.ok) return { status: "success" };
   if (response.status === 409) return { status: "duplicate" };

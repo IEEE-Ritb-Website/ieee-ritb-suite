@@ -1,11 +1,12 @@
 import { Router } from "express";
 import * as organizationController from "@/controllers/organizationController";
-import { asyncHandler } from "@/middlewares";
+import { asyncHandler, requireAuth, requireRole } from "@/middlewares";
+import { writeLimiter } from "@/middlewares/rateLimit";
 
 const router = Router();
 
-// Create a new organization
-router.post("/organizations", asyncHandler(organizationController.createOrganization));
+// Create a new organization (mentors and admins only)
+router.post("/organizations", writeLimiter, requireAuth, requireRole("mentor", "admin"), asyncHandler(organizationController.createOrganization));
 
 // Public routes - Read only
 router.get("/organizations", asyncHandler(organizationController.listOrganizations));

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { UserRole } from "@/utils/roles";
 
 // Configuration type
 export type ICONFIG = {
@@ -10,7 +11,28 @@ export type ICONFIG = {
         name: string;
     };
     cronSecret: string;
+    supabase: {
+        url: string;
+        anonKey: string;
+    };
 };
+
+// Authenticated user attached by requireAuth middleware.
+// Role is resolved from verified Supabase app_metadata at auth time.
+export type AuthUser = {
+    id: string;
+    email?: string;
+    role: UserRole;
+};
+
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Express {
+        interface Request {
+            user?: AuthUser;
+        }
+    }
+}
 
 export const ErrorResponseSchema = z.object({
     success: z.literal(false),

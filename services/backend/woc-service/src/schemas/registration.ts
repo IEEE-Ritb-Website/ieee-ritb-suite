@@ -22,6 +22,11 @@ export const RegistrationSchema = z.object({
     projectTitle: z.string(),
     projectSlug: z.string(),
 
+    // Bound server-side to the verified session (requireAuth) — never
+    // accepted from the client, so one account cannot register as another.
+    userId: z.string().min(1),
+    userEmail: z.string().email().optional(),
+
     participant: ParticipantSchema,
     proposal: ProposalSchema,
 

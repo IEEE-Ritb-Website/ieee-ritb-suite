@@ -12,4 +12,8 @@ export const CONFIG: ICONFIG = {
         name: "woc-service " + (isProduction() ? "production" : "development"),
     },
     cronSecret: process.env.CRON_SECRET || "",
+    supabase: {
+        url: process.env.SUPABASE_URL || "",
+        anonKey: process.env.SUPABASE_ANON_KEY || "",
+    },
 };
