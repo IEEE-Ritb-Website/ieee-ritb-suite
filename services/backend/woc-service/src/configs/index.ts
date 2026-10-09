@@ -1,10 +1,11 @@
 import { isProduction } from "astranova-core/node";
+import { ICONFIG } from "@/types";
 
 const SERVER_PORT = Number(process.env.PORT) || 3004;
 
-export const CONFIG = {
+export const CONFIG: ICONFIG = {
     database: {
-        name: isProduction() ? "prod" : "test",
+        name: isProduction() ? "woc-service-prod" : "woc-service-dev",
     },
     server: {
         port: SERVER_PORT,

@@ -3,8 +3,22 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import app from "./app";
+import { getAstraLogger } from "astralogger";
+import { CONFIG } from "./configs";
+import { connectToDatabase } from "./db";
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+const startServer = async () => {
+    try {
+        await connectToDatabase();
+        getAstraLogger().info("Database connected");
+
+        app.listen(CONFIG.server.port, () => {
+            getAstraLogger().info(`${CONFIG.server.name} server running on http://localhost:${CONFIG.server.port}`);
+        });
+    } catch (error) {
+        getAstraLogger().error({ err: error }, "Failed to start server");
+        process.exit(1);
+    }
+};
+
+startServer();

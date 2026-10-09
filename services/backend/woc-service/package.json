@@ -22,6 +22,7 @@
     "body-parser": "^2.3.0",
     "cors": "^2.8.6",
     "express": "^5.3.0",
+    "mongodb": "^6.21.0",
     "zod": "^4.6.5",
     "astralogger": "workspace:*",
     "astranova-core": "workspace:*",

@@ -3,9 +3,9 @@ import cors from "cors";
 import bodyParser from "body-parser";
 
 import router from "./routes";
+import { errorHandler } from "./middlewares";
 
 const app = express();
-
 app.use(cors({origin: "*", credentials: true,}));
 
 app.use(express.urlencoded({ extended: true }));
@@ -17,5 +17,7 @@ app.use(
 );
 
 app.use("/api", router);
+
+app.use(errorHandler);
     
 export default app;
