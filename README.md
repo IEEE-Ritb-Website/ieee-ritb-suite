@@ -257,7 +257,7 @@ ieee-ritb-suite/
 </td>
 <td>
 
-Scaffold new services instantly with `pnpm rs create-be/fe` - generates TypeScript, ESLint, Zod, and all configs automatically
+Scaffold new services instantly with `pnpm rs create-be/fe/create-next` - generates TypeScript, ESLint, Zod, and all configs automatically
 
 </td>
 </tr>
@@ -415,6 +415,7 @@ Architecture Decision Records (ADRs) are lightweight documents that capture impo
 |---------|-------------|
 | `pnpm rs create-be <name>` | Create new Express backend in `services/backend/` |
 | `pnpm rs create-fe <name>` | Create new Vite+React frontend in `services/frontend/` |
+| `pnpm rs create-next <name>` | Create new Next.js frontend in `services/frontend/` |
 
 ### 🤖 AI Command Assistant (astranova-ai)
 
@@ -533,7 +534,7 @@ We welcome contributions! Here's how to get started:
 
 | Guideline | Description |
 |-----------|-------------|
-| **Custom CLI** | Use `pnpm rs create-be/fe <name>` to scaffold new services |
+| **Custom CLI** | Use `pnpm rs create-be/fe/create-next <name>` to scaffold new services |
 | **Patterns** | Follow existing patterns in `services/backend/` or `services/frontend/` |
 | **Architecture** | Review [`docs/adrs/`](docs/adrs/) before making architectural decisions |
 | **Shared Packages** | Utilize `astralogger` and `catalogues` |
