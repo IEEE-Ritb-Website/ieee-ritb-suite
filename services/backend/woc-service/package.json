@@ -8,6 +8,7 @@
     "start": "node dist/index.js",
     "lint": "eslint . --ext .ts,.js",
     "test": "vitest run",
+    "seed": "node scripts/seed.mjs",
     "gen-docs": "astranova-cli generate-docs",
     "generate-docs": "astranova-cli generate-docs",
     "gen-client": "astranova-cli generate-client",

@@ -20,10 +20,9 @@ export const DeliverableSchema = z.object({
     description: z.string().optional(),
 });
 
-export const MentorSchema = z.object({
+export const CoordinatorSchema = z.object({
     name: z.string().min(2),
-    email: z.string().email().optional(),
-    profileUrl: z.string().url().optional(),
+    contact: z.string().min(1),
 });
 
 export const DurationSchema = z.object({
@@ -46,7 +45,7 @@ export const ProjectSchema = z.object({
     stipendDetails: StipendDetailsSchema.optional(),
     skills: z.array(SkillSchema).min(1),
     deliverables: z.array(DeliverableSchema).default([]),
-    mentor: MentorSchema.optional(),
+    coordinator: CoordinatorSchema.optional(),
     duration: DurationSchema.optional(),
     difficulty: z.enum(["beginner", "intermediate", "advanced"]).optional(),
     eligibility: EligibilitySchema.optional(),
@@ -54,7 +53,6 @@ export const ProjectSchema = z.object({
 
     organizationId: z.string().min(1),
 
-    status: z.enum(["draft", "published", "closed"]).default("draft"),
     tags: z.array(z.string()).default([]),
 
 
@@ -66,7 +64,7 @@ export const ProjectSchema = z.object({
 export type IStipendDetails = z.infer<typeof StipendDetailsSchema>;
 export type ISkill = z.infer<typeof SkillSchema>;
 export type IDeliverable = z.infer<typeof DeliverableSchema>;
-export type IMentor = z.infer<typeof MentorSchema>;
+export type ICoordinator = z.infer<typeof CoordinatorSchema>;
 export type IDuration = z.infer<typeof DurationSchema>;
 export type IEligibility = z.infer<typeof EligibilitySchema>;
 export type IProject = z.infer<typeof ProjectSchema> & {

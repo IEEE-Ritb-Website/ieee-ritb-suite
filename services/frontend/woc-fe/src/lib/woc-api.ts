@@ -21,11 +21,13 @@ export const WOC_API_BASE_URL = (
 
 /** Backend routes on woc-service. */
 export const WOC_ENDPOINTS = {
-  problemStatements: "/api/projects?status=published&limit=100",
+  problemStatements: "/api/projects?limit=100",
   problemStatementById: (id: string) => `/api/projects/${encodeURIComponent(id)}`,
   organizations: "/api/organizations?limit=100",
   registerForProblemStatement: (id: string) =>
     `/api/projects/${encodeURIComponent(id)}/register`,
+  myRegistration: (id: string) =>
+    `/api/projects/${encodeURIComponent(id)}/registrations/me`,
 } as const;
 
 export function isWocApiConfigured(): boolean {
@@ -106,13 +108,14 @@ function mapProblemStatement(raw: ApiProblemStatement): ProblemStatement {
   };
 }
 
-async function fetchApi<T>(path: string): Promise<T> {
+async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
   if (!isWocApiConfigured()) throw new WocApiNotConfiguredError();
   let response: Response;
   try {
     response = await fetch(`${WOC_API_BASE_URL}${path}`, {
       headers: { Accept: "application/json" },
       cache: "no-store",
+      ...init,
     });
   } catch {
     throw new Error(
@@ -157,4 +160,34 @@ export async function listOrganizations(): Promise<Organization[]> {
     WOC_ENDPOINTS.organizations,
   );
   return data.organizations.map(mapOrganization);
+}
+
+export type RegistrationStatus = "pending" | "approved" | "rejected" | "waitlisted";
+
+export type MyRegistration = {
+  id: string;
+  status: RegistrationStatus;
+} | null;
+
+// The caller's own registration for one project (null when none).
+// Requires a Supabase access token — without one there is no session
+// to look up, so it resolves null and lets the UI fall back to apply.
+export async function getMyRegistration(
+  projectId: string,
+  accessToken?: string,
+): Promise<MyRegistration> {
+  if (!isWocApiConfigured() || !accessToken) return null;
+  const data = await fetchApi<{
+    registration: { _id?: unknown; id?: string; status: RegistrationStatus } | null;
+  }>(WOC_ENDPOINTS.myRegistration(projectId), {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  if (!data.registration) return null;
+  return {
+    id: String(data.registration._id ?? data.registration.id ?? ""),
+    status: data.registration.status,
+  };
 }

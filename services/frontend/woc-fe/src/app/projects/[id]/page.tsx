@@ -3,11 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import OrganizationCard from "@/components/organizations/OrganizationCard";
 import PreviewDataNotice from "@/components/PreviewDataNotice";
+import { getSessionUser } from "@/lib/auth-session";
+import { createClient } from "@/lib/supabase/server";
 import {
   buildOrganizationMap,
+  getMyRegistrationSnapshot,
   getOrganizationsSnapshot,
   getProjectByIdSnapshot,
   getProjectsSnapshot,
+  type MyRegistration,
 } from "@/lib/woc-data";
 
 interface ProjectDetailsPageProps {
@@ -35,13 +39,21 @@ function formatStipendValue(value: unknown): string {
   return JSON.stringify(value);
 }
 
+const REGISTRATION_STATUS_COPY: Record<string, string> = {
+  pending: "Application pending review — mentors respond during the submission period.",
+  approved: "Accepted — check your email for onboarding details.",
+  rejected: "Not selected for this project this season.",
+  waitlisted: "Waitlisted — we will reach out if a slot opens up.",
+};
+
 export default async function ProjectDetailsPage({
   params,
 }: ProjectDetailsPageProps) {
   const { id } = await params;
-  const [projectSnapshot, organizationsSnapshot] = await Promise.all([
+  const [projectSnapshot, organizationsSnapshot, sessionUser] = await Promise.all([
     getProjectByIdSnapshot(id),
     getOrganizationsSnapshot(),
+    getSessionUser(),
   ]);
 
   if (projectSnapshot.error) {
@@ -65,6 +77,18 @@ export default async function ProjectDetailsPage({
 
   const project = projectSnapshot.data;
   if (!project) notFound();
+
+  let myRegistration: MyRegistration | null = null;
+  if (sessionUser) {
+    const supabase = await createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    ({ registration: myRegistration } = await getMyRegistrationSnapshot(
+      project.id,
+      session?.access_token ?? undefined,
+    ));
+  }
 
   const organizationsById = buildOrganizationMap(organizationsSnapshot.data);
   const organization = organizationsById.get(project.organization);
@@ -179,24 +203,59 @@ export default async function ProjectDetailsPage({
         <h2 className="text-xl font-semibold tracking-tight text-zinc-900 sm:text-2xl dark:text-zinc-50">
           Interested in this problem statement?
         </h2>
-        <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-          Sign in with GitHub to get started. Proposals are accepted during the
-          submission period (October 15 – October 31).
-        </p>
-        <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link
-            href={`/projects/${project.id}/register`}
-            className="inline-flex items-center justify-center bg-blue-700 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
-          >
-            Register for This Project
-          </Link>
-          <Link
-            href="/auth/sign-in"
-            className="inline-flex items-center justify-center border border-zinc-900/20 px-8 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-900/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 dark:border-zinc-100/20 dark:text-zinc-100 dark:hover:bg-zinc-100/10"
-          >
-            Sign in with GitHub
-          </Link>
-        </div>
+        {sessionUser && myRegistration ? (
+          <>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+              You&apos;ve already applied for this project.{" "}
+              {REGISTRATION_STATUS_COPY[myRegistration.status] ?? ""}
+            </p>
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href="/projects"
+                className="inline-flex items-center justify-center border border-zinc-900/20 px-8 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-900/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 dark:border-zinc-100/20 dark:text-zinc-100 dark:hover:bg-zinc-100/10"
+              >
+                Browse other projects
+              </Link>
+            </div>
+          </>
+        ) : sessionUser ? (
+          <>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+              You&apos;re signed in{sessionUser.name ? ` as ${sessionUser.name}` : ""}.
+              Proposals are accepted during the submission period (October 15 –
+              October 31).
+            </p>
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href={`/projects/${project.id}/register`}
+                className="inline-flex items-center justify-center bg-blue-700 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
+              >
+                Register for This Project
+              </Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+              Sign in with GitHub to get started. Proposals are accepted during the
+              submission period (October 15 – October 31).
+            </p>
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href={`/projects/${project.id}/register`}
+                className="inline-flex items-center justify-center bg-blue-700 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
+              >
+                Register for This Project
+              </Link>
+              <Link
+                href="/auth/sign-in"
+                className="inline-flex items-center justify-center border border-zinc-900/20 px-8 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-900/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 dark:border-zinc-100/20 dark:text-zinc-100 dark:hover:bg-zinc-100/10"
+              >
+                Sign in with GitHub
+              </Link>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -10,7 +10,6 @@
 "use client";
 
 import { useState } from "react";
-import { isSupabaseConfigured } from "@/lib/auth-config";
 import { createClient } from "@/lib/supabase/browser";
 
 function GitHubMark() {
@@ -26,11 +25,20 @@ function GitHubMark() {
   );
 }
 
-export default function GitHubSignInButton({ returnTo }: { returnTo?: string }) {
+export default function GitHubSignInButton({
+  returnTo,
+  configured,
+}: {
+  returnTo?: string;
+  // Passed from the server page (single source of truth). The button must
+  // NOT read env itself — server and client bundles can disagree on env
+  // during development, which crashes hydration.
+  configured: boolean;
+}) {
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  if (!isSupabaseConfigured()) {
+  if (!configured) {
     return (
       <div>
         <button

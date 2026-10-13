@@ -6,7 +6,9 @@
  *
  * BACKEND CONTRACT (woc-service, `POST /api/projects/:id/register`):
  * - Request body: `{ participant: { name, email, institution?, year? },
- *   proposal: { statement, githubUrl? } }`
+ *   proposal: { statement, githubUrl?, proposalDoc?: { url, type } } }`
+ *   where `proposalDoc` points at a file in the `proposal-docs` bucket —
+ *   the backend rejects URLs outside its own storage bucket.
  * - Auth: `Authorization: Bearer <supabase-access-token>` (required —
  *   the backend verifies the session and answers 401 otherwise).
  * - 2xx → `{ status: "success" }`
@@ -31,6 +33,23 @@ export interface RegistrationFormData {
   interest: string;
   skills: string[];
   additionalInfo: string;
+  /** Optional proposal document selected in the form (uploaded on submit). */
+  proposalDocFile?: File | null;
+}
+
+export type ProposalDocType = "pdf" | "docx";
+
+/** Supabase Storage bucket for applicant proposal documents. */
+export const PROPOSAL_DOCS_BUCKET = "proposal-docs";
+
+/** Per-file ceiling (15 MB) — mirrored by the bucket's file_size_limit. */
+export const MAX_PROPOSAL_DOC_BYTES = 15 * 1024 * 1024;
+
+export function proposalDocTypeForFile(file: File): ProposalDocType | null {
+  const name = file.name.toLowerCase();
+  if (name.endsWith(".pdf")) return "pdf";
+  if (name.endsWith(".docx")) return "docx";
+  return null;
 }
 
 export type RegistrationField =
@@ -162,7 +181,10 @@ export async function submitRegistration(
     }
   };
 
-  const postRegistration = (accessToken: string | undefined): Promise<Response> =>
+  const postPayload = (
+    accessToken: string | undefined,
+    proposalDoc: { url: string; type: ProposalDocType } | undefined,
+  ): Promise<Response> =>
     fetch(
       `${WOC_API_BASE_URL}${WOC_ENDPOINTS.registerForProblemStatement(data.problemStatementId)}`,
       {
@@ -181,14 +203,51 @@ export async function submitRegistration(
           proposal: {
             statement: statementParts.join("\n\n"),
             githubUrl: data.githubProfileUrl || undefined,
+            ...(proposalDoc ? { proposalDoc } : {}),
           },
         }),
       },
     );
 
+  // Upload the proposal document first (if any) so the registration carries
+  // a public bucket URL. Upload failure aborts before anything is sent.
+  let proposalDoc: { url: string; type: ProposalDocType } | undefined;
+  if (data.proposalDocFile) {
+    const file = data.proposalDocFile;
+    const type = proposalDocTypeForFile(file);
+    if (!type) {
+      return { status: "server-error", message: "Proposal document must be a PDF or DOCX file." };
+    }
+    if (file.size > MAX_PROPOSAL_DOC_BYTES) {
+      return { status: "server-error", message: "Proposal document must be smaller than 15 MB." };
+    }
+    try {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const path = `proposals/${data.problemStatementId}/${Date.now()}-${Math.random().toString(36).slice(2)}-${safeName}`;
+      const { error: uploadError } = await supabase.storage
+        .from(PROPOSAL_DOCS_BUCKET)
+        .upload(path, file, {
+          contentType: file.type || undefined,
+          upsert: false,
+        });
+      if (uploadError) {
+        return { status: "server-error", message: `Document upload failed: ${uploadError.message}` };
+      }
+      const { data: urlData } = supabase.storage
+        .from(PROPOSAL_DOCS_BUCKET)
+        .getPublicUrl(path);
+      proposalDoc = { url: urlData.publicUrl, type };
+    } catch {
+      return { status: "network-error" };
+    }
+  }
+
+  const postWithDoc = (accessToken: string | undefined): Promise<Response> =>
+    postPayload(accessToken, proposalDoc);
+
   let response: Response;
   try {
-    response = await postRegistration(await getAccessToken());
+    response = await postWithDoc(await getAccessToken());
   } catch {
     return { status: "network-error" };
   }
@@ -198,7 +257,7 @@ export async function submitRegistration(
     try {
       const { data } = await supabase.auth.refreshSession();
       if (data.session?.access_token) {
-        response = await postRegistration(data.session.access_token);
+        response = await postWithDoc(data.session.access_token);
       }
     } catch {
       // Fall through to the 401 mapping below.

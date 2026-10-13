@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { getDb } from "@/db";
+import { CONFIG } from "@/configs";
 import { IProject, IRegistration, RegistrationSchema } from "@/schemas";
 import { successResponse } from "@/utils/responseHelper";
 import { toObjectId } from "@/utils/objectId";
-import { assertRegistrationEligibility, normalizeEmail } from "@/utils/registrationGuards";
+import { assertProposalDocUrl, assertRegistrationEligibility, normalizeEmail } from "@/utils/registrationGuards";
 import { NotFoundError, ValidationError, ConflictError, UnauthorizedError } from "@/middlewares";
 
 const getProjectsCollection = () => getDb().collection<IProject>("projects");
@@ -67,6 +68,11 @@ export const registerForProject = async (req: Request, res: Response) => {
     // validate with Zod schema
     const validatedRegistration = RegistrationSchema.parse(registration);
 
+    // an attached proposal doc must genuinely live in our upload bucket
+    if (validatedRegistration.proposal.proposalDoc) {
+        assertProposalDocUrl(validatedRegistration.proposal.proposalDoc, CONFIG.supabase.url);
+    }
+
     // insert into database
     const result = await getRegistrationsCollection().insertOne(
         validatedRegistration as any,
@@ -82,7 +88,29 @@ export const registerForProject = async (req: Request, res: Response) => {
         .json(successResponse(createdRegistration, "Registration submitted successfully"));
 };
 
+export const getMyRegistration = async (req: Request, res: Response) => {
+    const { projectId } = req.params;
+
+    if (!req.user) {
+        throw new UnauthorizedError("Missing access token");
+    }
+
+    // Only the caller's own document is ever returned — no PII exposure.
+    const registration = await getRegistrationsCollection().findOne({
+        projectId: projectId as string,
+        userId: req.user.id,
+    });
+
+    res.json(
+        successResponse(
+            { registration: registration ?? null },
+            "Registration status retrieved successfully",
+        ),
+    );
+};
+
 export const listRegistrationsByProject = async (req: Request, res: Response) => {
+
     const { projectId } = req.params;
     const {
         status,

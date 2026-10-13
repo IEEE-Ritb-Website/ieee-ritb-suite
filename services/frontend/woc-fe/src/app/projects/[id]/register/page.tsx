@@ -4,10 +4,13 @@ import { notFound, redirect } from "next/navigation";
 import PreviewDataNotice from "@/components/PreviewDataNotice";
 import RegistrationForm from "@/components/registration/RegistrationForm";
 import { getSessionUser } from "@/lib/auth-session";
+import { createClient } from "@/lib/supabase/server";
 import {
   buildOrganizationMap,
+  getMyRegistrationSnapshot,
   getOrganizationsSnapshot,
   getProjectByIdSnapshot,
+  type MyRegistration,
 } from "@/lib/woc-data";
 
 interface RegisterPageProps {
@@ -76,6 +79,13 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const project = projectSnapshot.data;
   if (!project) notFound();
 
+  const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const { registration: myRegistration }: { registration: MyRegistration } =
+    await getMyRegistrationSnapshot(id, session?.access_token ?? undefined);
+
   const organizationsById = buildOrganizationMap(organizationsSnapshot.data);
   const organization = organizationsById.get(project.organization);
   const stipendSummary = getStipendSummary(
@@ -107,6 +117,27 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
         </div>
       )}
 
+      {myRegistration ? (
+        <div
+          role="status"
+          className="mt-10 border border-blue-700/30 bg-blue-50 px-6 py-10 text-center dark:border-blue-400/30 dark:bg-blue-950"
+        >
+          <h2 className="font-mono text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+            You&apos;ve already applied
+          </h2>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+            Your application for {project.title} is {myRegistration.status}.
+            Watch your email for updates during the submission period
+            (October 15 – October 31).
+          </p>
+          <Link
+            href={`/projects/${project.id}`}
+            className="mt-6 inline-block rounded-sm text-sm font-medium text-blue-700 hover:text-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            ← Back to problem statement
+          </Link>
+        </div>
+      ) : (
       <div className="mt-10 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
         <section
           aria-labelledby="register-summary-heading"
@@ -166,6 +197,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
           />
         </section>
       </div>
+      )}
     </div>
   );
 }

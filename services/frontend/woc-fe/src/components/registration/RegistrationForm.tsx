@@ -3,7 +3,9 @@
 import { useState, type FormEvent } from "react";
 import {
   ACADEMIC_YEARS,
+  MAX_PROPOSAL_DOC_BYTES,
   RegistrationNotConfiguredError,
+  proposalDocTypeForFile,
   submitRegistration,
   validateRegistrationForm,
   type RegistrationErrors,
@@ -79,6 +81,8 @@ export default function RegistrationForm({
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [customSkills, setCustomSkills] = useState("");
   const [additionalInfo, setAdditionalInfo] = useState("");
+  const [proposalDocFile, setProposalDocFile] = useState<File | null>(null);
+  const [proposalDocError, setProposalDocError] = useState<string | undefined>(undefined);
   const [errors, setErrors] = useState<RegistrationErrors>({});
   const [submitState, setSubmitState] = useState<SubmitState>({ kind: "idle" });
 
@@ -90,6 +94,26 @@ export default function RegistrationForm({
         ? current.filter((item) => item !== skill)
         : [...current, skill],
     );
+  }
+
+  function handleProposalDocChange(file: File | null): void {
+    if (!file) {
+      setProposalDocFile(null);
+      setProposalDocError(undefined);
+      return;
+    }
+    if (!proposalDocTypeForFile(file)) {
+      setProposalDocFile(null);
+      setProposalDocError("Only PDF or DOCX files are accepted.");
+      return;
+    }
+    if (file.size > MAX_PROPOSAL_DOC_BYTES) {
+      setProposalDocFile(null);
+      setProposalDocError("Proposal document must be smaller than 15 MB.");
+      return;
+    }
+    setProposalDocError(undefined);
+    setProposalDocFile(file);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
@@ -107,6 +131,10 @@ export default function RegistrationForm({
     setErrors(fieldErrors);
     if (Object.keys(fieldErrors).length > 0) {
       focusFirstError(fieldErrors);
+      return;
+    }
+    if (proposalDocError) {
+      document.getElementById("reg-proposal-doc")?.focus();
       return;
     }
 
@@ -127,6 +155,7 @@ export default function RegistrationForm({
         interest: interest.trim(),
         skills: [...selectedSkills, ...extraSkills],
         additionalInfo: additionalInfo.trim(),
+        proposalDocFile,
       });
       if (result.status === "success") {
         setSubmitState({ kind: "succeeded" });
@@ -328,6 +357,23 @@ export default function RegistrationForm({
             className={`mt-2 ${inputClassName(Boolean(errors.interest))}`}
           />
           <FieldError id={`${FIELD_IDS.interest}-error`} message={errors.interest} />
+        </div>
+
+        <div>
+          <label htmlFor="reg-proposal-doc" className="block text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            Proposal document <span className="font-normal text-zinc-500">(optional, PDF or DOCX, max 15 MB)</span>
+          </label>
+          <input
+            id="reg-proposal-doc"
+            name="proposalDoc"
+            type="file"
+            accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            onChange={(event) => handleProposalDocChange(event.target.files?.[0] ?? null)}
+            aria-invalid={Boolean(proposalDocError)}
+            aria-describedby={proposalDocError ? "reg-proposal-doc-error" : undefined}
+            className={`mt-2 ${inputClassName(Boolean(proposalDocError))}`}
+          />
+          <FieldError id="reg-proposal-doc-error" message={proposalDocError} />
         </div>
 
         <fieldset>

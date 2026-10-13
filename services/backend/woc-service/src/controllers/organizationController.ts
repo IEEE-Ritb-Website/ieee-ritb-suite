@@ -43,7 +43,7 @@ export const listOrganizations = async (req: Request, res: Response) => {
 
     const organizations = await getOrganizationsCollection()
         .find({})
-        .sort({ createdAt: -1 })
+        .sort({ name: 1 })
         .skip(skip)
         .limit(limitNum)
         .toArray();

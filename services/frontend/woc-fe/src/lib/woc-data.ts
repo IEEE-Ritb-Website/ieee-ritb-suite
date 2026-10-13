@@ -12,7 +12,9 @@ import {
   DEV_MOCK_PROBLEM_STATEMENTS,
 } from "./mock-data";
 import type { Organization, ProblemStatement } from "./woc-types";
+import type { MyRegistration } from "./woc-api";
 import {
+  getMyRegistration,
   getProblemStatement,
   isWocApiConfigured,
   listOrganizations,
@@ -102,4 +104,24 @@ export function countProjectsByOrganization(
     counts.set(project.organization, (counts.get(project.organization) ?? 0) + 1);
   }
   return counts;
+}
+
+export type { MyRegistration };
+
+// The signed-in caller's own registration for one project (null when they
+// have not applied). Fail-open by design: any lookup failure resolves
+// null so pages keep their apply CTA — the POST endpoint enforces the
+// truth (409 on duplicates) regardless of what the UI shows.
+export async function getMyRegistrationSnapshot(
+  projectId: string,
+  accessToken?: string,
+): Promise<{ registration: MyRegistration }> {
+  if (!isWocApiConfigured() || !accessToken) {
+    return { registration: null };
+  }
+  try {
+    return { registration: await getMyRegistration(projectId, accessToken) };
+  } catch {
+    return { registration: null };
+  }
 }

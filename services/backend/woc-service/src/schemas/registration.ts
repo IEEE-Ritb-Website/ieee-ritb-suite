@@ -11,10 +11,16 @@ export const ParticipantSchema = z.object({
     institution: z.string().optional(),
 });
 
+export const ProposalDocSchema = z.object({
+    url: z.string().url(),
+    type: z.enum(["pdf", "docx"]),
+});
+
 export const ProposalSchema = z.object({
     statement: z.string().min(20),
     githubUrl: z.string().url().optional(),
     portfolioUrl: z.string().url().optional(),
+    proposalDoc: ProposalDocSchema.optional(),
 });
 
 export const RegistrationSchema = z.object({
@@ -45,6 +51,7 @@ export const RegistrationSchema = z.object({
 
 
 export type IParticipant = z.infer<typeof ParticipantSchema>;
+export type IProposalDoc = z.infer<typeof ProposalDocSchema>;
 export type IProposal = z.infer<typeof ProposalSchema>;
 export type IRegistration = z.infer<typeof RegistrationSchema> & {
     _id?: string | any;

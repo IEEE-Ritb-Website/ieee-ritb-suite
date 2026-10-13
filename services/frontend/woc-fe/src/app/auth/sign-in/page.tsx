@@ -63,7 +63,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           </div>
         )}
         <div className="mt-6">
-          <GitHubSignInButton returnTo={returnTo} />
+          <GitHubSignInButton returnTo={returnTo} configured={supabaseStatus.configured} />
         </div>
         {!supabaseStatus.configured && (
           <div className="mt-6 border border-zinc-900/10 bg-[#FAF9F6] px-4 py-3 dark:border-zinc-100/10 dark:bg-zinc-900">

@@ -42,7 +42,6 @@ export const createProject = async (req: Request, res: Response) => {
 
 export const listProjects = async (req: Request, res: Response) => {
     const {
-        status = "published",
         organizationId,
         difficulty,
         page = "1",
@@ -55,7 +54,6 @@ export const listProjects = async (req: Request, res: Response) => {
 
 
     const filter: any = {};
-    if (status) filter.status = status;
     if (organizationId) filter.organizationId = organizationId;
     if (difficulty) filter.difficulty = difficulty;
 
