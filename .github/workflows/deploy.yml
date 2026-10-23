@@ -1,0 +1,86 @@
+name: Deploy Monorepo Services
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      packages: ${{ steps.filter.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            backend:
+              - 'services/backend/**'
+            frontend:
+              - 'services/frontend/**'
+            packages:
+              - 'packages/**'
+
+  build:
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      needs.changes.outputs.backend == 'true' ||
+      needs.changes.outputs.frontend == 'true' ||
+      needs.changes.outputs.packages == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      - name: Install deps
+        run: pnpm install
+      - name: Build all
+        run: pnpm build-all
+
+  deploy-backend:
+    needs: [changes, build]
+    if: |
+      needs.changes.outputs.backend == 'true' ||
+      needs.changes.outputs.packages == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install -g vercel
+
+      # Conditional deploy: prod if main, else preview
+      - name: Deploy Backend
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Deploying backend to PRODUCTION"
+            vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes --cwd=services/backend
+          else
+            echo "Deploying backend to PREVIEW"
+            vercel --token=${{ secrets.VERCEL_TOKEN }} --yes --cwd=services/backend
+          fi
+
+  deploy-frontend:
+    needs: [changes, build]
+    if: |
+      needs.changes.outputs.frontend == 'true' ||
+      needs.changes.outputs.packages == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install -g netlify-cli
+
+      # Conditional deploy: prod if main, else preview
+      - name: Deploy Frontend
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Deploying frontend to PRODUCTION"
+            netlify deploy --prod --dir=dist --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} --site=${{ secrets.NETLIFY_SITE_ID }} --cwd=services/frontend
+          else
+            echo "Deploying frontend to PREVIEW"
+            netlify deploy --dir=dist --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} --site=${{ secrets.NETLIFY_SITE_ID }} --cwd=services/frontend
+          fi
