@@ -1,0 +1,101 @@
+/**
+ * Drop-in theme for the WinterHero component.
+ *
+ * HOW TO USE IN ANOTHER APP
+ * 1. Copy the whole `winter-hero/` folder into the other app.
+ * 2. Import this file once (e.g. in that app's layout or page):
+ *      import "./winter-hero/winter-hero-theme.css";
+ * 3. Render `<WinterHero />` where the old hero section was.
+ *
+ * REQUIREMENTS
+ * - Tailwind CSS v4 (this file uses `@theme`, which only exists in v4).
+ * - For the exact headline look, load the Fraunces font in the host app
+ *   (e.g. via next/font) under the `--font-display` variable. Without it
+ *   the headline falls back to Georgia/serif and still looks fine.
+ *
+ * This only ADDS utilities (night/glacier/silver colors, rise/aurora/
+ * twinkle animations, frost text helpers). It does not reset or override
+ * anything in the host app.
+ */
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-sans: "Geist", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Cascadia Code", monospace;
+
+  --color-night-950: #04090f;
+  --color-night-900: #060d1a;
+  --color-night-800: #0a1428;
+  --color-night-700: #10203a;
+
+  --color-glacier-200: #c4e4ff;
+  --color-glacier-300: #8fcbff;
+  --color-glacier-400: #5aa9f5;
+  --color-glacier-500: #2e7fd9;
+  --color-glacier-600: #1e5fa8;
+  --color-glacier-900: #0c2342;
+
+  --color-silver-100: #eef2f8;
+  --color-silver-200: #d6deea;
+  --color-silver-300: #c0c9d9;
+  --color-silver-400: #9aa6bb;
+  --color-silver-500: #6f7b92;
+
+  --animate-rise: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-aurora: aurora 16s ease-in-out infinite alternate;
+  --animate-twinkle: twinkle 3.4s ease-in-out infinite;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes aurora {
+    from {
+      transform: translate(-6%, -2%) scale(1);
+      opacity: 0.7;
+    }
+    to {
+      transform: translate(6%, 4%) scale(1.12);
+      opacity: 1;
+    }
+  }
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 0.25;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+/* Frosted headline gradient + ice glow used by WinterHero. */
+.text-frost {
+  background: linear-gradient(180deg, #ffffff 20%, #b9d6f5 65%, #7ea9d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-ice-glow {
+  text-shadow:
+    0 0 24px rgb(90 169 245 / 0.55),
+    0 0 90px rgb(46 127 217 / 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

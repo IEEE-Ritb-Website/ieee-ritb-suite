@@ -8,6 +8,28 @@ import {
 import { getMonorepoRoot, detectServicePort } from "../helper.js";
 import chalk from "chalk";
 
+// The upstream builder persists package.json through an un-awaited async
+// write inside updatePackageJson(), so right after setupProject() the file
+// can be briefly empty or still hold the `pnpm init` stub. Wait until it
+// holds the builder's output (express is always in its dependencies).
+async function waitForUpstreamPackageJson(packageJsonPath: string): Promise<any> {
+    const startedAt = Date.now();
+    for (;;) {
+        try {
+            const parsed = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+            if (parsed?.dependencies?.express) {
+                return parsed;
+            }
+        } catch {
+            // Empty or partially written file; retry below.
+        }
+        if (Date.now() - startedAt > 30000) {
+            throw new Error(`Timed out waiting for content in ${packageJsonPath}`);
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+}
+
 export async function runCreateBE(projectName: string) {
     const rootDir = getMonorepoRoot();
     const baseDir = path.join(rootDir, "services", "backend");
@@ -50,8 +72,13 @@ export async function runCreateBE(projectName: string) {
         await builder.init();
         await builder.setupProject();
 
+        // The upstream createFile() never creates parent directories on the
+        // write path, so pre-create the ones our overrides need.
+        fs.mkdirSync(path.join(projectPath, "src", "configs"), { recursive: true });
+        fs.mkdirSync(path.join(projectPath, "src", "routes"), { recursive: true });
+
         // Override default tsconfig to extend base and fix rootDir requirement
-        builder.createFile(
+        await builder.createFile(
             "tsconfig.json",
             JSON.stringify(
                 {
@@ -75,7 +102,7 @@ export async function runCreateBE(projectName: string) {
             ) + "\n",
         );
 
-        builder.createFile(
+        await builder.createFile(
             "astralogger.json",
             JSON.stringify(
                 {
@@ -92,12 +119,12 @@ export async function runCreateBE(projectName: string) {
             ),
         );
 
-        builder.createFile(
+        await builder.createFile(
             ".env.example",
             `PORT=${nextPort}\nCRON_SECRET=\n`,
         );
 
-        builder.createFile(
+        await builder.createFile(
             "src/configs/index.ts",
             `import { isProduction } from "astranova-core/node";
 
@@ -116,7 +143,7 @@ export const CONFIG = {
 `,
         );
 
-        builder.createFile(
+        await builder.createFile(
             "src/routes/cron.ts",
             `import { type Request, type Response, Router } from "express";
 import { CONFIG } from "@/configs";
@@ -143,7 +170,7 @@ cronRoute.get('/cron', (req: Request, res: Response) => {
 `,
         );
 
-        builder.createFile(
+        await builder.createFile(
             "src/routes/index.ts",
             `import { Router } from 'express';
 import { pingRoute } from './ping';
@@ -204,13 +231,13 @@ pnpm --filter ${projectName} dev
 - \`GET /api/cron\` - Secured cron endpoint (requires \`x-cron-secret\` header)
 `;
 
-        builder.createFile("AGENTS.md", agentsContent);
-        builder.createFile("README.md", readmeContent);
+        await builder.createFile("AGENTS.md", agentsContent);
+        await builder.createFile("README.md", readmeContent);
 
         // Update package.json to include scripts and devDependencies for generating client and docs
         const packageJsonPath = path.join(projectPath, "package.json");
         if (fs.existsSync(packageJsonPath)) {
-            const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+            const packageJson = await waitForUpstreamPackageJson(packageJsonPath);
 
             packageJson.scripts = packageJson.scripts || {};
             packageJson.scripts["gen-docs"] = "astranova-cli generate-docs";

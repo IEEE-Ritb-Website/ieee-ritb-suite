@@ -177,6 +177,7 @@ graph TB
         ADMIN["🔐 admin-service<br/><i>Auth & User Admin</i>"]
         COMMON["🛠️ common-app-service<br/><i>Tools & URL Shortener</i>"]
         FORM["📋 form-service<br/><i>Forms & Registration</i>"]
+        WOCBE["❄️ woc-service<br/><i>Winter of Code API</i>"]
     end
 
     subgraph Clients["🔌 Client SDKs"]
@@ -190,6 +191,7 @@ graph TB
         LINKS["📋 ieee-links<br/><i>Chapter Showcase</i>"]
         TOOLS["🧰 common-app-fe<br/><i>Dev Tools</i>"]
         PROFILE["👤 profile-fe<br/><i>User Dashboard</i>"]
+        WOCFE["❄️ woc-fe<br/><i>Winter of Code Portal</i>"]
     end
 
     subgraph Docs["📖 Documentation"]
@@ -227,13 +229,15 @@ ieee-ritb-suite/
 │   │   ├── 🔐 admin-service/        # Auth & user administration
 │   │   ├── 🌐 root-service/         # Core public API
 │   │   ├── 🛠️ common-app-service/   # Dev tools backend & URL shortener
-│   │   └── 📋 form-service/         # Forms & event registration
+│   │   ├── 📋 form-service/         # Forms & event registration
+│   │   └── ❄️ woc-service/          # Winter of Code API (orgs, projects, registrations)
 │   │
 │   └── 🎨 frontend/                 # Vite + React frontends
 │       ├── 🏠 landing-fe/           # 3D landing page
 │       ├── 🧰 common-app-fe/        # Developer tools dashboard
 │       ├── 📋 ieee-links/           # Chapter link showcase
-│       └── 👤 profile-fe/           # Next.js user dashboard
+│       ├── 👤 profile-fe/           # Next.js user dashboard
+│       └── ❄️ woc-fe/               # Next.js Winter of Code portal
 │
 ├── 📖 docs/
 │   └── 📝 adrs/                     # Architecture Decision Records
@@ -257,7 +261,7 @@ ieee-ritb-suite/
 </td>
 <td>
 
-Scaffold new services instantly with `pnpm rs create-be/fe` - generates TypeScript, ESLint, Zod, and all configs automatically
+Scaffold new services instantly with `pnpm rs create-be/fe/create-next` - generates TypeScript, ESLint, Zod, and all configs automatically
 
 </td>
 </tr>
@@ -415,6 +419,7 @@ Architecture Decision Records (ADRs) are lightweight documents that capture impo
 |---------|-------------|
 | `pnpm rs create-be <name>` | Create new Express backend in `services/backend/` |
 | `pnpm rs create-fe <name>` | Create new Vite+React frontend in `services/frontend/` |
+| `pnpm rs create-next <name>` | Create new Next.js frontend in `services/frontend/` |
 
 ### 🤖 AI Command Assistant (astranova-ai)
 
@@ -488,6 +493,7 @@ cd services/frontend/<app-name>
 | **🧰 common-app-fe** | Developer tools dashboard | Radix UI, React Router, UUID/JSON/Hash generators |
 | **📋 ieee-links** | Chapter link showcase | Framer Motion |
 | **👤 profile-fe** | User dashboard & auth | Next.js 16, better-auth |
+| **❄️ woc-fe** | Winter of Code portal | Next.js 16, Supabase Auth |
 
 ### Backend Services
 
@@ -497,6 +503,7 @@ cd services/frontend/<app-name>
 | **🌐 root-service** | Core public API | Express v5, MongoDB, chapter catalogues |
 | **🛠️ common-app-service** | Dev tools backend & URL shortener | REST APIs, ritb.in short URLs, cron endpoint |
 | **📋 form-service** | Forms & event registration | Zod validation, MongoDB |
+| **❄️ woc-service** | Winter of Code API | Express v5, MongoDB, Supabase JWT auth |
 
 <p align="right">(<a href="#-table-of-contents">back to top</a>)</p>
 
@@ -509,8 +516,8 @@ cd services/frontend/<app-name>
 | Metric | Count |
 |:------:|:-----:|
 | 📦 **Shared Packages** | 5 |
-| 🖥️ **Backend Services** | 4 |
-| 🎨 **Frontend Apps** | 4 |
+| 🖥️ **Backend Services** | 5 |
+| 🎨 **Frontend Apps** | 5 |
 | 📖 **ADR Documents** | 8 |
 
 </div>
@@ -533,7 +540,7 @@ We welcome contributions! Here's how to get started:
 
 | Guideline | Description |
 |-----------|-------------|
-| **Custom CLI** | Use `pnpm rs create-be/fe <name>` to scaffold new services |
+| **Custom CLI** | Use `pnpm rs create-be/fe/create-next <name>` to scaffold new services |
 | **Patterns** | Follow existing patterns in `services/backend/` or `services/frontend/` |
 | **Architecture** | Review [`docs/adrs/`](docs/adrs/) before making architectural decisions |
 | **Shared Packages** | Utilize `astralogger` and `catalogues` |
