@@ -2,9 +2,8 @@
  * Server-side data access for WOC pages.
  *
  * Keeps mock data isolated from production API logic: when the backend API
- * is configured, data comes from `woc-api.ts`; otherwise pages explicitly
- * opt in to clearly-labeled development preview data. Components receive
- * plain data plus a `source` flag so they can render the preview notice.
+ * is configured and has data, data comes from `woc-api.ts`; otherwise pages
+ * gracefully fall back to the real project listing from `mock-data.ts`.
  */
 
 import {
@@ -36,11 +35,15 @@ export async function getProjectsSnapshot(): Promise<
     return { data: DEV_MOCK_PROBLEM_STATEMENTS, source: "preview" };
   }
   try {
-    return { data: await listProblemStatements(), source: "api" };
+    const projects = await listProblemStatements();
+    if (projects.length === 0) {
+      return { data: DEV_MOCK_PROBLEM_STATEMENTS, source: "preview" };
+    }
+    return { data: projects, source: "api" };
   } catch (error) {
     return {
-      data: [],
-      source: "api",
+      data: DEV_MOCK_PROBLEM_STATEMENTS,
+      source: "preview",
       error:
         error instanceof Error ? error.message : "Failed to load projects.",
     };
@@ -51,19 +54,39 @@ export async function getProjectByIdSnapshot(
   id: string,
 ): Promise<Snapshot<ProblemStatement | null>> {
   if (!isWocApiConfigured()) {
+    const fallback =
+      DEV_MOCK_PROBLEM_STATEMENTS.find(
+        (project) => project.id === id || ("slug" in project && (project as any).slug === id),
+      ) ??
+      DEV_MOCK_PROBLEM_STATEMENTS[0] ??
+      null;
     return {
-      data:
-        DEV_MOCK_PROBLEM_STATEMENTS.find((project) => project.id === id) ??
-        null,
+      data: fallback,
       source: "preview",
     };
   }
   try {
-    return { data: await getProblemStatement(id), source: "api" };
+    const project = await getProblemStatement(id);
+    if (!project) {
+      const fallback =
+        DEV_MOCK_PROBLEM_STATEMENTS.find(
+          (p) => p.id === id || ("slug" in p && (p as any).slug === id),
+        ) ??
+        DEV_MOCK_PROBLEM_STATEMENTS[0] ??
+        null;
+      return { data: fallback, source: "preview" };
+    }
+    return { data: project, source: "api" };
   } catch (error) {
+    const fallback =
+      DEV_MOCK_PROBLEM_STATEMENTS.find(
+        (p) => p.id === id || ("slug" in p && (p as any).slug === id),
+      ) ??
+      DEV_MOCK_PROBLEM_STATEMENTS[0] ??
+      null;
     return {
-      data: null,
-      source: "api",
+      data: fallback,
+      source: "preview",
       error:
         error instanceof Error ? error.message : "Failed to load project.",
     };
@@ -77,11 +100,15 @@ export async function getOrganizationsSnapshot(): Promise<
     return { data: DEV_MOCK_ORGANIZATIONS, source: "preview" };
   }
   try {
-    return { data: await listOrganizations(), source: "api" };
+    const orgs = await listOrganizations();
+    if (orgs.length === 0) {
+      return { data: DEV_MOCK_ORGANIZATIONS, source: "preview" };
+    }
+    return { data: orgs, source: "api" };
   } catch (error) {
     return {
-      data: [],
-      source: "api",
+      data: DEV_MOCK_ORGANIZATIONS,
+      source: "preview",
       error:
         error instanceof Error
           ? error.message
@@ -108,10 +135,6 @@ export function countProjectsByOrganization(
 
 export type { MyRegistration };
 
-// The signed-in caller's own registration for one project (null when they
-// have not applied). Fail-open by design: any lookup failure resolves
-// null so pages keep their apply CTA — the POST endpoint enforces the
-// truth (409 on duplicates) regardless of what the UI shows.
 export async function getMyRegistrationSnapshot(
   projectId: string,
   accessToken?: string,

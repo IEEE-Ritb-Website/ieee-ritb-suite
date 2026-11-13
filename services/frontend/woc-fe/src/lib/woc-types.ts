@@ -11,7 +11,7 @@
 export interface Organization {
   id: string;
   name: string;
-  imageUrl: string;
+  imageUrl?: string;
   tagline: string;
 }
 

@@ -20,23 +20,12 @@ export default function OrganizationCard({
 }: OrganizationCardProps) {
   return (
     <article className="flex items-start gap-4 border border-zinc-900/10 bg-white p-6 dark:border-zinc-100/10 dark:bg-zinc-950">
-      {organization.imageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={organization.imageUrl}
-          alt={`${organization.name} logo`}
-          width={48}
-          height={48}
-          className="h-12 w-12 shrink-0 border border-zinc-900/10 object-cover dark:border-zinc-100/10"
-        />
-      ) : (
-        <div
-          aria-hidden="true"
-          className="flex h-12 w-12 shrink-0 items-center justify-center bg-zinc-900 font-mono text-sm font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900"
-        >
-          {getInitials(organization.name)}
-        </div>
-      )}
+      <div
+        aria-hidden="true"
+        className="flex h-12 w-12 shrink-0 items-center justify-center bg-zinc-900 font-mono text-sm font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900"
+      >
+        {getInitials(organization.name)}
+      </div>
       <div className="min-w-0">
         <h3 className="truncate text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
           {organization.name}

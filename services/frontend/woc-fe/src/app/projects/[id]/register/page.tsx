@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import PreviewDataNotice from "@/components/PreviewDataNotice";
 import RegistrationForm from "@/components/registration/RegistrationForm";
 import { getSessionUser } from "@/lib/auth-session";
@@ -48,9 +48,6 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
   const { id } = await params;
 
   const sessionUser = await getSessionUser();
-  if (!sessionUser) {
-    redirect(`/auth/sign-in?next=${encodeURIComponent(`/projects/${id}/register`)}`);
-  }
 
   const [projectSnapshot, organizationsSnapshot] = await Promise.all([
     getProjectByIdSnapshot(id),
@@ -192,8 +189,8 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
           <RegistrationForm
             projectId={project.id}
             suggestedSkills={project.skills}
-            initialName={sessionUser.name ?? ""}
-            initialEmail={sessionUser.email ?? ""}
+            initialName={sessionUser?.name ?? ""}
+            initialEmail={sessionUser?.email ?? ""}
           />
         </section>
       </div>

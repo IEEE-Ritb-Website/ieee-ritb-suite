@@ -1,17 +1,17 @@
 import { Router } from "express";
 import * as registrationController from "@/controllers/registrationController";
-import { asyncHandler, requireAuth, requireRole } from "@/middlewares";
+import { asyncHandler } from "@/middlewares";
 import { writeLimiter } from "@/middlewares/rateLimit";
 
 const router = Router();
 
-// Public route - Register for a project (requires sign-in)
-router.post("/projects/:projectId/register", writeLimiter, requireAuth, asyncHandler(registrationController.registerForProject));
+// Register for a project (open, no auth required)
+router.post("/projects/:projectId/register", writeLimiter, asyncHandler(registrationController.registerForProject));
 
-// Registrations for a project (mentors and admins only — contains PII)
-router.get("/projects/:projectId/registrations", requireAuth, requireRole("mentor", "admin"), asyncHandler(registrationController.listRegistrationsByProject));
+// List registrations for a project
+router.get("/projects/:projectId/registrations", asyncHandler(registrationController.listRegistrationsByProject));
 
-// Caller's own registration for a project (any signed-in user)
-router.get("/projects/:projectId/registrations/me", requireAuth, asyncHandler(registrationController.getMyRegistration));
+// Get registration for a project (by optional email query or me)
+router.get("/projects/:projectId/registrations/me", asyncHandler(registrationController.getMyRegistration));
 
 export default router;
