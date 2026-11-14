@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import AuthButton from "@/components/auth/AuthButton";
 import AppSidebar from "@/components/layout/AppSidebar";
 import SiteFooter from "@/components/layout/SiteFooter";
-import { getSessionUser } from "@/lib/auth-session";
 import { SITE_NAME } from "@/lib/program";
 import "./globals.css";
 import "@/components/winter-hero/winter-hero-theme.css";
@@ -27,8 +25,7 @@ export const metadata: Metadata = {
     "RIT Winter of Code is a winter-long open-source program where students build real solutions for participating organizations.",
 };
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const sessionUser = await getSessionUser();
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
@@ -41,11 +38,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        <AppSidebar user={sessionUser} />
+        <AppSidebar />
         <div className="flex min-h-screen flex-col pt-14 md:pt-0 md:pl-16">
-          <div className="sticky top-0 z-30 hidden h-16 items-center justify-end border-b border-zinc-900/10 bg-[#FAF9F6]/90 px-6 backdrop-blur md:flex dark:border-zinc-100/10 dark:bg-zinc-950/90">
-            <AuthButton user={sessionUser} />
-          </div>
           <main id="main-content" className="flex flex-1 flex-col">
             {children}
           </main>

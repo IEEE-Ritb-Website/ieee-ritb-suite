@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import AuthButton, { type WocSessionUser } from "@/components/auth/AuthButton";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -22,7 +21,7 @@ function HamburgerIcon() {
   );
 }
 
-export default function AppSidebar({ user }: { user?: WocSessionUser | null }) {
+export default function AppSidebar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const navId = useId();
@@ -64,7 +63,6 @@ export default function AppSidebar({ user }: { user?: WocSessionUser | null }) {
             RIT Winter of Code
           </Link>
         </div>
-        <AuthButton compact user={user} />
       </div>
 
       <aside
@@ -159,8 +157,7 @@ export default function AppSidebar({ user }: { user?: WocSessionUser | null }) {
               })}
             </ul>
             <div className="mt-auto border-t border-zinc-900/10 px-5 py-5 dark:border-zinc-100/10">
-              <AuthButton user={user} />
-              <p className="mt-4 font-mono text-xs leading-5 text-zinc-500 dark:text-zinc-500">
+              <p className="font-mono text-xs leading-5 text-zinc-500 dark:text-zinc-500">
                 Submission · Oct 15 – Oct 31
                 <br />
                 Coding · Nov 01 – Dec 31

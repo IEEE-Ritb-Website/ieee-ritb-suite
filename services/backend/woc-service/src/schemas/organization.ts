@@ -9,5 +9,6 @@ export const OrganizationSchema = z.object({
 
 
 export type IOrganization = z.infer<typeof OrganizationSchema> & {
-    _id?: string | any;
+    id?: string;
+    _id?: string;
 };

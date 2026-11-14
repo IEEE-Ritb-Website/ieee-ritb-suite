@@ -43,6 +43,7 @@ export const errorHandler = (
     err: unknown,
     req: Request,
     res: Response,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _next: NextFunction
 ) => {
     getAstraLogger().error({ err }, `[Error] path=${req.path} method=${req.method}`);
@@ -70,12 +71,12 @@ export const errorHandler = (
         return res.status(400).json(errorResponse);
     }
 
-    if (err instanceof NotFoundError) {
+    if (err instanceof NotFoundError || (err instanceof Error && err.message.includes("invalid input syntax for type uuid"))) {
         const errorResponse: ErrorResponse = {
             success: false,
             error: {
                 type: "not_found",
-                message: err.message,
+                message: err.message.includes("invalid input syntax for type uuid") ? "Resource not found" : err.message,
             },
         };
         return res.status(404).json(errorResponse);
@@ -116,12 +117,12 @@ export const errorHandler = (
         return res.status(409).json(errorResponse);
     }
 
-    // Handle MongoDB duplicate key errors
+    // Handle database duplicate key errors (e.g. Postgres 23505)
     if (
         err instanceof Error &&
-        err.name === "MongoServerError" &&
-        "code" in err &&
-        (err as { code: number }).code === 11000
+        (("code" in err && ((err as { code: unknown }).code === "23505" || (err as { code: unknown }).code === 11000)) ||
+         err.message.includes("unique constraint") ||
+         err.message.includes("duplicate key"))
     ) {
         const errorResponse: ErrorResponse = {
             success: false,

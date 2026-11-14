@@ -14,8 +14,9 @@ const EXPLORE_LINKS = [
 ];
 
 const PROGRAM_LINKS = [
-  { href: "/auth/sign-in", label: "Sign in" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/projects", label: "Problem Statements" },
+  { href: "/timeline", label: "Timeline" },
+  { href: "/organizations", label: "Organizations" },
 ];
 
 const IEEE_RITB_LINKS = [

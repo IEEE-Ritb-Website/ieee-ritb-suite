@@ -1,142 +1,192 @@
-// Sample data seeder for woc-service (local development only).
-// Seeds organizations + published-ready projects via direct Mongo writes
-// (creation APIs require mentor/admin sessions). Safe to re-run:
-// documents are matched by unique name/slug and only inserted when absent.
+// Real data seeder for woc-service using Supabase.
+// Seeds the real organization & project extracted from the official PDF listing.
 //
 // Usage: pnpm --filter woc-service seed
 import dotenv from "dotenv";
-import { MongoClient } from "mongodb";
+import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
 
-const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/woc-service-dev";
+const url = process.env.SUPABASE_URL;
+const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
-// Use the same database the service itself uses: the URI path when set,
-// otherwise the service's dev/prod database name.
-function resolveDbName() {
-  try {
-    const pathName = new URL(uri).pathname.replace(/^\//, "");
-    if (pathName) return pathName;
-  } catch {
-    // fall through to the default below
-  }
-  return process.env.NODE_ENV === "production" ? "woc-service-prod" : "woc-service-dev";
+if (!url || !key) {
+  console.error("SUPABASE_URL and SUPABASE_ANON_KEY (or SUPABASE_SERVICE_ROLE_KEY) must be set in .env");
+  process.exit(1);
 }
 
-const ORGANIZATIONS = [
-  {
-    name: "IEEE Computer Society RIT-B",
-    tagline: "Student computing chapter driving open source on campus.",
-  },
-  {
-    name: "OpenForge Lab",
-    tagline: "Campus open-source lab mentoring winter contributors.",
-  },
-];
+const supabase = createClient(url, key, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 
-const PROJECTS = [
-  {
-    title: "Campus Navigation Assistant",
-    slug: "campus-nav-assistant",
-    shortDesc: "A chatbot that answers campus queries — rooms, timetables, and events.",
-    longDesc:
-      "Build a retrieval-based assistant over campus data (rooms, timetables, events). " +
-      "Ship a working demo with an evaluation set of at least 50 real questions.",
-    stipendDetails: { type: "fixed", amount: 5000, currency: "INR" },
-    skills: [{ name: "TypeScript" }, { name: "React" }, { name: "REST APIs" }],
-    deliverables: [
-      { title: "Working demo", description: "Deployed demo answering campus questions." },
-      { title: "Evaluation set", description: "At least 50 real questions with expected answers." },
-    ],
-    coordinator: { name: "Ananya Rao", contact: "ananya@ritb.edu" },
-    duration: { value: 8, unit: "weeks" },
-    difficulty: "beginner",
-    eligibility: { allowedYears: [1, 2, 3, 4] },
-    organization: "IEEE Computer Society RIT-B",
-    tags: ["web", "chatbot"],
-  },
-  {
-    title: "ML Attendance Predictor",
-    slug: "ml-attendance-predictor",
-    shortDesc: "Predict course attendance patterns from anonymized timetable data.",
-    longDesc:
-      "Explore anonymized timetable and attendance data, build a baseline predictor, " +
-      "and document findings in a reproducible notebook with charts.",
-    stipendDetails: { type: "range", minAmount: 3000, maxAmount: 6000, currency: "INR" },
-    skills: [{ name: "Python", level: "intermediate" }, { name: "scikit-learn" }],
-    deliverables: [
-      { title: "Baseline model", description: "Trained predictor with reported metrics." },
-      { title: "Reproducible notebook", description: "Charts and findings in one runnable notebook." },
-    ],
-    coordinator: { name: "Rahul Verma", contact: "rahul@ritb.edu" },
-    duration: { value: 8, unit: "weeks" },
-    difficulty: "intermediate",
-    eligibility: { allowedYears: [2, 3, 4] },
-    organization: "IEEE Computer Society RIT-B",
-    tags: ["ml", "data"],
-  },
-  {
-    title: "RIT Events IoT Board",
-    slug: "rit-events-iot-board",
-    shortDesc: "An LED notice board driven by campus event feeds over MQTT.",
-    longDesc:
-      "Design firmware and a small publisher service so the notice board reflects " +
-      "live campus events. Deliver working hardware plus documented wiring and code.",
-    stipendDetails: { type: "unpaid" },
-    skills: [{ name: "C++", level: "advanced" }, { name: "MQTT" }],
-    deliverables: [
-      { title: "Working hardware", description: "Board displaying live event feed." },
-      { title: "Docs", description: "Wiring diagram and firmware documentation." },
-    ],
-    coordinator: { name: "Vikram Menon", contact: "vikram@openforge.in" },
-    duration: { value: 8, unit: "weeks" },
-    difficulty: "advanced",
-    organization: "OpenForge Lab",
-    tags: ["iot", "hardware"],
-  },
-];
+const REAL_ORGANIZATION = {
+  name: "Technorishi Consulting Pvt. Ltd.",
+  tagline: "Your Vision . Our Process — Enterprise solutions in HCM, facility management, compliance, and permit-to-work.",
+  image_url: null,
+};
 
-const client = new MongoClient(uri);
+const REAL_PROJECT = {
+  title: "No-Code Business Process Management (BPM) Platform: Form, Status, Process and Transition Engine with Approval Engine Integration",
+  slug: "nocode-bpm-platform",
+  short_desc: "A metadata-driven no-code BPM platform enabling administrators to design forms, define statuses, model processes as stages, and execute transitions integrated with an existing approval engine.",
+  long_desc: `Our platform already has an approval workflow designer and engine that decides who approves what and in which order. What is missing is the layer that defines the business process around that approval. This layer covers three things: the form that captures the data, the stages the request passes through, and the statuses and lifecycle it follows from creation until it closes.
 
-try {
-  await client.connect();
-  const db = client.db(resolveDbName());
+Today, each new process needs development effort to build its form, define its statuses, and wire it to the approval engine. Business users cannot set up or change a process on their own.
 
-  const orgIds = new Map();
-  for (const org of ORGANIZATIONS) {
-    await db.collection("organizations").updateOne(
-      { name: org.name },
-      { $setOnInsert: { ...org } },
-      { upsert: true },
-    );
-    const saved = await db.collection("organizations").findOne({ name: org.name });
-    orgIds.set(org.name, String(saved._id));
+We want a no-code layer where an administrator can design forms, define statuses, model processes as stages, and configure the transitions between them. Some transitions will hand control to the existing approval engine and resume based on the approval outcome. Every submitted form should run as a tracked process instance until it reaches a terminal status such as Completed, Rejected, or Cancelled, with a full audit trail.
+
+The challenge has two parts:
+1. Design a metadata-driven engine where forms, statuses, processes, and transitions are configuration, not code.
+2. Integrate it cleanly with an existing approval engine that the students will not modify.
+
+Technorishi builds enterprise platforms across HCM, facility management, compliance, and permit-to-work, all of which need configurable processes. The approval engine is already in place. This project builds the reusable process layer on top of it. The selected students will build four designers and one engine:
+• Form Designer and Engine: Configurable form builder with common field types, field validations, and form versioning.
+• Status Designer: Status master, categories (open, in-progress, terminal), and display attributes.
+• Process Designer: Define processes as sets of stages, link forms, and set lifecycles.
+• Transition Designer and Engine: Define allowed transitions, trigger actions, role permissions, conditions, webhooks, transition validation, and audit history.
+• Approval Engine Integration: Holding state during approval steps, receiving callbacks, and syncing process status.`,
+  stipend_details: {
+    type: "fixed",
+    notes: "Industry mentorship and internship certificate from Technorishi Consulting Pvt. Ltd.",
+  },
+  skills: [
+    { name: "REST APIs" },
+    { name: "Relational Databases" },
+    { name: "PostgreSQL" },
+    { name: "React" },
+    { name: "State Machines" },
+    { name: "Spring Boot / .NET / Node" },
+  ],
+  deliverables: [
+    {
+      title: "Architecture & Data-Model Document",
+      description: "Architecture and data-model document, including the approval engine integration contract.",
+    },
+    {
+      title: "Designers Suite",
+      description: "Working form, status, process, and transition designers with runtime form rendering.",
+    },
+    {
+      title: "Process Execution Engine",
+      description: "Process execution engine with transition validation, state machines, and an audit trail.",
+    },
+    {
+      title: "Approval Engine Integration",
+      description: "Working integration with the approval engine (or provided sandbox).",
+    },
+    {
+      title: "Working Demo & Setup Guide",
+      description: "Two configured demo processes running end-to-end, source code repo, API documentation, and setup video.",
+    },
+  ],
+  coordinator: {
+    name: "Technical Project Head",
+    contact: "info@technorishi.co.in",
+  },
+  duration: {
+    value: 8,
+    unit: "weeks",
+  },
+  difficulty: "intermediate",
+  eligibility: {
+    description: "Pre-final or final year students in CSE, IT, or related branches. Prior full-stack project experience required.",
+    allowedYears: [3, 4],
+    requireIEEEMembership: false,
+  },
+  tags: ["bpm", "no-code", "workflow-engine", "react", "fullstack", "enterprise"],
+};
+
+async function seed() {
+  console.log("Seeding data into Supabase...");
+
+  // 1. Upsert organization
+  const { data: existingOrg, error: orgFindError } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("name", REAL_ORGANIZATION.name)
+    .maybeSingle();
+
+  if (orgFindError) {
+    console.error("Error checking organizations table. Have you run supabase-schema.sql in Supabase SQL editor?", orgFindError.message);
+    process.exit(1);
   }
 
-  let insertedProjects = 0;
-  for (const project of PROJECTS) {
-    const { organization, ...rest } = project;
-    const result = await db.collection("projects").updateOne(
-      { slug: rest.slug },
-      {
-        $setOnInsert: {
-          ...rest,
-          organizationId: orgIds.get(organization),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      },
-      { upsert: true },
-    );
-    insertedProjects += result.upsertedCount ?? 0;
+  let orgId = existingOrg?.id;
+  if (!orgId) {
+    const { data: newOrg, error: orgInsertError } = await supabase
+      .from("organizations")
+      .insert(REAL_ORGANIZATION)
+      .select("id")
+      .single();
+
+    if (orgInsertError) {
+      console.error("Failed to insert organization:", orgInsertError);
+      process.exit(1);
+    }
+    orgId = newOrg.id;
+    console.log(`Created organization: ${REAL_ORGANIZATION.name} (${orgId})`);
+  } else {
+    const { error: orgUpdateError } = await supabase
+      .from("organizations")
+      .update(REAL_ORGANIZATION)
+      .eq("id", orgId);
+
+    if (orgUpdateError) {
+      console.error("Failed to update organization:", orgUpdateError);
+      process.exit(1);
+    }
+    console.log(`Updated organization: ${REAL_ORGANIZATION.name} (${orgId})`);
   }
 
-  const orgCount = await db.collection("organizations").countDocuments();
-  const projectCount = await db.collection("projects").countDocuments();
-  console.log(
-    `Seed complete: ${orgCount} organizations, ${projectCount} projects ` +
-    `(${insertedProjects} projects newly inserted).`,
-  );
-} finally {
-  await client.close();
+  // 2. Upsert project
+  const { data: existingProject, error: projectFindError } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("slug", REAL_PROJECT.slug)
+    .maybeSingle();
+
+  if (projectFindError) {
+    console.error("Error checking projects table:", projectFindError.message);
+    process.exit(1);
+  }
+
+  if (!existingProject) {
+    const { data: newProject, error: projectInsertError } = await supabase
+      .from("projects")
+      .insert({
+        ...REAL_PROJECT,
+        organization_id: orgId,
+      })
+      .select("id")
+      .single();
+
+    if (projectInsertError) {
+      console.error("Failed to insert project:", projectInsertError);
+      process.exit(1);
+    }
+    console.log(`Created project: ${REAL_PROJECT.title} (${newProject.id})`);
+  } else {
+    // Update existing project with latest details
+    const { error: updateError } = await supabase
+      .from("projects")
+      .update({
+        ...REAL_PROJECT,
+        organization_id: orgId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", existingProject.id);
+
+    if (updateError) {
+      console.error("Failed to update project:", updateError);
+      process.exit(1);
+    }
+    console.log(`Updated project: ${REAL_PROJECT.title} (${existingProject.id})`);
+  }
+
+  console.log("Seeding completed successfully!");
 }
+
+seed().catch((err) => {
+  console.error("Seed error:", err);
+  process.exit(1);
+});

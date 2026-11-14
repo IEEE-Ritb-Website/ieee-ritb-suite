@@ -1,11 +1,13 @@
-import { ObjectId } from "mongodb";
 import { ValidationError } from "@/middlewares";
 
-// Route params arrive as strings while Mongo stores ObjectIds.
-// Converts a param to ObjectId, rejecting malformed ids with a 400.
-export const toObjectId = (id: string, resource: string): ObjectId => {
-    if (!ObjectId.isValid(id)) {
-        throw new ValidationError(`Invalid ${resource} id`);
+/**
+ * Validates a resource ID string.
+ */
+export const validateId = (id: string, resource: string): string => {
+    if (!id || typeof id !== "string" || id.trim().length === 0) {
+        throw new ValidationError(`Invalid ${resource} ID`);
     }
-    return new ObjectId(id);
+    return id.trim();
 };
+
+export const toObjectId = validateId;

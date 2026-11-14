@@ -1,10 +1,5 @@
 import { CorsOptions } from "cors";
 
-// Restrictive allowlist (comma-separated origins). Defaults to the local
-// frontend dev server. Server-to-server callers and curl send no Origin
-// header and are always allowed. Credentials stay disabled — the API uses
-// Bearer tokens, not cookies, so no cross-origin credentialed requests
-// are needed.
 const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "http://localhost:3000")
     .split(",")
     .map((origin) => origin.trim())
@@ -13,6 +8,11 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "http://localhost:3000")
 export const corsOptions: CorsOptions = {
     origin: (origin, callback) => {
         if (!origin) {
+            callback(null, true);
+            return;
+        }
+        // In local development, permit any localhost origin (e.g. localhost:3000, 3001, 3002)
+        if (/^https?:\/\/localhost(:\d+)?$/.test(origin) || /^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin)) {
             callback(null, true);
             return;
         }
