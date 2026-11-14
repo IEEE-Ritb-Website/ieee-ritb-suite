@@ -10,6 +10,7 @@ import { mapProject } from "./projectController";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapRegistration = (row: any) => ({
     id: row.id,
     _id: row.id,
@@ -58,6 +59,7 @@ export const registerForProject = async (req: Request, res: Response) => {
     const resolvedProjectId = project.id;
 
     // Eligibility verification (e.g. deadline, allowed years)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     assertRegistrationEligibility(project as any, participant.year);
 
     // Duplicate check in Supabase

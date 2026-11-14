@@ -7,7 +7,8 @@ import { NotFoundError, ConflictError } from "@/middlewares";
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export const mapProject = (row: any) => ({
+export // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapProject = (row: any) => ({
     id: row.id,
     _id: row.id,
     title: row.title,
