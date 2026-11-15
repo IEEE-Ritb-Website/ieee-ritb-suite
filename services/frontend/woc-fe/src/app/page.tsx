@@ -3,7 +3,7 @@ import Link from "next/link";
 import { WinterHero } from "@/components/winter-hero/winter-hero";
 import HighlightsSection from "@/components/home/HighlightsSection";
 import IntroductionSection from "@/components/home/IntroductionSection";
-import TimelineSection from "@/components/home/TimelineSection";
+// import TimelineSection from "@/components/home/TimelineSection";
 import OrganizationCard from "@/components/organizations/OrganizationCard";
 import PreviewDataNotice from "@/components/PreviewDataNotice";
 import ProjectCard from "@/components/projects/ProjectCard";
@@ -43,7 +43,7 @@ export default async function Home() {
 
       <HighlightsSection />
 
-      <TimelineSection />
+      {/* <TimelineSection /> */}
 
       <section
         aria-labelledby="home-projects-heading"

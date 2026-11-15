@@ -4,9 +4,6 @@ import { ICONFIG } from "@/types";
 const SERVER_PORT = Number(process.env.PORT) || 3004;
 
 export const CONFIG: ICONFIG = {
-    database: {
-        name: isProduction() ? "woc-service-prod" : "woc-service-dev",
-    },
     server: {
         port: SERVER_PORT,
         name: "woc-service " + (isProduction() ? "production" : "development"),
@@ -15,5 +12,6 @@ export const CONFIG: ICONFIG = {
     supabase: {
         url: process.env.SUPABASE_URL || "",
         anonKey: process.env.SUPABASE_ANON_KEY || "",
+        serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
     },
 };

@@ -3,9 +3,6 @@ import type { UserRole } from "@/utils/roles";
 
 // Configuration type
 export type ICONFIG = {
-    database: {
-        name: string;
-    };
     server: {
         port: number;
         name: string;
@@ -14,6 +11,7 @@ export type ICONFIG = {
     supabase: {
         url: string;
         anonKey: string;
+        serviceRoleKey?: string;
     };
 };
 

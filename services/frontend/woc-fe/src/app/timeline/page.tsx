@@ -15,8 +15,8 @@ const PHASE_ACTIONS: Record<string, { href: string; label: string }> = {
     label: "Browse problem statements",
   },
   coding: {
-    href: "/auth/sign-in",
-    label: "Sign in to track progress",
+    href: "/projects",
+    label: "Explore problem statements",
   },
 };
 
@@ -48,12 +48,6 @@ export default function TimelinePage() {
           className="inline-flex items-center justify-center bg-blue-700 px-8 py-3.5 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
         >
           Explore Problem Statements
-        </Link>
-        <Link
-          href="/auth/sign-in"
-          className="inline-flex items-center justify-center border border-zinc-900/20 px-8 py-3.5 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-900/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 dark:border-zinc-100/20 dark:text-zinc-100 dark:hover:bg-zinc-100/10"
-        >
-          Sign in with GitHub
         </Link>
       </div>
     </div>

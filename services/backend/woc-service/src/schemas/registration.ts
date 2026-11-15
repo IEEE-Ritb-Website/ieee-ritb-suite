@@ -28,9 +28,8 @@ export const RegistrationSchema = z.object({
     projectTitle: z.string(),
     projectSlug: z.string(),
 
-    // Bound server-side to the verified session (requireAuth) — never
-    // accepted from the client, so one account cannot register as another.
-    userId: z.string().min(1),
+    // Optional user identifier (no auth required)
+    userId: z.string().optional(),
     userEmail: z.string().email().optional(),
 
     participant: ParticipantSchema,
@@ -40,13 +39,13 @@ export const RegistrationSchema = z.object({
     status: z.enum(["pending", "approved", "rejected", "waitlisted"]).default("pending"),
 
 
-    submittedAt: z.date().default(() => new Date()),
+    submittedAt: z.coerce.date().default(() => new Date()),
     ipAddress: z.string().optional(),
     userAgent: z.string().optional(),
 
 
-    createdAt: z.date().default(() => new Date()),
-    updatedAt: z.date().default(() => new Date()),
+    createdAt: z.coerce.date().default(() => new Date()),
+    updatedAt: z.coerce.date().default(() => new Date()),
 });
 
 
@@ -54,5 +53,6 @@ export type IParticipant = z.infer<typeof ParticipantSchema>;
 export type IProposalDoc = z.infer<typeof ProposalDocSchema>;
 export type IProposal = z.infer<typeof ProposalSchema>;
 export type IRegistration = z.infer<typeof RegistrationSchema> & {
-    _id?: string | any;
+    id?: string;
+    _id?: string;
 };

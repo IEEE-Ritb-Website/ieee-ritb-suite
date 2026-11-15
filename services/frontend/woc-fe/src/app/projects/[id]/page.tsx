@@ -237,8 +237,7 @@ export default async function ProjectDetailsPage({
         ) : (
           <>
             <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-              Sign in with GitHub to get started. Proposals are accepted during the
-              submission period (October 15 – October 31).
+              Proposals are accepted during the submission period (October 15 – October 31).
             </p>
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
@@ -246,12 +245,6 @@ export default async function ProjectDetailsPage({
                 className="inline-flex items-center justify-center bg-blue-700 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
               >
                 Register for This Project
-              </Link>
-              <Link
-                href="/auth/sign-in"
-                className="inline-flex items-center justify-center border border-zinc-900/20 px-8 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-900/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 dark:border-zinc-100/20 dark:text-zinc-100 dark:hover:bg-zinc-100/10"
-              >
-                Sign in with GitHub
               </Link>
             </div>
           </>

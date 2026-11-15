@@ -1,58 +1,54 @@
 # woc-service — RIT Winter of Code backend
 
-Express + TypeScript + MongoDB + Zod API for RIT Winter of Code
+Express + TypeScript + Supabase + Zod API for RIT Winter of Code
 (IEEE RIT-B Suite).
 
 ## Getting Started
 
 ### Prerequisites
 - Node.js & pnpm
-- MongoDB reachable via `MONGODB_URI` (defaults to `mongodb://localhost:27017`)
+- Supabase project URL and keys (`SUPABASE_URL`, `SUPABASE_ANON_KEY`)
+
+### Database Setup
+Execute `supabase-schema.sql` in your Supabase SQL Editor:
+- Creates `organizations`, `projects`, and `registrations` tables.
+- Disables RLS (or grants public policies) so endpoints can query and register.
 
 ### Configure & Run
 From the monorepo root:
 ```bash
 cp services/backend/woc-service/.env.example services/backend/woc-service/.env
-# fill in values (Supabase keys come from the Supabase dashboard)
+# fill in SUPABASE_URL and SUPABASE_ANON_KEY
 pnpm --filter woc-service build
 pnpm --filter woc-service start   # serves on PORT (default 3004)
 ```
 
-### Seed sample data (local dev)
+### Seed real project data
 ```bash
 pnpm --filter woc-service seed
 ```
-Idempotent upserts of 2 organizations + 3 projects.
+Seeds Technorishi Consulting Pvt. Ltd. and the BPM project from `src/assets/`.
 
 ### Tests
 ```bash
-pnpm --filter woc-service test   # vitest: auth, roles, guards, error mapping
+pnpm --filter woc-service test
 ```
 
 ## Structure
-- `src/index.ts` - Entry point (connects DB, ensures indexes, boots server)
-- `src/configs/` - Configurations (port, database, secrets)
+- `src/index.ts` - Entry point (verifies Supabase client, boots server)
+- `src/configs/` - Configurations (port, Supabase credentials, secrets)
 - `src/controllers/` - Route handlers
 - `src/routes/` - Route definitions
 - `src/schemas/` - Input validations (Zod)
-- `src/middlewares/` - Auth, roles, rate limiting, error handling
-- `src/db/` - MongoDB connection + unique index setup
-- `src/utils/` - Response helpers, roles, guards, CORS, Supabase client
-- `src/__tests__/` - Vitest suite
+- `src/middlewares/` - Rate limiting, error handling, async wrappers
+- `src/db/` - Supabase client connection & helpers
+- `src/assets/` - Project listing assets and PDFs
+- `supabase-schema.sql` - Table definitions for Supabase
 
 ## Endpoints (base `/api`)
 - `GET /ping` - Health check
 - `GET /sample` - Sample endpoint
 - `GET /cron` - Secured cron endpoint (requires `x-cron-secret` header)
-- Organizations — `POST /organizations` (mentor/admin), `GET /organizations`, `GET /organizations/:id`
-- Projects — `POST /projects` (mentor/admin), `GET /projects` (`organizationId`/`difficulty` filters), `GET /projects/:id`, `GET /projects/slug/:slug`
-- Registrations — `POST /projects/:id/register` (signed-in users), `GET /projects/:id/registrations` (mentor/admin), `GET /projects/:id/registrations/me` (own registration)
-
-## Auth & Safety
-- `Authorization: Bearer <supabase-access-token>` verified per request via
-  `requireAuth`; roles (`admin`/`mentor`/`participant`) from signed Supabase
-  `app_metadata` via `requireRole`. Reads stay public.
-- Unique DB indexes (org names, project slugs, one registration per
-  user/email per project) backstop the application-level duplicate checks.
-- Restrictive CORS allowlist (`ALLOWED_ORIGINS`), rate limits on reads and
-  tighter limits on writes, malformed JSON mapped to 400.
+- Organizations — `POST /organizations`, `GET /organizations`, `GET /organizations/:id`
+- Projects — `POST /projects`, `GET /projects` (`organizationId`/`difficulty` filters), `GET /projects/:id`, `GET /projects/slug/:slug`
+- Registrations — `POST /projects/:id/register` (open registration), `GET /projects/:id/registrations`, `GET /projects/:id/registrations/me`

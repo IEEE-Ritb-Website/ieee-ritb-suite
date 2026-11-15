@@ -103,10 +103,9 @@ describe("errorHandler", () => {
         expect(captured.statusCode).toBe(409);
     });
 
-    it("maps MongoDB duplicate-key errors to 409", () => {
-        const err = Object.assign(new Error("E11000 duplicate key"), {
-            name: "MongoServerError",
-            code: 11000,
+    it("maps database duplicate-key errors to 409", () => {
+        const err = Object.assign(new Error("duplicate key value violates unique constraint"), {
+            code: "23505",
         });
         const captured = handle(err);
         expect(captured.statusCode).toBe(409);

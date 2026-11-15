@@ -45,6 +45,7 @@ export class WocApiNotConfiguredError extends Error {
 
 type ApiOrganization = {
   _id?: unknown;
+  id?: string;
   name: string;
   imageUrl?: string;
   tagline?: string;
@@ -52,6 +53,7 @@ type ApiOrganization = {
 
 type ApiProblemStatement = {
   _id?: unknown;
+  id?: string;
   title: string;
   slug: string;
   shortDesc: string;
@@ -80,7 +82,7 @@ function formatStipendAmount(raw: NonNullable<ApiProblemStatement["stipendDetail
 
 function mapOrganization(raw: ApiOrganization): Organization {
   return {
-    id: String(raw._id ?? ""),
+    id: String(raw.id ?? raw._id ?? ""),
     name: raw.name,
     imageUrl: raw.imageUrl ?? "",
     tagline: raw.tagline ?? "",
@@ -96,7 +98,7 @@ function mapProblemStatement(raw: ApiProblemStatement): ProblemStatement {
     if (raw.stipendDetails.notes) stipendDetails.note = raw.stipendDetails.notes;
   }
   return {
-    id: String(raw._id ?? ""),
+    id: String(raw.id ?? raw._id ?? ""),
     title: raw.title,
     shortDesc: raw.shortDesc,
     longDesc: raw.longDesc,

@@ -56,8 +56,8 @@ export const ProjectSchema = z.object({
     tags: z.array(z.string()).default([]),
 
 
-    createdAt: z.date().default(() => new Date()),
-    updatedAt: z.date().default(() => new Date()),
+    createdAt: z.coerce.date().default(() => new Date()),
+    updatedAt: z.coerce.date().default(() => new Date()),
 });
 
 
@@ -68,5 +68,6 @@ export type ICoordinator = z.infer<typeof CoordinatorSchema>;
 export type IDuration = z.infer<typeof DurationSchema>;
 export type IEligibility = z.infer<typeof EligibilitySchema>;
 export type IProject = z.infer<typeof ProjectSchema> & {
-    _id?: string | any;
+    id?: string;
+    _id?: string;
 };

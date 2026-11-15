@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+/*
 const PROGRAM_FACTS = [
   {
     label: "Submission",
@@ -18,12 +19,13 @@ const PROGRAM_FACTS = [
       "Sign in with GitHub to submit proposals and track your progress.",
   },
 ];
+*/
 
 export default function IntroductionSection() {
   return (
     <section
       aria-labelledby="intro-heading"
-      className="grid md:grid-cols-2"
+      // className="grid md:grid-cols-2"
     >
       <div className="flex flex-col justify-center bg-blue-700 px-6 py-14 sm:px-10 lg:px-14 lg:py-20">
         <p className="font-mono text-xs font-medium tracking-[0.3em] text-blue-100 uppercase">
@@ -50,6 +52,7 @@ export default function IntroductionSection() {
           </Link>
         </div>
       </div>
+      {/*
       <div className="flex flex-col justify-center bg-zinc-900 px-6 py-14 sm:px-10 lg:px-14 lg:py-20 dark:bg-zinc-900">
         <dl className="divide-y divide-zinc-100/10">
           {PROGRAM_FACTS.map((fact) => (
@@ -69,6 +72,7 @@ export default function IntroductionSection() {
           ))}
         </dl>
       </div>
+      */}
     </section>
   );
 }
